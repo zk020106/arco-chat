@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'vite-plugin-dts';
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import * as path from 'node:path';
 
 export default defineConfig({
@@ -46,5 +47,7 @@ export default defineConfig({
     entryRoot: 'src',
     outDir: 'dist',
     include: ['src/components', 'src/index.ts'],
-  })],
+  }),
+  cssInjectedByJsPlugin()
+],
 });

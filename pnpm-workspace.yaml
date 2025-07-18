@@ -26,3 +26,4 @@ catalog:
   'markdown-it-emoji': ^3.0.0
   'markdown-it-plantuml': ^1.4.1
   '@types/node': '20.14.8'
+  'vite-plugin-css-injected-by-js': 3.5.2

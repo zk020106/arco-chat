@@ -1,14 +1,16 @@
 {
   "name": "arco-chat-components",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js"
-    },
-    "./dist/style.css": "./dist/style.css"
+    }
   },
+  "files": [
+    "dist"
+  ],
   "packageManager": "pnpm@10.13.1",
   "scripts": {
     "build": "vue-tsc -b && vite build --config vite.config.ts",
@@ -34,6 +36,7 @@
     "vite-plugin-dts": "catalog:",
     "vue-tsc": "catalog:",
     "turbo": "catalog:",
-    "@types/node": "catalog:"
+    "@types/node": "catalog:",
+    "vite-plugin-css-injected-by-js": "catalog:"
   }
 }
