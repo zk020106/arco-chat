@@ -1,0 +1,88 @@
+:root {
+  /* 主题色与基础色彩 */
+  --color-bg: #f7f8fa;
+  --color-card: #fff;
+  --color-primary: #00b96b;
+  --color-secondary: #e5e6eb;
+  --color-text: #222;
+  --color-text-secondary: #888;
+  --color-border: #e5e6eb;
+  --color-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+body {
+  background: var(--color-bg);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+}
+
+/* 卡片/气泡通用样式 */
+.card, .bubble-card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--color-shadow);
+  padding: 16px 20px;
+  margin: 8px 0;
+  font-size: 16px;
+  color: var(--color-text);
+  max-width: 80%;
+  word-break: break-all;
+}
+
+/* 按钮基础样式 */
+.btn {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn:hover {
+  background: #00c37a;
+}
+
+/* 输入框基础样式 */
+.input {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 16px;
+  outline: none;
+  background: #fff;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0,185,107,0.08);
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 25px;
+  transition: all 0.3s;
+  background-color: rgba(106, 115, 125, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(106, 115, 125, 0.27);
+}
+
+::-webkit-scrollbar-corner {
+  display: none;
+}

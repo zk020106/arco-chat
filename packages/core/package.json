@@ -1,0 +1,37 @@
+{
+  "name": "arco-chat-core",
+  "version": "1.0.0",
+  "main": "dist/umd/arco-chat-core.umd.js",
+  "module": "dist/es/index.js",
+  "types": "dist/es/index.d.ts",
+  "exports": {
+    "import": "./dist/es/index.js",
+    "require": "./dist/umd/arco-chat-core.umd.js"
+  },
+  "packageManager": "pnpm@10.13.1",
+  "scripts": {
+    "build:es": "vue-tsc -b && vite build --config vite.config.ts",
+    "build:umd": "vue-tsc -b && vite build --config vite.config.umd.ts",
+    "build": "rimraf dist && pnpm run build:es && pnpm run build:umd",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@antfu/eslint-config": "catalog:",
+    "@types/markdown-it": "catalog:",
+    "@vitejs/plugin-vue": "catalog:",
+    "autoprefixer": "catalog:",
+    "sass": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:",
+    "vue-tsc": "catalog:",
+    "turbo": "catalog:",
+    "dompurify": "catalog:",
+    "highlight.js": "catalog:",
+    "markdown-it": "catalog:",
+    "lodash-es": "catalog:",
+    "@datatraccorporation/markdown-it-mermaid": "catalog:",
+    "markdown-it-emoji": "catalog:",
+    "markdown-it-plantuml": "catalog:"
+  }
+}

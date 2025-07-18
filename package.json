@@ -1,0 +1,51 @@
+{
+  "name": "arco-chat",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.6.5",
+  "scripts": {
+    "build": "turbo run build",
+    "build:core": "turbo run build --filter=arco-chat-core",
+    "publish:core": "cd packages/core && npm publish",
+    "publish:core:beta": "cd packages/core && npm publish --tag beta",
+    "dev:core": "turbo run dev --filter=arco-chat-core",
+    "build:storybook": "pnpm run build:storybook --filter=arco-chat-core",
+    "dev:docs": "turbo run dev --filter=docs",
+    "build:docs": "turbo run build --filter=docs",
+    "ci:publish": "pnpm changeset publish -r --filter=arco-chat-core",
+    "dev": "npm run dev:playground",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types",
+    "lint": "turbo run lint",
+    "lint:fix": "oxlint ./packages --fix && eslint . --fix",
+    "lint:ic": "eslint --inspect-config",
+    "eslint": "eslint .",
+    "eslint:fix": "eslint --fix",
+    "lint-staged": "lint-staged",
+    "prepare": "husky"
+  },
+  "engines": {
+    "node": ">=20.10.0",
+    "pnpm": ">=9.12.0"
+  },
+  "dependencies": {
+    "@antfu/eslint-config": "catalog:",
+    "@changesets/changelog-github": "catalog:",
+    "@changesets/cli": "catalog:",
+    "@types/markdown-it": "catalog:",
+    "@vitejs/plugin-vue": "catalog:",
+    "autoprefixer": "catalog:",
+    "sass": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:",
+    "vue-tsc": "catalog:",
+    "turbo": "catalog:",
+    "dompurify": "catalog:",
+    "highlight.js": "catalog:",
+    "markdown-it": "catalog:",
+    "lodash-es": "catalog:",
+    "@datatraccorporation/markdown-it-mermaid": "catalog:",
+    "markdown-it-emoji": "catalog:",
+    "markdown-it-plantuml": "catalog:"
+  }
+}
