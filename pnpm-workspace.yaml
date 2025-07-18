@@ -25,3 +25,4 @@ catalog:
   '@datatraccorporation/markdown-it-mermaid': ^0.5.0
   'markdown-it-emoji': ^3.0.0
   'markdown-it-plantuml': ^1.4.1
+  '@types/node': '20.14.8'

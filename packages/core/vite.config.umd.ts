@@ -16,7 +16,7 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       name: 'ArcoChatCore',
-      fileName: () => 'arco-chat-core.umd.js',
+      fileName: () => 'arco-chat-components.umd.js',
       formats: ['umd']
     },
     rollupOptions: {

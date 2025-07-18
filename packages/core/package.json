@@ -1,12 +1,12 @@
 {
-  "name": "arco-chat-core",
-  "version": "1.0.0",
-  "main": "dist/umd/arco-chat-core.umd.js",
+  "name": "arco-chat-components",
+  "version": "1.0.4",
+  "main": "dist/umd/arco-chat-components.umd.js",
   "module": "dist/es/index.js",
   "types": "dist/es/index.d.ts",
   "exports": {
     "import": "./dist/es/index.js",
-    "require": "./dist/umd/arco-chat-core.umd.js"
+    "require": "./dist/umd/arco-chat-components.umd.js"
   },
   "packageManager": "pnpm@10.13.1",
   "scripts": {
@@ -16,6 +16,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "dompurify": "catalog:",
+    "highlight.js": "catalog:",
+    "markdown-it": "catalog:",
+    "lodash-es": "catalog:",
+    "@datatraccorporation/markdown-it-mermaid": "catalog:",
+    "markdown-it-emoji": "catalog:",
+    "markdown-it-plantuml": "catalog:"
+  },
+  "devDependencies": {
     "@antfu/eslint-config": "catalog:",
     "@types/markdown-it": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
@@ -26,12 +35,6 @@
     "vite-plugin-dts": "catalog:",
     "vue-tsc": "catalog:",
     "turbo": "catalog:",
-    "dompurify": "catalog:",
-    "highlight.js": "catalog:",
-    "markdown-it": "catalog:",
-    "lodash-es": "catalog:",
-    "@datatraccorporation/markdown-it-mermaid": "catalog:",
-    "markdown-it-emoji": "catalog:",
-    "markdown-it-plantuml": "catalog:"
+    "@types/node": "catalog:"
   }
 }
