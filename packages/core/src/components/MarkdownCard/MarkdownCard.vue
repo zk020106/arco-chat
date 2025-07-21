@@ -5,16 +5,16 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, getCurrentInstance, h, nextTick, onMounted, ref, watch, render,defineComponent} from 'vue'
+import { computed, defineEmits, defineProps, getCurrentInstance, h, nextTick, onMounted, ref, watch, render, defineComponent } from 'vue'
 import MarkdownIt from 'markdown-it'
 import DOMPurify from 'dompurify'
-import type {MarkdownCardProps} from './markdown-card-types'
+import type { MarkdownCardProps, TypingOptions } from './markdown-card-types'
 import CodeBlock from './components/CodeBlock.vue'
 import ThinkBlock from './components/ThinkBlock.vue'
 import { compile } from 'vue'
 import 'highlight.js/styles/github.css'
 
-const props = withDefaults(defineProps<MarkdownCardProps>(),{
+const props = withDefaults(defineProps<MarkdownCardProps>(), {
   safeMode: false,
   typing: true,
   enableThink: true
@@ -35,7 +35,6 @@ const emit = defineEmits<{
 }>()
 
 const md = ref()
-const typingMarkdown=ref('')
 const typingContent = ref('')
 let typingTimer: ReturnType<typeof setTimeout> | null = null
 const isTyping = ref(false)
@@ -75,8 +74,8 @@ defineExpose({ markdownVNode })
 
 function parseContentWithThink(content: string) {
   return content
-      .replace(/<think>/g, `<think-block>`) // 小写，和 code-block 一致
-      .replace(/<\/think>/g, `</think-block>`);
+    .replace(/<think>/g, `<think-block>`) // 小写，和 code-block 一致
+    .replace(/<\/think>/g, `</think-block>`);
 }
 
 function createMarkdownIt() {
@@ -101,32 +100,102 @@ function createMarkdownIt() {
   return instance
 }
 
-function startTypingEffect( step = 5, interval = 50, style = 'normal') {
+const splitMarkdownBlocks = (src: string) => {
+  const blocks: Array<{ type: 'text' | 'code' | 'think', value: string, inner?: string }> = []
+  let rest = src
+  const codeBlockRE = /```[\s\S]*?```/g
+  const thinkBlockRE = /<think-block>[\s\S]*?<\/think-block>/g
+  let matchArr: Array<{ type: 'code' | 'think', value: string, index: number, inner?: string }> = []
+  let match
+  while ((match = codeBlockRE.exec(rest))) {
+    matchArr.push({ type: 'code', value: match[0], index: match.index, inner: match[0].replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '') })
+  }
+  while ((match = thinkBlockRE.exec(rest))) {
+    matchArr.push({ type: 'think', value: match[0], index: match.index, inner: match[0].replace(/^<think-block>/, '').replace(/<\/think-block>$/, '') })
+  }
+  matchArr = matchArr.sort((a, b) => a.index - b.index)
+  let lastIndex = 0
+  for (const m of matchArr) {
+    if (m.index > lastIndex) {
+      blocks.push({ type: 'text', value: rest.slice(lastIndex, m.index) })
+    }
+    blocks.push({ type: m.type, value: m.value, inner: m.inner })
+    lastIndex = m.index + m.value.length
+  }
+  if (lastIndex < rest.length) {
+    blocks.push({ type: 'text', value: rest.slice(lastIndex) })
+  }
+  return blocks
+}
+
+function startTypingEffect(step: number | [number, number] = 2, interval = 50, style = 'normal') {
   clearTyping()
-  typingMarkdown.value=""
   typingContent.value = ''
   isTyping.value = true
   emit('typing-start')
   let i = 0
-  const src=props.content||""
+  const src = props.content || ""
   const processedSrc = props.enableThink ? parseContentWithThink(src) : src
-  const len=processedSrc.length
+  const blocks = splitMarkdownBlocks(processedSrc)
+  let blockIndex = 0
+  let charIndex = 0
+  let current = ""
   function nextStep() {
-    if (i >= len) {
-      typingMarkdown.value=processedSrc
+    if (blockIndex >= blocks.length) {
       typingContent.value = md.value.render(processedSrc)
       isTyping.value = false
       emit('typing-end')
       return
     }
-    let s = step
-    if (Array.isArray(step)) {
-      // 随机步长
-      s = Math.floor(Math.random() * (step[1] - step[0] + 1)) + step[0]
+    const block = blocks[blockIndex]
+    if (block.type === "text") {
+      const stepSize = Array.isArray(step) ? 
+        Math.floor(Math.random() * (step[1] - step[0] + 1)) + step[0] : 
+        step
+      charIndex += stepSize
+      current = blocks.slice(0, blockIndex).map(b => b.value).join('') + block.value.slice(0, charIndex)
+      if (charIndex >= block.value.length) {
+        blockIndex++
+        charIndex = 0
+      }
+    } else if (block.type === "code") {
+      const codeMatch = block.value.match(/^(```[a-zA-Z]*\n?)([\s\S]*)(```)/)
+      if (codeMatch) {
+        const prefix = codeMatch[1]
+        const inner = codeMatch[2]
+        const suffix = codeMatch[3]
+        charIndex++
+        const partial = prefix + inner.slice(0, charIndex) + suffix
+        current = blocks.slice(0, blockIndex).map(b => b.value).join('') + partial
+        if (charIndex >= inner.length) {
+          blockIndex++
+          charIndex = 0
+        }
+      } else {
+        current = blocks.slice(0, blockIndex + 1).map(b => b.value).join('')
+        blockIndex++
+        charIndex = 0
+      }
+    } else if (block.type === "think") {
+      const thinkMatch = block.value.match(/^(<think-block>)([\s\S]*)(<\/think-block>)$/)
+      if (thinkMatch) {
+        const prefix = thinkMatch[1]
+        const inner = thinkMatch[2]
+        const suffix = thinkMatch[3]
+        charIndex++
+        const partial = prefix + inner.slice(0, charIndex) + suffix
+        current = blocks.slice(0, blockIndex).map(b => b.value).join('') + partial
+        if (charIndex >= inner.length) {
+          blockIndex++
+          charIndex = 0
+        }
+      } else {
+        current = blocks.slice(0, blockIndex + 1).map(b => b.value).join('')
+        blockIndex++
+        charIndex = 0
+      }
     }
-    typingMarkdown.value=processedSrc.slice(0,i+s)
-    typingContent.value = md.value.render(typingMarkdown.value)
-    i += s
+    typingContent.value = md.value.render(current)
     emit('typing')
     typingTimer = setTimeout(nextStep, interval)
   }
@@ -142,20 +211,20 @@ function clearTyping() {
 }
 
 watch(
-    () => [props.content, props.typing, props.typingOptions],
-    ([content, typing, typingOptions]) => {
-      clearTyping()
-      if (typing) {
-        // 打字机参数
-        const { step = 5, interval = 50 } = typingOptions || {}
-        nextTick(() => startTypingEffect( step, interval))
-      } else {
-        if(md.value){
-          typingContent.value = md.value.render(content)
-        }
+  () => [props.content, props.typing, props.typingOptions],
+  ([content, typing, typingOptions]) => {
+    clearTyping()
+    if (typing) {
+      const step = (typingOptions as TypingOptions)?.step ?? 8
+      const interval = (typingOptions as TypingOptions)?.interval ?? 50
+      nextTick(() => startTypingEffect(step, interval))
+    } else {
+      if (md.value) {
+        typingContent.value = md.value.render(content)
       }
-    },
-    { immediate: true, deep: true },
+    }
+  },
+  { immediate: true, deep: true },
 )
 
 onMounted(() => {
@@ -221,9 +290,11 @@ const vCustomBlocks = {
 
 /* markdown 内容区域 */
 .ac-markdown-content {
-  font-size: var(--font-size-body-medium); /* 文字大小 */
+  font-size: var(--font-size-body-medium);
+  /* 文字大小 */
   line-height: 1.6;
-  color: var(--color-text-1); /* 主文本色 */
+  color: var(--color-text-1);
+  /* 主文本色 */
 }
 
 /* 标题样式 */
@@ -258,7 +329,8 @@ const vCustomBlocks = {
 
 /* 链接样式 */
 .ac-markdown-content :deep(a) {
-  color: rgb(var(--primary-6)); /* 主色 */
+  color: rgb(var(--primary-6));
+  /* 主色 */
   text-decoration: none;
 }
 
@@ -276,7 +348,8 @@ const vCustomBlocks = {
 
 /* 行内代码样式 */
 .ac-markdown-content :deep(code) {
-  font-family: var(--font-family-code),serif; /* 代码字体 */
+  font-family: var(--font-family-code), serif;
+  /* 代码字体 */
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;
