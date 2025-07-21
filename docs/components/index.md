@@ -9,18 +9,48 @@ import Bubble from '../../packages/core/src/components/Bubble/Bubble.vue'
 import MarkdownCard from '../../packages/core/src/components/MarkdownCard/MarkdownCard.vue'
 
 const inputValue = ref('')
-const content = `
-<think>
-嗯，用户让我帮他写一个快速排序。我得先回想一下快速排序的原理。快速排序是分治算法的一种，基本步骤是选一个基准元素，然后把数组分成两部分，一部分比基准小，另一部分比基准大，然后递归地对这两部分排序。
+const content = ref(`
+<think>这是深度思考</think>
+# 快速排序（Quick Sort）
 
-</think>
+### 介绍
+**快速排序（Quick Sort）**：是一种高效的排序算法，它采用分治法（Divide and Conquer）的思想。它的基本思路是：
 
-以下是使用 Python 实现的快速排序算法，包含详细注释：
+1. 选择一个基准值（pivot）
+2. 将数组分成两部分：小于基准值的部分和大于等于基准值的部分
+3. 递归地对这两部分进行排序
 
-\`\`\`python
-    print("排序后：", sorted_arr)
+### 代码实现
+
+1. 以下是快速排序的实现方法
+\`\`\`ts
+function quickSort(arr) {
+  function quickSort(arr) {
+  if (arr.length < 2) {
+    return arr;
+  }
+
+  const pivot = arr[0];
+  const left = [];
+  const right = [];
+
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] < pivot) {
+      left.push(arr[i]);
+    } else {
+      right.push(arr[i]);
+    }
+  }
+
+  return [...quickSort(left), pivot, ...quickSort(right)];
+}
+
+// 使用示例
+const arr = [3, 6, 8, 10, 1, 2, 1];
+console.log(quickSort(arr)); // 输出排序后的数组
+}
 \`\`\`
-`
+`);
 </script>
 
 # 组件演示
@@ -47,7 +77,7 @@ const content = `
 
 ## MarkdownCard
 
-<MarkdownCard content="# 标题\n正文内容" />
+<MarkdownCard content="# 标题<br>正文内容" />
 
 <MarkdownCard :content="content" />
 

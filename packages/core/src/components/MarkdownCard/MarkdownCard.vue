@@ -35,10 +35,11 @@ const emit = defineEmits<{
 }>()
 
 const md = ref()
-
+const typingMarkdown=ref('')
 const typingContent = ref('')
 let typingTimer: ReturnType<typeof setTimeout> | null = null
 const isTyping = ref(false)
+
 
 /**
  * 是否安全模式预览 html
@@ -46,11 +47,11 @@ const isTyping = ref(false)
  * safeMode: false 时，直接渲染原始 html
  */
 const renderedMarkdown = computed(() => {
-  if (!md.value) return props.content
   let content = props.content || ''
   if (props.enableThink) {
     content = parseContentWithThink(content)
   }
+  if (!md.value) return content
   let html = md.value.render(content)
   if (props.safeMode) {
     html = DOMPurify.sanitize(html)
@@ -69,6 +70,7 @@ const markdownVNode = computed(() => {
     }
   })
 })
+
 defineExpose({ markdownVNode })
 
 function parseContentWithThink(content: string) {
@@ -99,16 +101,20 @@ function createMarkdownIt() {
   return instance
 }
 
-function startTypingEffect(html, step = 2, interval = 50, style = 'normal') {
+function startTypingEffect( step = 5, interval = 50, style = 'normal') {
   clearTyping()
+  typingMarkdown.value=""
   typingContent.value = ''
   isTyping.value = true
   emit('typing-start')
   let i = 0
-  const len = html.length
+  const src=props.content||""
+  const processedSrc = props.enableThink ? parseContentWithThink(src) : src
+  const len=processedSrc.length
   function nextStep() {
     if (i >= len) {
-      typingContent.value = html
+      typingMarkdown.value=processedSrc
+      typingContent.value = md.value.render(processedSrc)
       isTyping.value = false
       emit('typing-end')
       return
@@ -118,17 +124,11 @@ function startTypingEffect(html, step = 2, interval = 50, style = 'normal') {
       // 随机步长
       s = Math.floor(Math.random() * (step[1] - step[0] + 1)) + step[0]
     }
-    typingContent.value = html.slice(0, i + s)
+    typingMarkdown.value=processedSrc.slice(0,i+s)
+    typingContent.value = md.value.render(typingMarkdown.value)
     i += s
     emit('typing')
-
-    nextTick(() => {
-      const container = document.querySelector('.ac-markdown-content')
-      if (container) processCustomBlocks(container as HTMLElement)
-    })
-
     typingTimer = setTimeout(nextStep, interval)
-
   }
   nextStep()
 }
@@ -142,15 +142,17 @@ function clearTyping() {
 }
 
 watch(
-    () => [props.content, props.typing, props.typingOptions, renderedMarkdown.value],
-    ([, typing, typingOptions, html]) => {
+    () => [props.content, props.typing, props.typingOptions],
+    ([content, typing, typingOptions]) => {
       clearTyping()
       if (typing) {
         // 打字机参数
-        const { step = 2, interval = 50, style = 'normal' } = typingOptions || {}
-        nextTick(() => startTypingEffect(html, step, interval, style))
+        const { step = 5, interval = 50 } = typingOptions || {}
+        nextTick(() => startTypingEffect( step, interval))
       } else {
-        typingContent.value = html
+        if(md.value){
+          typingContent.value = md.value.render(content)
+        }
       }
     },
     { immediate: true, deep: true },
