@@ -55,7 +55,7 @@ function copyCode() {
 // 移除 watch 逻辑，不再根据 props.foldable 自动收起
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .code-block { border-radius: 8px; border: 1px solid var(--color-border-2, #e5e6eb); margin-bottom: 16px; background: var(--color-fill-2, #f7f8fa);}
 .code-block-header { display: flex; align-items: center; justify-content: space-between; padding: 4px 12px; font-size: 13px; background: var(--color-fill-1, #f2f3f5);}
 .code-block-lang { color: var(--color-text-3, #86909c);}
@@ -64,4 +64,4 @@ function copyCode() {
 pre { margin: 0; padding: 12px; background: none; }
 .fade-enter-active, .fade-leave-active { transition: opacity .2s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
-</style> 
+</style>

@@ -28,7 +28,7 @@ function toggleFold() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .ac-think-block {
   background: rgb(var(--color-fill-1));
   border-left: 4px solid rgb(var(--primary-6));
@@ -71,4 +71,4 @@ function toggleFold() {
   font-size: 12px;
   color: #8b8b8b;
 }
-</style> 
+</style>
