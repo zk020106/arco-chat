@@ -32,6 +32,10 @@ export interface MarkdownCardProps {
   safeMode?: boolean
   /** think 插件配置 */
   thinkOptions?: ThinkPluginOptions
+  /** 自定义渲染器：key 为标签名，如 'think-block'|'agent-block'|'task-block'|'table'|'code-block' */
+  customRenderers?: Record<string, any>
+  /** 自定义标签别名映射：如 { 'my-think': 'think-block', 'grid': 'table' } */
+  customTags?: Record<string, string>
 }
 
 /**

@@ -1,5 +1,5 @@
 <template>
-  <div class="ac-bubble" :class="['ac-bubble', `ac-bubble-${props.align}`]">
+  <div class="ac-bubble" :class="bubbleClasses">
     <div class="ac-bubble-avatar">
       <Avatar v-bind="avatarConfig">
         {{ avatarConfig?.displayName }}
@@ -12,7 +12,7 @@
           <BubbleLoading></BubbleLoading>
         </slot>
       </div>
-      <div v-if="(slots.default || content) && !loading" class="ac-bubble-content" :class="[variant]">
+      <div v-if="!loading" class="ac-bubble-content" :class="[variant]">
         <slot>{{ content }}</slot>
       </div>
       <slot v-if="!loading" name="bottom"></slot>
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useSlots } from 'vue'
+import { computed } from 'vue'
 import { Avatar } from '@arco-design/web-vue'
 import type { BubblePropsType } from './bubble-types'
 import BubbleLoading from './BubbleLoading.vue'
@@ -39,7 +39,6 @@ const props = withDefaults(defineProps<BubblePropsType>(), {
  * default - 内容区
  * bottom - 气泡底部区域
  */
-const slots = useSlots()
 const bubbleClasses = computed(() => {
   return [
     `ac-bubble-${props.align}`,

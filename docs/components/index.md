@@ -7,8 +7,11 @@ import { ref } from 'vue'
 import Input from '../../packages/core/src/components/Input/Input.vue'
 import Bubble from '../../packages/core/src/components/Bubble/Bubble.vue'
 import MarkdownCard from '../../packages/core/src/components/MarkdownCard/MarkdownCard.vue'
+import test from './test.md?raw'
+
 
 const inputValue = ref('')
+const content1 = ref(test)
 const content = ref(`
 <think>这是深度思考</think>
 # 快速排序（Quick Sort）
@@ -77,8 +80,11 @@ console.log(quickSort(arr)); // 输出排序后的数组
 
 ## MarkdownCard
 
-<MarkdownCard content="# 标题<br>正文内容" />
+### <MarkdownCard :safe-mode="true" :typing="false" content="# 标题<br>正文内容" />
+<MarkdownCard :content="content1"
+  :safeMode="true"
+/>
 
-<MarkdownCard :content="content" />
+[//]: # (<MarkdownCard :content="content1" />)
 
 <!-- <MarkdownCard content="<think>思考：这是一条提示信息</think>" />  -->

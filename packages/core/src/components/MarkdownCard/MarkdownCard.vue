@@ -5,19 +5,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, getCurrentInstance, h, nextTick, onMounted, ref, watch, render, defineComponent } from 'vue'
+import { computed, defineEmits, defineProps, getCurrentInstance, h, nextTick, onMounted, onBeforeUnmount, ref, watch, render, useSlots } from 'vue'
 import MarkdownIt from 'markdown-it'
 import DOMPurify from 'dompurify'
 import type { MarkdownCardProps, TypingOptions } from './markdown-card-types'
 import CodeBlock from './components/CodeBlock.vue'
 import ThinkBlock from './components/ThinkBlock.vue'
-import { compile } from 'vue'
 import 'highlight.js/styles/github.css'
 
 const props = withDefaults(defineProps<MarkdownCardProps>(), {
   safeMode: false,
-  typing: true,
-  enableThink: true
+  typing: false,
+  enableThink: true,
+  customRenderers: () => ({}),
+  customTags: () => ({})
 })
 
 /**
@@ -38,6 +39,7 @@ const md = ref()
 const typingContent = ref('')
 let typingTimer: ReturnType<typeof setTimeout> | null = null
 const isTyping = ref(false)
+const slots = useSlots()
 
 
 /**
@@ -58,24 +60,29 @@ const renderedMarkdown = computed(() => {
   return html
 })
 
-// 动态渲染 markdown + 组件
-const markdownVNode = computed(() => {
-  const html = renderedMarkdown.value
-  const Comp = compile(`<div>${html}</div>`)
-  return defineComponent({
-    components: { CodeBlock, ThinkBlock },
-    render() {
-      return h(Comp)
-    }
-  })
-})
+// 移除动态编译 vnode 相关逻辑，直接通过自定义指令挂载子组件
 
-defineExpose({ markdownVNode })
+function normalizeByCustomTags(html: string) {
+  const aliases = props.customTags || {}
+  // 将自定义标签名归一化到标准标签名
+  for (const [from, to] of Object.entries(aliases)) {
+    const open = new RegExp(`<${from}>`, 'g')
+    const close = new RegExp(`</${from}>`, 'g')
+    html = html.replace(open, `<${to}>`).replace(close, `</${to}>`)
+  }
+  return html
+}
 
 function parseContentWithThink(content: string) {
-  return content
-    .replace(/<think>/g, `<think-block>`) // 小写，和 code-block 一致
-    .replace(/<\/think>/g, `</think-block>`);
+  // 支持 <think> 简写；新增 <agent> 与 <task>
+  const normalized = content
+    .replace(/<think>/g, `<think-block>`)
+    .replace(/<\/think>/g, `</think-block>`)
+    .replace(/<agent>/g, `<agent-block>`)
+    .replace(/<\/agent>/g, `</agent-block>`)
+    .replace(/<task>/g, `<task-block>`)
+    .replace(/<\/task>/g, `</task-block>`)
+  return normalizeByCustomTags(normalized)
 }
 
 function createMarkdownIt() {
@@ -142,15 +149,16 @@ function startTypingEffect(step: number | [number, number] = 2, interval = 50, s
   let current = ""
   function nextStep() {
     if (blockIndex >= blocks.length) {
-      typingContent.value = md.value.render(processedSrc)
+      const finalHtml = md.value.render(processedSrc)
+      typingContent.value = props.safeMode ? DOMPurify.sanitize(finalHtml) : finalHtml
       isTyping.value = false
       emit('typing-end')
       return
     }
     const block = blocks[blockIndex]
     if (block.type === "text") {
-      const stepSize = Array.isArray(step) ? 
-        Math.floor(Math.random() * (step[1] - step[0] + 1)) + step[0] : 
+      const stepSize = Array.isArray(step) ?
+        Math.floor(Math.random() * (step[1] - step[0] + 1)) + step[0] :
         step
       charIndex += stepSize
       current = blocks.slice(0, blockIndex).map(b => b.value).join('') + block.value.slice(0, charIndex)
@@ -195,7 +203,8 @@ function startTypingEffect(step: number | [number, number] = 2, interval = 50, s
         charIndex = 0
       }
     }
-    typingContent.value = md.value.render(current)
+    const stepHtml = md.value.render(current)
+    typingContent.value = props.safeMode ? DOMPurify.sanitize(stepHtml) : stepHtml
     emit('typing')
     typingTimer = setTimeout(nextStep, interval)
   }
@@ -220,7 +229,8 @@ watch(
       nextTick(() => startTypingEffect(step, interval))
     } else {
       if (md.value) {
-        typingContent.value = md.value.render(content)
+        const html = md.value.render(content || '')
+        typingContent.value = props.safeMode ? DOMPurify.sanitize(html) : html
       }
     }
   },
@@ -231,6 +241,21 @@ onMounted(() => {
   md.value = createMarkdownIt()
   emit('after-mdt-init', md.value)
 })
+
+onBeforeUnmount(() => {
+  clearTyping()
+})
+
+// 当 mdOptions 或 mdPlugins 变化时，重建 markdown-it 实例并重渲染
+watch(
+  () => [props.mdOptions, props.mdPlugins],
+  () => {
+    md.value = createMarkdownIt()
+    const html = md.value.render((props.content || ('' as string)))
+    typingContent.value = props.safeMode ? DOMPurify.sanitize(html) : html
+  },
+  { deep: true }
+)
 
 // 处理自定义标签的函数
 function processCustomBlocks(el: HTMLElement) {
@@ -244,7 +269,10 @@ function processCustomBlocks(el: HTMLElement) {
     const foldable = node.hasAttribute('foldable')
     const showCopy = node.hasAttribute('showCopy')
 
-    const vnode = h(CodeBlock, { code, lang, foldable, showCopy })
+    const Custom = props.customRenderers && props.customRenderers['code-block']
+    const vnode = slots.code
+      ? h('div', null, slots.code({ code, lang, foldable, showCopy }))
+      : h(Custom || CodeBlock, { code, lang, foldable, showCopy })
     const container = document.createElement('div')
     // @ts-ignore
     vnode.appContext = (getCurrentInstance() as any)?.appContext
@@ -258,8 +286,63 @@ function processCustomBlocks(el: HTMLElement) {
     if ((node as HTMLElement).dataset.rendered === 'true') return
 
     const slotContent = node.innerHTML
-    const vnode = h(ThinkBlock, {}, { default: () => h('div', { innerHTML: slotContent }) })
+    const customClass = props.thinkOptions && props.thinkOptions.customClass ? props.thinkOptions.customClass : ''
+    const Custom = props.customRenderers && props.customRenderers['think-block']
+    const vnode = slots.think
+      ? h('div', null, slots.think({ html: slotContent }))
+      : h(Custom || ThinkBlock, { class: customClass }, { default: () => h('div', { innerHTML: slotContent }) })
     const container = document.createElement('div')
+    // @ts-ignore
+    vnode.appContext = (getCurrentInstance() as any)?.appContext
+    render(vnode, container)
+    node.replaceWith(container.firstElementChild as HTMLElement)
+  })
+
+  // 处理 agent-block 标签
+  const agentBlocks = el.querySelectorAll('agent-block')
+  agentBlocks.forEach(node => {
+    if ((node as HTMLElement).dataset.rendered === 'true') return
+    const slotContent = node.innerHTML
+    const Custom = props.customRenderers && props.customRenderers['agent-block']
+    const vnode = slots.agent
+      ? h('div', null, slots.agent({ html: slotContent }))
+      : (Custom ? h(Custom, {}, { default: () => h('div', { innerHTML: slotContent }) }) : null)
+    if (vnode) {
+      const container = document.createElement('div')
+      // @ts-ignore
+      vnode.appContext = (getCurrentInstance() as any)?.appContext
+      render(vnode, container)
+      node.replaceWith(container.firstElementChild as HTMLElement)
+    }
+  })
+
+  // 处理 task-block 标签
+  const taskBlocks = el.querySelectorAll('task-block')
+  taskBlocks.forEach(node => {
+    if ((node as HTMLElement).dataset.rendered === 'true') return
+    const slotContent = node.innerHTML
+    const Custom = props.customRenderers && props.customRenderers['task-block']
+    const vnode = slots.task
+      ? h('div', null, slots.task({ html: slotContent }))
+      : (Custom ? h(Custom, {}, { default: () => h('div', { innerHTML: slotContent }) }) : null)
+    if (vnode) {
+      const container = document.createElement('div')
+      // @ts-ignore
+      vnode.appContext = (getCurrentInstance() as any)?.appContext
+      render(vnode, container)
+      node.replaceWith(container.firstElementChild as HTMLElement)
+    }
+  })
+
+  // 处理 table 标签（允许替换原生表格）
+  const tables = el.querySelectorAll('table')
+  tables.forEach(node => {
+    const Custom = props.customRenderers && props.customRenderers['table']
+    if (!Custom && !slots.table) return
+    const container = document.createElement('div')
+    const vnode = slots.table
+      ? h('div', null, slots.table({ html: node.outerHTML }))
+      : h(Custom, {}, { default: () => h('div', { innerHTML: node.outerHTML }) })
     // @ts-ignore
     vnode.appContext = (getCurrentInstance() as any)?.appContext
     render(vnode, container)
