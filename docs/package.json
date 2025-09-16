@@ -10,6 +10,7 @@
   "devDependencies": {
     "vitepress": "^1.6.3",
     "vue-docgen-cli": "^4.56.0",
-    "@arco-design/web-vue":"catalog:"
+    "@arco-design/web-vue":"catalog:",
+    "@vueuse/core": "^11.0.0"
   }
 }   

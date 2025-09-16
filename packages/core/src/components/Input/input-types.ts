@@ -44,6 +44,11 @@ export enum SubmitShortKey {
  * 输入框 props 定义
  */
 export const inputProps = {
+  /** v-model 值（优先级高于 value） */
+  modelValue: {
+    type: String,
+    default: '',
+  },
   /** 输入框内容 */
   value: {
     type: String,
@@ -98,6 +103,8 @@ export const inputProps = {
  * Input 组件 props 类型
  */
 export interface InputProps {
+  /** v-model 值（优先级高于 value） */
+  modelValue: string
   /** 输入框内容 */
   value: string
   /** 占位符 */

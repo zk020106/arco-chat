@@ -46,13 +46,13 @@ export interface AvatarProps {
  */
 export interface BubblePropsType {
   /** 气泡显示内容 */
-  content: string
+  content?: string
   /** 是否显示 loading 态，显示 loading 时其他区域将不会显示 */
-  loading: boolean
+  loading?: boolean
   /** 气泡对齐方式 */
-  align: BubbleAlign
+  align?: BubbleAlign
   /** 气泡样式 */
-  variant: BubbleVariant
+  variant?: BubbleVariant
   /** 头像配置对象 */
-  avatarConfig: AvatarProps
+  avatarConfig?: AvatarProps
 }

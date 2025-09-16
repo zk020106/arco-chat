@@ -62,6 +62,7 @@ function copyCode() {
 .code-block-actions { margin-left: auto; display: flex; gap: 4px; }
 .code-block-copy, .code-block-toggle { background: none; border: none; color: var(--primary-6, #165dff); cursor: pointer; margin-left: 0; padding: 0; }
 pre { margin: 0; padding: 12px; background: none; }
+pre, pre code { color: var(--color-text-1, #1d2129); }
 .fade-enter-active, .fade-leave-active { transition: opacity .2s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

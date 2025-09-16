@@ -3,7 +3,8 @@ title: 组件演示
 ---
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useDark } from '@vueuse/core'
 import Input from '../../packages/core/src/components/Input/Input.vue'
 import Bubble from '../../packages/core/src/components/Bubble/Bubble.vue'
 import MarkdownCard from '../../packages/core/src/components/MarkdownCard/MarkdownCard.vue'
@@ -27,15 +28,14 @@ const content = ref(`
 
 1. 以下是快速排序的实现方法
 \`\`\`ts
-function quickSort(arr) {
-  function quickSort(arr) {
+function quickSort(arr: number[]) {
   if (arr.length < 2) {
     return arr;
   }
 
   const pivot = arr[0];
-  const left = [];
-  const right = [];
+  const left: number[] = [];
+  const right: number[] = [];
 
   for (let i = 1; i < arr.length; i++) {
     if (arr[i] < pivot) {
@@ -50,15 +50,42 @@ function quickSort(arr) {
 
 // 使用示例
 const arr = [3, 6, 8, 10, 1, 2, 1];
-console.log(quickSort(arr)); // 输出排序后的数组
-}
+console.log(quickSort(arr));
 \`\`\`
 `);
+
+// 主题切换 Demo（与 Arco 联动）
+const isDark = useDark({
+  selector: 'html',
+  attribute: 'class',
+  valueDark: 'dark',
+  valueLight: '',
+  storageKey: 'vitepress-theme-appearance'
+})
+const toggleTheme = () => {
+  const html = document.documentElement
+  const nextDark = !isDark.value
+  if (nextDark) html.classList.add('dark')
+  else html.classList.remove('dark')
+}
+const arcoTheme = computed(() => document.body.getAttribute('arco-theme') || 'light')
+
+// MarkdownCard 交互示例状态
+const mdTyping = ref(false)
+const mdSafe = ref(true)
 </script>
 
 # 组件演示
 
 这里可以直接体验和查看各个组件的实际效果。
+
+## 主题切换 Demo（联动 Arco）
+
+<div style="display:flex;align-items:center;gap:12px;">
+  <button class="vp-button" @click="toggleTheme">切换到 {{ isDark ? '亮色' : '暗色' }}</button>
+  <span>VitePress: {{ isDark ? 'dark' : 'light' }}</span>
+  <span>Arco: {{ arcoTheme }}</span>
+</div>
 
 ## Input 输入框
 
@@ -80,9 +107,21 @@ console.log(quickSort(arr)); // 输出排序后的数组
 
 ## MarkdownCard
 
-### <MarkdownCard :safe-mode="true" :typing="false" content="# 标题<br>正文内容" />
-<MarkdownCard :content="content1"
-  :safeMode="true"
+### 快速预览
+<MarkdownCard :content="content" :safeMode="true" />
+
+### 交互示例
+
+<div style="margin: 8px 0; display:flex; gap:12px; align-items:center; flex-wrap: wrap;">
+  <label><input type="checkbox" v-model="mdTyping" /> typing</label>
+  <label><input type="checkbox" v-model="mdSafe" /> safeMode</label>
+</div>
+
+<MarkdownCard
+  :content="content"
+  :typing="mdTyping"
+  :safeMode="mdSafe"
+  :thinkOptions="{ customClass: 'ac-think' }"
 />
 
 [//]: # (<MarkdownCard :content="content1" />)

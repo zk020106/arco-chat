@@ -47,5 +47,8 @@
     "@datatraccorporation/markdown-it-mermaid": "catalog:",
     "markdown-it-emoji": "catalog:",
     "markdown-it-plantuml": "catalog:"
+  },
+  "volta": {
+    "node": "22.17.1"
   }
 }

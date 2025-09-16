@@ -7,7 +7,7 @@
     </div>
     <div class="ac-bubble-content-container">
       <slot v-if="!loading" name="top"></slot>
-      <div v-if="loading" class="loading-container">
+      <div v-if="loading" class="loading-container" :class="[variant]">
         <slot name="loadingTpl">
           <BubbleLoading></BubbleLoading>
         </slot>
@@ -70,6 +70,24 @@ const bubbleClasses = computed(() => {
   .ac-bubble-content-container {
     max-width: 100%;
   }
+  .loading-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    &.filled,
+    &.bordered {
+      padding: 12px 16px;
+      border-radius: 12px;
+    }
+    &.filled {
+      background-color: rgb(var(--color-bg-2, #fff));
+    }
+    &.bordered {
+      border: 1px solid var(--color-neutral-2);
+      background-color: transparent;
+    }
+  }
   .ac-bubble-content {
     word-wrap: break-word;
     &.filled,
@@ -78,7 +96,7 @@ const bubbleClasses = computed(() => {
       border-radius: 12px;
     }
     &.filled {
-      background-color: rgb(var(--color-bg-2, #fff));
+      background-color: var(--color-bg-2, #fff);
     }
     &.bordered {
       border: 1px solid var(--color-neutral-2);

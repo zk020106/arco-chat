@@ -30,6 +30,8 @@ export interface MarkdownCardProps {
   mdPlugins?: any[]
   /** 是否开启安全模式预览HTML代码 */
   safeMode?: boolean
+  /** DOMPurify 清洗配置（safeMode=true 有效） */
+  sanitizeOptions?: Record<string, any>
   /** think 插件配置 */
   thinkOptions?: ThinkPluginOptions
   /** 自定义渲染器：key 为标签名，如 'think-block'|'agent-block'|'task-block'|'table'|'code-block' */

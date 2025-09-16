@@ -1,6 +1,6 @@
 <template>
   <div class="ac-markdown-card">
-    <div class="ac-markdown-content" v-html="props.typing ? typingContent : renderedMarkdown" v-custom-blocks></div>
+    <div class="ac-markdown-content" ref="contentEl" v-html="props.typing ? typingContent : renderedMarkdown" v-custom-blocks></div>
   </div>
 </template>
 
@@ -18,8 +18,26 @@ const props = withDefaults(defineProps<MarkdownCardProps>(), {
   typing: false,
   enableThink: true,
   customRenderers: () => ({}),
-  customTags: () => ({})
+  customTags: () => ({}),
+  sanitizeOptions: () => ({
+    ADD_TAGS: ['code-block', 'think-block', 'agent-block', 'task-block'],
+    ADD_ATTR: ['code', 'lang', 'foldable', 'showCopy', 'class', 'style'],
+    ALLOW_DATA_ATTR: true,
+    USE_PROFILES: { html: true }
+  })
 })
+function sanitizeHtml(html: string) {
+  // 外部传入优先，未传则使用组件内默认
+  const defaultOpts = {
+    ADD_TAGS: ['code-block', 'think-block', 'agent-block', 'task-block'],
+    ADD_ATTR: ['code', 'lang', 'foldable', 'showCopy', 'class', 'style'],
+    ALLOW_DATA_ATTR: true,
+    USE_PROFILES: { html: true }
+  }
+  const opts = { ...defaultOpts, ...(props.sanitizeOptions || {}) }
+  return DOMPurify.sanitize(html, opts)
+}
+
 
 /**
  * MarkdownCard 组件支持的事件
@@ -40,6 +58,7 @@ const typingContent = ref('')
 let typingTimer: ReturnType<typeof setTimeout> | null = null
 const isTyping = ref(false)
 const slots = useSlots()
+const contentEl = ref<HTMLElement | null>(null)
 
 
 /**
@@ -55,7 +74,7 @@ const renderedMarkdown = computed(() => {
   if (!md.value) return content
   let html = md.value.render(content)
   if (props.safeMode) {
-    html = DOMPurify.sanitize(html)
+    html = sanitizeHtml(html)
   }
   return html
 })
@@ -150,9 +169,14 @@ function startTypingEffect(step: number | [number, number] = 2, interval = 50, s
   function nextStep() {
     if (blockIndex >= blocks.length) {
       const finalHtml = md.value.render(processedSrc)
-      typingContent.value = props.safeMode ? DOMPurify.sanitize(finalHtml) : finalHtml
+      typingContent.value = props.safeMode ? sanitizeHtml(finalHtml) : finalHtml
       isTyping.value = false
       emit('typing-end')
+      nextTick(() => {
+        if (contentEl.value) {
+          processCustomBlocks(contentEl.value)
+        }
+      })
       return
     }
     const block = blocks[blockIndex]
@@ -204,8 +228,14 @@ function startTypingEffect(step: number | [number, number] = 2, interval = 50, s
       }
     }
     const stepHtml = md.value.render(current)
-    typingContent.value = props.safeMode ? DOMPurify.sanitize(stepHtml) : stepHtml
+    typingContent.value = props.safeMode ? sanitizeHtml(stepHtml) : stepHtml
     emit('typing')
+    // 在打字过程中也尝试挂载自定义块，保证 code-block/think-block 等可见即生效
+    nextTick(() => {
+      if (contentEl.value) {
+        processCustomBlocks(contentEl.value)
+      }
+    })
     typingTimer = setTimeout(nextStep, interval)
   }
   nextStep()
@@ -230,7 +260,7 @@ watch(
     } else {
       if (md.value) {
         const html = md.value.render(content || '')
-        typingContent.value = props.safeMode ? DOMPurify.sanitize(html) : html
+        typingContent.value = props.safeMode ? sanitizeHtml(html) : html
       }
     }
   },
@@ -252,7 +282,14 @@ watch(
   () => {
     md.value = createMarkdownIt()
     const html = md.value.render((props.content || ('' as string)))
-    typingContent.value = props.safeMode ? DOMPurify.sanitize(html) : html
+    typingContent.value = props.safeMode ? sanitizeHtml(html) : html
+    if (!props.typing) {
+      nextTick(() => {
+        if (contentEl.value) {
+          processCustomBlocks(contentEl.value)
+        }
+      })
+    }
   },
   { deep: true }
 )
@@ -353,11 +390,13 @@ function processCustomBlocks(el: HTMLElement) {
 // 注册自定义指令
 const vCustomBlocks = {
   mounted(el: HTMLElement) {
+    if (isTyping.value) return
     nextTick(() => {
       processCustomBlocks(el)
     })
   },
   updated(el: HTMLElement) {
+    if (isTyping.value) return
     nextTick(() => {
       processCustomBlocks(el)
     })
@@ -376,7 +415,8 @@ const vCustomBlocks = {
   font-size: var(--font-size-body-medium);
   /* 文字大小 */
   line-height: 1.6;
-  color: var(--color-text-1);
+  color: var(--color-text-2);
+  background-color: var(--color-bg-1);
   /* 主文本色 */
 }
 

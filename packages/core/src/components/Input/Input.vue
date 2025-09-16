@@ -37,6 +37,7 @@ import {
 import type { InputProps } from './input-types'
 
 const props = withDefaults(defineProps<InputProps>(), {
+  modelValue: '',
   value: '',
   placeholder: '',
   disabled: false,
@@ -48,7 +49,7 @@ const props = withDefaults(defineProps<InputProps>(), {
   maxLength: undefined,
   submitShortKey: null,
 })
-const emits = defineEmits(inputEmits)
+const emits = defineEmits([...inputEmits, 'update:modelValue'])
 
 const inputValue = ref('')
 const inputClasses = computed(() => ({
@@ -64,11 +65,18 @@ const clearInput = () => {
 const getInput = () => inputValue.value
 
 watch(
-  () => props.value,
+  () => [props.modelValue, props.value],
   () => {
-    inputValue.value = props.value
+    inputValue.value = props.modelValue ?? props.value
   },
   { immediate: true },
+)
+
+watch(
+  () => inputValue.value,
+  (val) => {
+    emits('update:modelValue', val)
+  },
 )
 provide(inputInjectionKey, { inputValue, rootProps: props, rootEmits: emits })
 defineExpose({ clearInput, getInput })
