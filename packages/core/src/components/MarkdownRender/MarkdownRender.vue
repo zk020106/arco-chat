@@ -26,14 +26,14 @@
   import CodeBlock from './components/CodeBlock.vue';
   import ThinkBlock from './components/ThinkBlock.vue';
   import type {
-    MarkdownRendererProps,
-    MarkdownRendererSlots,
+    MarkdownRenderProps,
+    MarkdownRenderSlots,
     SlotInterceptorProps,
     TypingOptions,
-  } from './markdown-renderer-types';
+  } from './markdown-render-types';
   import 'highlight.js/styles/github.css';
 
-  const props = withDefaults(defineProps<MarkdownRendererProps>(), {
+  const props = withDefaults(defineProps<MarkdownRenderProps>(), {
     safeMode: false,
     typing: false,
     enableThink: true,
@@ -358,7 +358,7 @@
       for (const node of nodes) {
         if ((node as HTMLElement).dataset.rendered === 'true') return;
 
-        const slotHandler = slots[tagName as keyof MarkdownRendererSlots];
+        const slotHandler = slots[tagName as keyof MarkdownRenderSlots];
         const container = document.createElement('div');
         let vnode: VNode | null = null;
 

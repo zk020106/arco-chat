@@ -1,4 +1,4 @@
-// MarkdownRenderer 组件类型定义
+// MarkdownRender 组件类型定义
 
 /**
  * 打字机动效配置类型
@@ -92,9 +92,9 @@ export interface TypingOptions {
   };
   
   /**
-   * MarkdownRenderer 组件 props 类型
+   * MarkdownRender 组件 props 类型
    */
-  export interface MarkdownRendererProps {
+  export interface MarkdownRenderProps {
     /** markdown 内容 */
     content: string;
     /** 是否打字机动效 */
@@ -135,9 +135,9 @@ export interface TypingOptions {
   export type SlotFunction = (props: SlotInterceptorProps) => unknown;
   
   /**
-   * MarkdownRenderer 组件插槽类型定义
+   * MarkdownRender 组件插槽类型定义
    */
-  export interface MarkdownRendererSlots {
+  export interface MarkdownRenderSlots {
     /** 表格插槽 */
     table?: (props: TableSlotProps) => unknown;
     /** 图片插槽 */
