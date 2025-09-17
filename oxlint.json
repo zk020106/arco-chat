@@ -1,0 +1,65 @@
+{
+  "rules": {
+    "correctness": "warn",
+    "suspicious": "warn", 
+    "perf": "warn",
+    "style": "warn",
+    "pedantic": "warn",
+    "cargo": "warn",
+    "rust": "warn",
+    "nursery": "warn"
+  },
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.turbo/**",
+    "**/coverage/**",
+    "**/*.min.js",
+    "**/*.bundle.js",
+    "**/vendor/**",
+    "**/public/**",
+    "**/.next/**",
+    "**/.nuxt/**",
+    "**/.output/**",
+    "**/.vite/**",
+    "**/docs/**",
+    "**/*.md",
+    "**/.github/**",
+    "**/.image/**",
+    "**/src/types/shims-vue.d.ts",
+    "**/pnpm-lock.yaml",
+    "**/package-lock.json",
+    "**/yarn.lock"
+  ],
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "globals": {
+    "console": "readonly",
+    "process": "readonly",
+    "Buffer": "readonly",
+    "__dirname": "readonly",
+    "__filename": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "require": "readonly",
+    "exports": "readonly",
+    "defineProps": "readonly",
+    "defineEmits": "readonly",
+    "defineExpose": "readonly",
+    "defineSlots": "readonly",
+    "defineModel": "readonly",
+    "defineOptions": "readonly",
+    "withDefaults": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  }
+}

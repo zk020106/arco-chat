@@ -15,11 +15,10 @@
     "dev": "npm run dev:playground",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "lint": "turbo run lint",
-    "lint:fix": "oxlint ./packages --fix && eslint . --fix",
-    "lint:ic": "eslint --inspect-config",
-    "eslint": "eslint .",
-    "eslint:fix": "eslint --fix",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "lint:packages": "oxlint ./packages",
+    "lint:packages:fix": "oxlint ./packages --fix",
     "lint-staged": "lint-staged",
     "prepare": "husky"
   },
@@ -28,7 +27,6 @@
     "pnpm": ">=9.12.0"
   },
   "dependencies": {
-    "@antfu/eslint-config": "catalog:",
     "@changesets/changelog-github": "catalog:",
     "@changesets/cli": "catalog:",
     "@types/markdown-it": "catalog:",

@@ -26,7 +26,6 @@
     "markdown-it-plantuml": "catalog:"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "catalog:",
     "@types/markdown-it": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
     "autoprefixer": "catalog:",
