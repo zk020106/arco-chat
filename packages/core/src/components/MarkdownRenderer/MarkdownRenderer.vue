@@ -21,6 +21,8 @@
     useSlots,
     watch,
   } from 'vue';
+  import type { VNode, AppContext } from 'vue';
+  import type { PluginSimple, PluginWithOptions } from 'markdown-it';
   import CodeBlock from './components/CodeBlock.vue';
   import ThinkBlock from './components/ThinkBlock.vue';
   import type {
@@ -72,7 +74,7 @@
     (e: 'typing-end'): void;
   }>();
 
-  const md = ref();
+  const md = ref<MarkdownIt>();
   const typingContent = ref('');
   const slots = useSlots();
   let typingTimer: ReturnType<typeof setTimeout> | null = null;
@@ -136,9 +138,12 @@
     const instance = new MarkdownIt(options);
     // 应用插件
     if (Array.isArray(props.mdPlugins)) {
-      for (const pluginObj of props.mdPlugins) {
-        if (pluginObj?.plugin) {
-          instance.use(pluginObj.plugin, pluginObj.opts || {});
+      type MdPluginItem = { plugin: PluginSimple | PluginWithOptions<any>; opts?: unknown };
+      const plugins = props.mdPlugins as Array<MdPluginItem | unknown>;
+      for (const item of plugins) {
+        const pluginObj = item as Partial<MdPluginItem>;
+        if (pluginObj && pluginObj.plugin) {
+          instance.use(pluginObj.plugin as any, (pluginObj.opts as any) || {});
         }
       }
     }
@@ -201,7 +206,8 @@
     let current = '';
     function nextStep() {
       if (blockIndex >= blocks.length) {
-        const finalHtml = md.value.render(processedSrc);
+        const renderer = md.value ?? (md.value = createMarkdownIt());
+        const finalHtml = renderer.render(processedSrc);
         typingContent.value = props.safeMode ? sanitizeHtml(finalHtml) : finalHtml;
         isTyping.value = false;
         emit('typing-end');
@@ -278,7 +284,8 @@
           charIndex = 0;
         }
       }
-      const stepHtml = md.value.render(current);
+      const renderer = md.value ?? (md.value = createMarkdownIt());
+      const stepHtml = renderer.render(current);
       typingContent.value = props.safeMode ? sanitizeHtml(stepHtml) : stepHtml;
       emit('typing');
       // 在打字过程中也尝试挂载自定义块，保证 code-block/think-block 等可见即生效
@@ -309,7 +316,8 @@
         const interval = (typingOptions as TypingOptions)?.interval ?? 50;
         nextTick(() => startTypingEffect(step, interval));
       } else if (md.value) {
-        const html = md.value.render(content || '');
+        const contentStr = (content as string) || '';
+        const html = md.value.render(contentStr);
         typingContent.value = props.safeMode ? sanitizeHtml(html) : html;
       }
     },
@@ -352,7 +360,7 @@
 
         const slotHandler = slots[tagName as keyof MarkdownRendererSlots];
         const container = document.createElement('div');
-        let vnode: unknown;
+        let vnode: VNode | null = null;
 
         // 如果有插槽处理器，使用插槽（用户自定义渲染）
         if (slotHandler) {
@@ -377,7 +385,8 @@
         }
 
         if (vnode) {
-          vnode.appContext = (getCurrentInstance() as { appContext?: unknown })?.appContext;
+          (vnode as VNode & { appContext?: AppContext | null }).appContext =
+            (getCurrentInstance() as { appContext?: AppContext | null } | null)?.appContext ?? null;
           render(vnode, container);
           node.replaceWith(container.firstElementChild as HTMLElement);
         }

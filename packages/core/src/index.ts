@@ -1,6 +1,6 @@
 import '@arco-design/web-vue/dist/arco.css'
 import './style.css'
-export { Bubble, BubbleList } from '@/components/Bubble'
+export { Bubble } from '@/components/Bubble'
 export { Input } from '@/components/Input'
 export { Mention } from '@/components/Mention'
 export { Prompt } from '@/components/Prompt'

@@ -1,54 +1,57 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'vite-plugin-dts';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import * as path from 'node:path';
 
 export default defineConfig({
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern'
-      }
-    }
-  },
-  build: {
-    lib: {
-      entry: 'src/index.ts',
-      name: 'ArcoChatCore',
-      fileName: () => 'index.js',
-      formats: ['es']
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: 'modern'
+            }
+        }
     },
-    rollupOptions: {
-      external: [
-        'vue',
-        '@arco-design/web-vue',
-        'markdown-it',
-        'highlight.js',
-        'xss',
-      ],
-      output: {
-        globals: {
-          vue: 'Vue',
-          '@arco-design/web-vue': 'ArcoVue',
-          'markdown-it': 'MarkdownIt',
-          'highlight.js': 'hljs',
-          'xss': 'XSS',
+    build: {
+        lib: {
+            entry: path.resolve(__dirname, 'src/index.ts'),
+            name: 'ArcoChatCore',
+            fileName: 'index',
+            formats: ['es']
         },
-      },
+        rollupOptions: {
+            external: [
+                'vue',
+                '@arco-design/web-vue',
+                'markdown-it',
+                'highlight.js',
+                'xss',
+            ],
+            output: {
+                globals: {
+                    vue: 'Vue',
+                    '@arco-design/web-vue': 'ArcoVue',
+                    'markdown-it': 'MarkdownIt',
+                    'highlight.js': 'hljs',
+                    'xss': 'XSS',
+                },
+            },
+        },
+        outDir: 'dist',
     },
-    outDir: 'dist',
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, 'src'),
+        },
     },
-  },
-  plugins: [vue(), dts({
-    entryRoot: 'src',
-    outDir: 'dist',
-    include: ['src/components', 'src/index.ts'],
-  }),
-  cssInjectedByJsPlugin()
-],
+    plugins: [vue(),
+        dts({
+            tsconfigPath: './tsconfig.build.json',
+            insertTypesEntry: true,
+            outDir: 'dist/types',       // 输出目录统一
+            rollupTypes: false,         // 不在入口目录生成文件
+            include: ['src/**/*.ts', 'src/**/*.vue']
+        }),
+        cssInjectedByJsPlugin()
+    ],
 });
