@@ -46,7 +46,17 @@
     "markdown-it-emoji": "catalog:",
     "markdown-it-plantuml": "catalog:"
   },
+  "devDependencies": {
+    "oxlint": "^1.16.0",
+    "lint-staged": "^16.1.6",
+    "prettier": "^3.6.2"
+  },
   "volta": {
     "node": "22.17.1"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx,vue}": [
+      "oxlint --fix"
+    ]
   }
 }
