@@ -99,7 +99,7 @@ const bubbleClasses = computed(() => {
       border-radius: 12px;
     }
     &.filled {
-      background-color: rgb(var(--color-bg-2, #fff));
+      background-color: var(--color-bg-2, #fff);
     }
     &.bordered {
       border: 1px solid var(--color-neutral-2);
