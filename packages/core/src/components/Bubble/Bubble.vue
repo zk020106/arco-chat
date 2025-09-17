@@ -1,7 +1,15 @@
 <template>
   <div class="ac-bubble" :class="bubbleClasses">
     <div class="ac-bubble-avatar">
-      <Avatar v-bind="avatarConfig">
+      <Avatar 
+        :size="avatarConfig?.size"
+        :image-url="avatarConfig?.imageUrl"
+        :shape="avatarConfig?.shape"
+        :auto-fix-font-size="avatarConfig?.autoFixFontSize"
+        :trigger-type="avatarConfig?.triggerType"
+        :trigger-icon-style="avatarConfig?.triggerIconStyle"
+        :object-fit="avatarConfig?.objectFit"
+      >
         {{ avatarConfig?.displayName }}
       </Avatar>
     </div>
@@ -32,6 +40,8 @@ const props = withDefaults(defineProps<BubblePropsType>(), {
   align: 'left',
   variant: 'filled',
   avatarConfig: () => ({ size: 36 }),
+  failed: false,
+  timestamp: undefined,
 })
 /**
  * top - 气泡顶部区域
@@ -43,6 +53,7 @@ const bubbleClasses = computed(() => {
   return [
     `ac-bubble-${props.align}`,
     props.loading ? 'ac-bubble-loading' : '',
+    props.failed ? 'ac-bubble-failed' : '',
   ]
 })
 </script>
@@ -60,6 +71,13 @@ const bubbleClasses = computed(() => {
   }
   &.ac-bubble-right {
     flex-direction: row-reverse;
+  }
+  
+  &.ac-bubble-failed {
+    .ac-bubble-content {
+      border: 1px solid var(--color-danger-6, #f53f3f);
+      background-color: var(--color-danger-1, #ffece8);
+    }
   }
 
   .ac-bubble-avatar {

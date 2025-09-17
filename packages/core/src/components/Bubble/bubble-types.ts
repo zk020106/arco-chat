@@ -55,4 +55,64 @@ export interface BubblePropsType {
   variant?: BubbleVariant
   /** 头像配置对象 */
   avatarConfig?: AvatarProps
+  /** 是否显示失败状态 */
+  failed?: boolean
+  /** 消息时间戳 */
+  timestamp?: number
+}
+
+/**
+ * 消息数据接口
+ */
+export interface BubbleMessage {
+  /** 消息唯一标识 */
+  id?: string
+  /** 消息内容 */
+  content: string
+  /** 用户ID */
+  userId?: string
+  /** 用户名 */
+  userName?: string
+  /** 是否显示 loading 态 */
+  loading?: boolean
+  /** 气泡对齐方式 */
+  align?: BubbleAlign
+  /** 气泡样式 */
+  variant?: BubbleVariant
+  /** 头像配置对象 */
+  avatarConfig?: AvatarProps
+  /** 是否显示失败状态 */
+  failed?: boolean
+  /** 消息时间戳 */
+  timestamp?: number
+  /** 消息类型 */
+  type?: 'text' | 'image' | 'file' | 'system'
+  /** 额外数据 */
+  data?: Record<string, any>
+}
+
+/**
+ * 气泡列表组件 props 类型
+ */
+export interface BubbleListProps {
+  /** 消息列表 */
+  messages: BubbleMessage[]
+  /** 是否自动滚动到底部 */
+  autoScroll?: boolean
+  /** 是否显示加载更多按钮 */
+  showLoadMore?: boolean
+  /** 是否显示滚动到底部按钮 */
+  showScrollToBottom?: boolean
+  /** 加载更多按钮文本 */
+  loadMoreText?: string
+  /** 是否正在加载更多 */
+  loadingMore?: boolean
+  /** 列表最大高度 */
+  maxHeight?: string
+  /** 是否反向显示（最新消息在底部） */
+  reverse?: boolean
+  /** 是否分组显示消息 */
+  groupMessages?: boolean
+  /** 消息分组时间阈值（毫秒） */
+  groupTimeThreshold?: number
 }

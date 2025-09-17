@@ -1,129 +1,108 @@
 ---
-title: 组件演示
+title: 组件库概览
+description: Arco Chat 组件库 - 专为聊天应用设计的 Vue 3 组件库
 ---
+
+# Arco Chat 组件库
+
+欢迎使用 Arco Chat 组件库！这是一个专为聊天应用设计的 Vue 3 组件库，提供了一套完整的聊天界面解决方案。
+
+## 🚀 特性
+
+- **🎨 现代化设计**: 基于 Arco Design 设计语言，提供一致的用户体验
+- **📱 响应式布局**: 支持各种屏幕尺寸，移动端友好
+- **🎯 高度可定制**: 丰富的插槽系统和配置选项
+- **🔧 TypeScript 支持**: 完整的类型定义，提供更好的开发体验
+- **⚡ 性能优化**: 基于 Vue 3 Composition API，性能优异
+- **🎭 主题支持**: 支持深色/浅色主题切换
+
+## 📦 组件列表
+
+### 核心组件
+
+- **[Bubble](./bubble/index.md)** - 消息气泡组件
+- **[BubbleList](./bubble/bubble-list.md)** - 消息列表组件
+- **[Input](./input/index.md)** - 输入框组件
+- **[Layout](./layout/index.md)** - 布局组件
+
+### 高级组件
+
+- **[Mention](./mention/index.md)** - 提及组件
+- **[Prompt](./prompt/index.md)** - 提示组件
+- **[MarkdownRenderer](./markdown-renderer/index.md)** - Markdown 渲染器
+
+## 🎯 快速开始
+
+### 安装
+
+```bash
+npm install @arco-chat/core
+```
+
+### 基本使用
+
+```vue
+<template>
+  <Layout>
+    <template #header>
+      <Header title="聊天应用" />
+    </template>
+    <template #content>
+      <BubbleList :messages="messages" />
+    </template>
+    <template #sender>
+      <Input @send="handleSend" />
+    </template>
+  </Layout>
+</template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useDark } from '@vueuse/core'
-import Input from '../../packages/core/src/components/Input/Input.vue'
-import Bubble from '../../packages/core/src/components/Bubble/Bubble.vue'
-import MarkdownCard from '../../packages/core/src/components/MarkdownCard/MarkdownCard.vue'
-import test from './test.md?raw'
+import { Layout, Header, BubbleList, Input } from '@arco-chat/core'
 
-
-const inputValue = ref('')
-const content1 = ref(test)
-const content = ref(`
-<think>这是深度思考</think>
-# 快速排序（Quick Sort）
-
-### 介绍
-**快速排序（Quick Sort）**：是一种高效的排序算法，它采用分治法（Divide and Conquer）的思想。它的基本思路是：
-
-1. 选择一个基准值（pivot）
-2. 将数组分成两部分：小于基准值的部分和大于等于基准值的部分
-3. 递归地对这两部分进行排序
-
-### 代码实现
-
-1. 以下是快速排序的实现方法
-\`\`\`ts
-function quickSort(arr: number[]) {
-  if (arr.length < 2) {
-    return arr;
+const messages = ref([
+  {
+    id: '1',
+    content: '你好！',
+    align: 'left',
+    avatarConfig: { displayName: '用户' }
   }
+])
 
-  const pivot = arr[0];
-  const left: number[] = [];
-  const right: number[] = [];
-
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i] < pivot) {
-      left.push(arr[i]);
-    } else {
-      right.push(arr[i]);
-    }
-  }
-
-  return [...quickSort(left), pivot, ...quickSort(right)];
+const handleSend = (value) => {
+  console.log('发送消息:', value)
 }
-
-// 使用示例
-const arr = [3, 6, 8, 10, 1, 2, 1];
-console.log(quickSort(arr));
-\`\`\`
-`);
-
-// 主题切换 Demo（与 Arco 联动）
-const isDark = useDark({
-  selector: 'html',
-  attribute: 'class',
-  valueDark: 'dark',
-  valueLight: '',
-  storageKey: 'vitepress-theme-appearance'
-})
-const toggleTheme = () => {
-  const html = document.documentElement
-  const nextDark = !isDark.value
-  if (nextDark) html.classList.add('dark')
-  else html.classList.remove('dark')
-}
-const arcoTheme = computed(() => document.body.getAttribute('arco-theme') || 'light')
-
-// MarkdownCard 交互示例状态
-const mdTyping = ref(false)
-const mdSafe = ref(true)
 </script>
+```
 
-# 组件演示
+## 🎨 设计理念
 
-这里可以直接体验和查看各个组件的实际效果。
+### 组件化设计
+每个组件都是独立的，可以单独使用，也可以组合使用，提供最大的灵活性。
 
-## 主题切换 Demo（联动 Arco）
+### 插槽系统
+通过 Vue 的插槽系统，你可以完全自定义组件的渲染内容，满足各种定制需求。
 
-<div style="display:flex;align-items:center;gap:12px;">
-  <button class="vp-button" @click="toggleTheme">切换到 {{ isDark ? '亮色' : '暗色' }}</button>
-  <span>VitePress: {{ isDark ? 'dark' : 'light' }}</span>
-  <span>Arco: {{ arcoTheme }}</span>
-</div>
+### 配置驱动
+通过 props 配置组件行为，减少代码量，提高开发效率。
 
-## Input 输入框
+## 📖 文档结构
 
-<Input v-model="inputValue" placeholder="请输入内容" />
+- **[组件概览](./index.md)** - 当前页面，组件库整体介绍
+- **[Bubble 组件](./bubble/index.md)** - 消息气泡组件文档
+- **[BubbleList 组件](./bubble/bubble-list.md)** - 消息列表组件文档
+- **[Input 组件](./input/index.md)** - 输入框组件文档
+- **[Layout 组件](./layout/index.md)** - 布局组件文档
+- **[Mention 组件](./mention/index.md)** - 提及组件文档
+- **[Prompt 组件](./prompt/index.md)** - 提示组件文档
+- **[MarkdownRenderer 组件](./markdown-renderer/index.md)** - Markdown 渲染器文档
+- **[综合示例](./comprehensive-demo.md)** - 完整应用示例
 
-当前输入：{{ inputValue }}
+## 🔗 相关链接
 
----
+- [Arco Design](https://arco.design/) - 基础设计系统
+- [Vue 3](https://vuejs.org/) - 前端框架
+- [TypeScript](https://www.typescriptlang.org/) - 类型系统
 
-## Bubble 气泡
+## 📄 许可证
 
-<Bubble type="sent" avatar="/avatar.png">你好！</Bubble>
-
-<Bubble type="received" :loading="true">对方正在输入...</Bubble>
-
-<Bubble type="sent" :failed="true">消息发送失败</Bubble>
-
----
-
-## MarkdownCard
-
-### 快速预览
-<MarkdownCard :content="content" :safeMode="true" />
-
-### 交互示例
-
-<div style="margin: 8px 0; display:flex; gap:12px; align-items:center; flex-wrap: wrap;">
-  <label><input type="checkbox" v-model="mdTyping" /> typing</label>
-  <label><input type="checkbox" v-model="mdSafe" /> safeMode</label>
-</div>
-
-<MarkdownCard
-  :content="content"
-  :typing="mdTyping"
-  :safeMode="mdSafe"
-  :thinkOptions="{ customClass: 'ac-think' }"
-/>
-
-[//]: # (<MarkdownCard :content="content1" />)
-
-<!-- <MarkdownCard content="<think>思考：这是一条提示信息</think>" />  -->
+MIT License
