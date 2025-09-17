@@ -1,8 +1,8 @@
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
-import dts from 'vite-plugin-dts';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import * as path from 'node:path';
+import dtsPlugin from "vite-plugin-dts";
 
 export default defineConfig({
     css: {
@@ -45,7 +45,7 @@ export default defineConfig({
         },
     },
     plugins: [vue(),
-        dts({
+        dtsPlugin({
             tsconfigPath: './tsconfig.build.json',
             insertTypesEntry: true,
             outDir: 'dist/types',       // 输出目录统一

@@ -1,19 +1,22 @@
 {
-  "name": "@arco-chat/core",
-  "version": "1.0.8",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "name": "arco-design-x",
+  "version": "1.0.0",
+  "author": "mochou",
+  "license": "MIT",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs"
     }
   },
   "files": [
     "dist"
-  ],
+  ]
   "packageManager": "pnpm@10.13.1",
   "scripts": {
-    "build": "vue-tsc -b && vite build --config vite.config.ts",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
