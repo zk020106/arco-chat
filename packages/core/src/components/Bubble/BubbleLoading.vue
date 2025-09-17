@@ -11,8 +11,10 @@
   <style scoped lang="scss">
   .ac-bubble-loading {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 8px;
+    height: 100%;
 
     .loading-dot {
       width: 8px;
