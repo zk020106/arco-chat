@@ -1,13 +1,13 @@
 import type { App } from 'vue'
-import AcBubble from './Bubble.vue'
-import AcBubbleList from './BubbleList.vue'
+import Bubble from './Bubble.vue'
+import BubbleList from './BubbleList.vue'
 
-AcBubble.install = (app: App) => {
-  app.component('AcBubble', AcBubble)
+Bubble.install = (app: App) => {
+  app.component('Bubble', Bubble)
 }
 
-AcBubbleList.install = (app: App) => {
-  app.component('AcBubbleList', AcBubbleList)
+BubbleList.install = (app: App) => {
+  app.component('BubbleList', BubbleList)
 }
 
-export { AcBubble, AcBubbleList }
+export { Bubble, BubbleList }

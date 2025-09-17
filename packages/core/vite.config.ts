@@ -37,6 +37,7 @@ export default defineConfig({
         },
       },
     },
+    outDir: 'dist',
   },
   resolve: {
     alias: {

@@ -1,8 +1,8 @@
 import type { App } from 'vue'
-import AcMention from './Mention.vue'
+import Mention from './Mention.vue'
 
-AcMention.install = (app: App) => {
-  app.component('AcMention', AcMention)
+Mention.install = (app: App) => {
+  app.component('Mention', Mention)
 }
 
-export { AcMention }
+export { Mention }

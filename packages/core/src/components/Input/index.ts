@@ -1,8 +1,8 @@
 import type { App } from 'vue'
-import AcInput from './Input.vue'
+import Input from './Input.vue'
 
-AcInput.install = (app: App) => {
-  app.component('AcInput', AcInput)
+Input.install = (app: App) => {
+  app.component('Input', Input)
 }
 
-export { AcInput }
+export { Input }

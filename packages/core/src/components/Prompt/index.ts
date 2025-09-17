@@ -1,8 +1,11 @@
 import type { App } from 'vue'
-import AcPrompt from './Prompt.vue'
+import Prompt from './Prompt.vue'
 
-AcPrompt.install = (app: App) => {
-  app.component('AcPrompt', AcPrompt)
+export { type PromptProps } from './prompt-types'
+export { default as Prompt } from './Prompt.vue'
+
+Prompt.install = (app: App) => {
+  app.component('Prompt', Prompt)
 }
 
-export { AcPrompt }
+

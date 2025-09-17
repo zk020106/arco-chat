@@ -1,6 +1,6 @@
 {
   "name": "arco-chat",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "packageManager": "pnpm@10.6.5",
   "scripts": {
     "build": "turbo run build",
@@ -20,7 +20,7 @@
     "lint:packages": "oxlint ./packages",
     "lint:packages:fix": "oxlint ./packages --fix",
     "lint-staged": "lint-staged",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "engines": {
     "node": ">=18.20.0",
@@ -29,26 +29,27 @@
   "dependencies": {
     "@changesets/changelog-github": "catalog:",
     "@changesets/cli": "catalog:",
+    "@datatraccorporation/markdown-it-mermaid": "catalog:",
     "@types/markdown-it": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
     "autoprefixer": "catalog:",
+    "dompurify": "catalog:",
+    "highlight.js": "catalog:",
+    "lodash-es": "catalog:",
+    "markdown-it": "catalog:",
+    "markdown-it-emoji": "catalog:",
+    "markdown-it-plantuml": "catalog:",
     "sass": "catalog:",
+    "turbo": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-dts": "catalog:",
-    "vue-tsc": "catalog:",
-    "turbo": "catalog:",
-    "dompurify": "catalog:",
-    "highlight.js": "catalog:",
-    "markdown-it": "catalog:",
-    "lodash-es": "catalog:",
-    "@datatraccorporation/markdown-it-mermaid": "catalog:",
-    "markdown-it-emoji": "catalog:",
-    "markdown-it-plantuml": "catalog:"
+    "vue-tsc": "catalog:"
   },
   "devDependencies": {
-    "oxlint": "^1.16.0",
+    "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
+    "oxlint": "^1.16.0",
     "prettier": "^3.6.2"
   },
   "volta": {
