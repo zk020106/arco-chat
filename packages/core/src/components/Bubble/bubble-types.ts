@@ -8,6 +8,7 @@
  * 头像配置对象
  */
 import type { CSSProperties } from 'vue'
+import type { TypewriterConfig, TypewriterCompleteStrategy } from '../Typewriter/typewriter-types'
 
 export type BubbleVariant = 'filled' | 'borderless' | 'outlined' | 'shadow'
 
@@ -25,23 +26,6 @@ export type BubbleAlign = 'start' | 'end'
  */
 export type BubbleShape = 'round' | 'corner'
 
-/**
- * 打字机动画配置
- */
-export interface TypewriterConfig {
-  /** 打字速度，每个字符的间隔时间（毫秒） */
-  speed?: number
-  /** 是否显示光标 */
-  showCursor?: boolean
-  /** 光标样式 */
-  cursorStyle?: string
-  /** 光标闪烁间隔时间（毫秒） */
-  cursorBlinkSpeed?: number
-  /** 是否自动开始打字动画 */
-  autoStart?: boolean
-  /** 打字完成后的延迟时间（毫秒） */
-  delayAfterComplete?: number
-}
 
 export type AvatarShape = 'circle' | 'square'
 export type AvatarTriggerType = 'mask' | 'button'
@@ -144,10 +128,6 @@ export interface BubbleMessage {
   streaming?: boolean
 }
 
-/**
- * 打字完成触发策略
- */
-export type TypewriterCompleteStrategy = 'only-last' | 'all' | number[]
 
 /**
  * 气泡列表组件 props 类型

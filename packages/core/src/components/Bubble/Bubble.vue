@@ -65,7 +65,7 @@ import { Avatar } from '@arco-design/web-vue'
 import type { BubblePropsType } from './bubble-types'
 import type { TypingOptions } from '../MarkdownRender/markdown-render-types'
 import BubbleLoading from './BubbleLoading.vue'
-import Typewriter from './Typewriter.vue'
+import Typewriter from '../Typewriter/Typewriter.vue'
 import MarkdownRender from '../MarkdownRender/MarkdownRender.vue'
 
 const props = withDefaults(defineProps<BubblePropsType>(), {

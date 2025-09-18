@@ -18,8 +18,6 @@ export type {
   BubbleVariant,
   BubbleAlign,
   BubbleShape,
-  TypewriterConfig,
-  TypewriterCompleteStrategy,
   AvatarProps,
   AvatarShape,
   AvatarTriggerType,
