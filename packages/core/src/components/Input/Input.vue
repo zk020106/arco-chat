@@ -74,7 +74,9 @@
         class="ac-submit-button"
         @click="submit"
       >
-        {{ loading ? '停止回答' : '发送' }}
+        <template #icon v-if="!loading">
+          <icon-send />
+        </template>
       </a-button>
     </div>
     
@@ -109,6 +111,7 @@
 
 <script setup lang="ts">
 import IconClose from '@arco-design/web-vue/es/icon/icon-close'
+import IconSend from '@arco-design/web-vue/es/icon/icon-send'
 import VoiceInput from './components/VoiceInput.vue'
 import {
   InputVariant,

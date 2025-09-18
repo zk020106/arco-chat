@@ -108,3 +108,95 @@
   color: var(--color-text-4);
   cursor: not-allowed;
 }
+
+/* 发送按钮样式 */
+.ac-submit-button {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  border: none !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin-left: 8px !important;
+  margin-right: 8px !important;
+  position: relative !important;
+  overflow: hidden !important;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.05) !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%) !important;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.98) !important;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4) !important;
+  }
+
+  &:disabled {
+    background: var(--color-fill-3) !important;
+    box-shadow: none !important;
+    transform: none !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+  }
+
+  /* 按钮内容 */
+  .arco-btn-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: white !important;
+  }
+
+  /* 加载状态 */
+  &.arco-btn-loading {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    
+    .arco-btn-loading-icon {
+      color: white !important;
+    }
+  }
+
+  /* 图标样式 */
+  .arco-icon {
+    font-size: 16px !important;
+    color: white !important;
+  }
+}
+
+/* 清空按钮样式优化 */
+.ac-clear-button {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  border: none !important;
+  background: var(--color-fill-3) !important;
+  color: var(--color-text-3) !important;
+  transition: all 0.2s ease !important;
+  margin-left: 4px !important;
+  margin-right: 4px !important;
+
+  &:hover:not(:disabled) {
+    background: var(--color-fill-4) !important;
+    color: var(--color-text-2) !important;
+    transform: scale(1.1) !important;
+  }
+
+  .arco-btn-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
