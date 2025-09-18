@@ -23,7 +23,7 @@
         class="ac-bubble-list-messages"
         :class="{ 'ac-bubble-list-reverse': reverse }"
       >
-        <template v-for="(message, index) in displayMessages" :key="message.id || index">
+        <template v-for="(message, index) in displayMessagesWithKeys" :key="message.__key">
           <!-- 气泡组件 -->
           <Bubble
             :content="message.content"
@@ -65,39 +65,7 @@
 
       </div>
 
-      <!-- 第三方虚拟滚动列表 -->
-      <RecycleScroller
-        v-else
-        class="ac-bubble-list-messages"
-        :items="displayMessages"
-        :item-size="itemHeight"
-        :key-field="'id'"
-        :buffer="bufferSize"
-        :direction="reverse ? 'vertical' : 'vertical'"
-        @update="onRecycleUpdate"
-      >
-        <template #default="{ item, index }">
-          <Bubble
-            :content="item.content"
-            :loading="item.loading"
-            :align="item.align"
-            :variant="item.variant"
-            :shape="item.shape"
-            :avatar-config="item.avatarConfig"
-            :failed="item.failed"
-            :timestamp="item.timestamp"
-            :max-width="item.maxWidth ?? defaultBubbleMaxWidth"
-            :typewriter="item.typewriter"
-            :typewriter-config="item.typewriterConfig"
-            :markdown="item.markdown"
-            :streaming="item.streaming"
-            @click="handleMessageClick(item, index)"
-            @typewriter-complete="handleTypewriterComplete(item, index)"
-            @typewriter-start="handleTypewriterStart(item, index)"
-            @typewriter-typing="(currentText, progress) => handleTypewriterTyping(item, index, currentText, progress)"
-          />
-        </template>
-      </RecycleScroller>
+      
 
       <!-- 滚动到底部按钮 -->
       <div 
@@ -117,7 +85,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import { RecycleScroller } from 'vue-virtual-scroller'
+ 
 import Bubble from './Bubble.vue'
 import type { BubbleListProps, BubbleMessage } from './bubble-types'
 
@@ -133,8 +101,6 @@ const props = withDefaults(defineProps<BubbleListProps>(), {
   scrollToBottomThreshold: 100,
   typewriterCompleteStrategy: 'only-last',
   virtualScroll: false,
-  itemHeight: 60,
-  bufferSize: 8,
   defaultBubbleMaxWidth: '75%'
 })
 
@@ -193,10 +159,7 @@ const autoScrollToBottom = () => {
 }
 
 // RecycleScroller 的可视区更新事件，用于触顶/触底检测
-function onRecycleUpdate({ firstVisibleIndex, lastVisibleIndex }: { firstVisibleIndex: number; lastVisibleIndex: number }) {
-  if (firstVisibleIndex === 0) onReachTop()
-  // 如需触底回调，可在此根据 lastVisibleIndex 判断
-}
+ 
 
 // 处理消息点击
 const handleMessageClick = (message: BubbleMessage, index: number) => {
