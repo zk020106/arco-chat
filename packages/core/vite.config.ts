@@ -52,13 +52,13 @@ export default defineConfig({
         AutoImport({
             imports: [
                 'vue',
-                {
-                    'vue': ['render']
-                }
+                { 'vue': ['render'] }
             ],
+            dts: 'src/auto-imports.d.ts', // <--- 强制写到 src 下
             resolvers: [ArcoResolver()],
         }),
         Components({
+            dts: 'src/components.d.ts',
             resolvers: [
                 ArcoResolver({
                     sideEffect: true

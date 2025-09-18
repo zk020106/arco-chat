@@ -1,3 +1,5 @@
+/// <reference path="./auto-imports.d.ts" />
+
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
 

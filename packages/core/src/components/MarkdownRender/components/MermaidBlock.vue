@@ -191,6 +191,23 @@ function zoomOut() {
   zoomLevel.value = Math.max(zoomLevel.value - 0.2, 0.5)
 }
 
+// 下载 SVG 文件的辅助函数
+const downloadSVG = (svgElement: SVGElement) => {
+  try {
+    const svgData = new XMLSerializer().serializeToString(svgElement)
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
+    const link = document.createElement('a')
+    link.download = `mermaid-diagram-${Date.now()}.svg`
+    link.href = URL.createObjectURL(svgBlob)
+    link.click()
+    URL.revokeObjectURL(link.href)
+    Message.success('SVG 文件导出成功')
+  } catch (error) {
+    console.error('SVG 导出失败:', error)
+    Message.error('导出失败')
+  }
+}
+
 // 导出图片
 async function exportImage() {
   if (!renderedSvg.value) {
@@ -225,21 +242,34 @@ async function exportImage() {
     const url = URL.createObjectURL(svgBlob)
     
     img.onload = () => {
-      ctx.scale(2, 2) // 高分辨率
-      ctx.drawImage(img, 0, 0, rect.width, rect.height)
+      try {
+        ctx.scale(2, 2) // 高分辨率
+        ctx.drawImage(img, 0, 0, rect.width, rect.height)
+        
+        // 下载图片
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const link = document.createElement('a')
+            link.download = `mermaid-diagram-${Date.now()}.png`
+            link.href = URL.createObjectURL(blob)
+            link.click()
+            URL.revokeObjectURL(link.href)
+            Message.success('图片导出成功')
+          }
+        }, 'image/png')
+      } catch (error) {
+        // 如果 Canvas 被污染，回退到下载 SVG
+        console.warn('Canvas 被污染，回退到 SVG 下载:', error)
+        downloadSVG(svgElement)
+      }
       
-      // 下载图片
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const link = document.createElement('a')
-          link.download = `mermaid-diagram-${Date.now()}.png`
-          link.href = URL.createObjectURL(blob)
-          link.click()
-          URL.revokeObjectURL(link.href)
-          Message.success('图片导出成功')
-        }
-      })
-      
+      URL.revokeObjectURL(url)
+    }
+    
+    img.onerror = () => {
+      // 如果图片加载失败，回退到下载 SVG
+      console.warn('图片加载失败，回退到 SVG 下载')
+      downloadSVG(svgElement)
       URL.revokeObjectURL(url)
     }
     
