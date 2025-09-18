@@ -159,4 +159,6 @@ export interface BubbleListProps {
   itemHeight?: number
   /** 虚拟滚动缓冲区大小 */
   bufferSize?: number
+  /** 默认气泡最大宽度，如 '75%' */
+  defaultBubbleMaxWidth?: string
 }

@@ -70,6 +70,25 @@
   min-height: 48px;
 }
 
+/* 让文本域占据剩余空间，避免被按钮挤压 */
+.ac-input-textarea {
+  flex: 1 1 auto;
+  min-width: 0; /* 关键：允许在flex容器中收缩 */
+}
+
+/* 兼容 Arco 包裹层，确保宽度撑满 */
+.ac-input-textarea .arco-textarea,
+.ac-input-textarea .arco-textarea-wrapper {
+  width: 100%;
+  background: transparent;
+}
+
+/* 操作按钮不参与收缩，避免压缩输入区 */
+.ac-submit-button,
+.ac-clear-button {
+  flex: 0 0 auto;
+}
+
 .ac-input-content:focus-within {
   color: rgb(var(--color-text-1));
   border-color: rgb(var(--primary-6));

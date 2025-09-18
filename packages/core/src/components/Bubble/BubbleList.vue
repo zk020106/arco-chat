@@ -18,7 +18,11 @@
       </div>
 
       <!-- 消息列表 -->
-      <div class="ac-bubble-list-messages" :class="{ 'ac-bubble-list-reverse': reverse }">
+      <div
+        v-if="!virtualScroll"
+        class="ac-bubble-list-messages"
+        :class="{ 'ac-bubble-list-reverse': reverse }"
+      >
         <template v-for="(message, index) in displayMessages" :key="message.id || index">
           <!-- 气泡组件 -->
           <Bubble
@@ -30,7 +34,7 @@
             :avatar-config="message.avatarConfig"
             :failed="message.failed"
             :timestamp="message.timestamp"
-            :max-width="message.maxWidth"
+            :max-width="message.maxWidth ?? defaultBubbleMaxWidth"
             :typewriter="message.typewriter"
             :typewriter-config="message.typewriterConfig"
             :markdown="message.markdown"
@@ -58,7 +62,22 @@
             </template>
           </Bubble>
         </template>
+
       </div>
+
+      <!-- 第三方虚拟滚动列表 -->
+      <VirtualList
+        v-else
+        class="ac-bubble-list-messages"
+        :data-key="dataKeyFn"
+        :data-sources="displayMessages"
+        :data-component="BubbleRow"
+        :keeps="keeps"
+        :estimate-size="itemHeight"
+        :direction="reverse ? 'vertical' : 'vertical'"
+        @totop="onReachTop"
+        @tobottom="onReachBottom"
+      />
 
       <!-- 滚动到底部按钮 -->
       <div 
@@ -77,7 +96,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, h, defineComponent } from 'vue'
+import VirtualList from 'vue-virtual-scroll-list'
 import Bubble from './Bubble.vue'
 import type { BubbleListProps, BubbleMessage } from './bubble-types'
 
@@ -94,7 +114,8 @@ const props = withDefaults(defineProps<BubbleListProps>(), {
   typewriterCompleteStrategy: 'only-last',
   virtualScroll: false,
   itemHeight: 60,
-  bufferSize: 5,
+  bufferSize: 8,
+  defaultBubbleMaxWidth: '75%'
 })
 
 const emit = defineEmits<{
@@ -115,13 +136,12 @@ const displayMessages = computed(() => {
   return props.reverse ? [...props.list].reverse() : props.list
 })
 
-
 // 处理加载更多
 const handleLoadMore = () => {
   emit('loadMore')
 }
 
-// 滚动到底部
+// 滚动到底部（仅对非虚拟列表容器）
 const scrollToBottom = () => {
   if (containerRef.value) {
     containerRef.value.scrollTop = containerRef.value.scrollHeight
@@ -129,16 +149,16 @@ const scrollToBottom = () => {
   }
 }
 
-// 检查是否在底部
+// 检查是否在底部（仅非虚拟）
 const checkIsAtBottom = () => {
   if (!containerRef.value) return
-  
   const { scrollTop, scrollHeight, clientHeight } = containerRef.value
   isAtBottom.value = scrollHeight - scrollTop - clientHeight < props.scrollToBottomThreshold
 }
 
-// 监听滚动事件
+// 监听滚动事件（仅非虚拟）
 const handleScroll = () => {
+  if (props.virtualScroll) return
   checkIsAtBottom()
   lastScrollTop.value = containerRef.value?.scrollTop || 0
 }
@@ -151,6 +171,39 @@ const autoScrollToBottom = () => {
     })
   }
 }
+
+// 行渲染组件（用于 VirtualList 的 data-component）
+const BubbleRow = defineComponent<{ source: BubbleMessage; index: number }>(() => ({
+  render(props) {
+    const message = props.source
+    const index = props.index
+    return h(
+      Bubble,
+      {
+        content: message.content,
+        loading: message.loading,
+        align: message.align,
+        variant: message.variant,
+        shape: message.shape,
+        avatarConfig: message.avatarConfig,
+        failed: message.failed,
+        timestamp: message.timestamp,
+        maxWidth: message.maxWidth ?? defaultBubbleMaxWidth,
+        typewriter: message.typewriter,
+        typewriterConfig: message.typewriterConfig,
+        markdown: message.markdown,
+        streaming: message.streaming,
+        onClick: () => handleMessageClick(message, index),
+        onTypewriterComplete: () => handleTypewriterComplete(message, index),
+        onTypewriterStart: () => handleTypewriterStart(message, index),
+        onTypewriterTyping: (currentText: string, progress: number) => handleTypewriterTyping(message, index, currentText, progress)
+      }
+    )
+  }
+}))
+
+const dataKeyFn = (item: BubbleMessage, index: number) => item.id ?? index
+const keeps = computed(() => Math.max(30, Math.ceil(((containerRef.value?.clientHeight || 600) / props.itemHeight)) + props.bufferSize * 2))
 
 // 处理消息点击
 const handleMessageClick = (message: BubbleMessage, index: number) => {
@@ -178,38 +231,31 @@ const handleTypewriterTyping = (message: BubbleMessage, index: number, currentTe
 // 检查打字完成触发策略
 const checkTypewriterCompleteStrategy = (index: number): boolean => {
   const strategy = props.typewriterCompleteStrategy
-  
-  if (strategy === 'all') {
-    return true
-  }
-  
-  if (strategy === 'only-last') {
-    return index === displayMessages.value.length - 1
-  }
-  
-  if (Array.isArray(strategy)) {
-    return strategy.includes(index)
-  }
-  
+  if (strategy === 'all') return true
+  if (strategy === 'only-last') return index === displayMessages.value.length - 1
+  if (Array.isArray(strategy)) return strategy.includes(index)
   return false
 }
 
-// 滚动到指定气泡
+// 虚拟列表触顶/触底事件 -> 懒加载
+function onReachTop() {
+  emit('loadMore')
+}
+function onReachBottom() {
+  // 可按需触发
+}
+
+// 滚动到指定气泡（仅非虚拟容器）
 const scrollToBubble = (index: number) => {
   if (!containerRef.value) return
-  
   const messages = containerRef.value.querySelectorAll('.ac-bubble')
   const targetMessage = messages[index]
-  
   if (targetMessage) {
-    targetMessage.scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'center' 
-    })
+    ;(targetMessage as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 }
 
-// 滚动到顶部
+// 滚动到顶部（仅非虚拟容器）
 const scrollToTop = () => {
   if (containerRef.value) {
     containerRef.value.scrollTop = 0
@@ -235,7 +281,7 @@ defineExpose({
 })
 
 onMounted(() => {
-  if (containerRef.value) {
+  if (!props.virtualScroll && containerRef.value) {
     containerRef.value.addEventListener('scroll', handleScroll)
     // 初始滚动到底部
     if (props.reverse) {
@@ -245,7 +291,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (containerRef.value) {
+  if (!props.virtualScroll && containerRef.value) {
     containerRef.value.removeEventListener('scroll', handleScroll)
   }
 })

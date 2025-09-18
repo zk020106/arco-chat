@@ -4,3 +4,10 @@
  * Layout 组件 props 类型
  */
 export interface LayoutProps {}
+
+export interface LayoutProps {
+  /** 初始侧边宽度，如 '260px' */
+  asideWidth?: string
+  /** 是否默认折叠 */
+  collapsed?: boolean
+}
