@@ -1,6 +1,6 @@
 {
   "name": "arco-design-x",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "mochou",
   "license": "MIT",
   "main": "dist/index.mjs",
@@ -24,10 +24,13 @@
     "dayjs": "^1.11.18",
     "dompurify": "^3.2.6",
     "highlight.js": "^11.11.1",
+    "katex": "^0.16.22",
     "lodash-es": "^4.17.21",
     "markdown-it": "^14.1.0",
     "markdown-it-emoji": "^3.0.0",
-    "markdown-it-plantuml": "^1.4.1"
+    "markdown-it-katex": "^2.0.3",
+    "markdown-it-plantuml": "^1.4.1",
+    "mermaid": "^11.11.0"
   },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",

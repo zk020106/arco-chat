@@ -31,16 +31,22 @@
     SlotInterceptorProps,
     TypingOptions,
   } from './markdown-render-types';
+  import { pluginManager, processMermaidDiagrams, defaultPluginOptions } from './plugins';
   import 'highlight.js/styles/github.css';
+  import 'katex/dist/katex.min.css';
 
   const props = withDefaults(defineProps<MarkdownRenderProps>(), {
     safeMode: false,
     typing: false,
     enableThink: true,
+    enableMermaid: true,
+    enableLatex: true,
+    enableEmoji: true,
     customRenderers: () => ({}),
     customTags: () => ({}),
     supportedTags: () => [], // 默认为空数组，会追加到默认标签后面
     customBlockTags: () => [], // 默认为空数组，会追加到默认标签后面
+    pluginConfig: () => defaultPluginOptions,
     sanitizeOptions: () => ({
       ADD_TAGS: ['code-block', 'think-block'],
       ADD_ATTR: ['code', 'lang', 'foldable', 'showCopy', 'class', 'style'],
@@ -136,7 +142,44 @@
       ...props.mdOptions,
     };
     const instance = new MarkdownIt(options);
+    
+    // 更新插件配置
+    if (props.pluginConfig) {
+      // 更新 mermaid 配置
+      if (props.pluginConfig.mermaid) {
+        const mermaidPlugin = pluginManager.get('mermaid');
+        if (mermaidPlugin) {
+          mermaidPlugin.options = { ...mermaidPlugin.options, ...props.pluginConfig.mermaid };
+        }
+      }
+      
+      // 更新 latex 配置
+      if (props.pluginConfig.latex) {
+        const latexPlugin = pluginManager.get('latex');
+        if (latexPlugin) {
+          latexPlugin.options = { ...latexPlugin.options, ...props.pluginConfig.latex };
+        }
+      }
+      
+      // 更新 emoji 配置
+      if (props.pluginConfig.emoji) {
+        const emojiPlugin = pluginManager.get('emoji');
+        if (emojiPlugin) {
+          emojiPlugin.options = { ...emojiPlugin.options, ...props.pluginConfig.emoji };
+        }
+      }
+    }
+    
+    // 根据启用状态控制插件
+    const enabledPlugins: string[] = [];
+    if (props.enableMermaid) enabledPlugins.push('mermaid');
+    if (props.enableLatex) enabledPlugins.push('latex');
+    if (props.enableEmoji !== false) enabledPlugins.push('emoji'); // 默认启用 emoji
+    
     // 应用插件
+    pluginManager.applyPlugins(instance, enabledPlugins);
+    
+    // 应用用户自定义插件
     if (Array.isArray(props.mdPlugins)) {
       type MdPluginItem = { plugin: PluginSimple | PluginWithOptions<any>; opts?: unknown };
       const plugins = props.mdPlugins as Array<MdPluginItem | unknown>;
@@ -333,9 +376,9 @@
     clearTyping();
   });
 
-  // 当 mdOptions 或 mdPlugins 变化时，重建 markdown-it 实例并重渲染
+  // 当 mdOptions、mdPlugins 或插件配置变化时，重建 markdown-it 实例并重渲染
   watch(
-    () => [props.mdOptions, props.mdPlugins],
+    () => [props.mdOptions, props.mdPlugins, props.enableMermaid, props.enableLatex, props.enableEmoji, props.pluginConfig],
     () => {
       md.value = createMarkdownIt();
       const html = md.value.render(props.content || ('' as string));
@@ -353,6 +396,11 @@
 
   // 处理自定义标签的函数
   function processCustomBlocks(el: HTMLElement) {
+    // 处理 Mermaid 图表
+    if (props.enableMermaid) {
+      processMermaidDiagrams(el).catch(console.error);
+    }
+    
     // 统一的插槽拦截处理函数
     const processSlotInterception = (tagName: string, nodes: NodeListOf<Element>) => {
       for (const node of nodes) {
@@ -460,7 +508,7 @@
   }
 
   // 注册自定义指令
-  const _vCustomBlocks = {
+  const vCustomBlocks = {
     mounted(el: HTMLElement) {
       if (isTyping.value) return;
       nextTick(() => {
@@ -612,5 +660,52 @@
     border-radius: var(--border-radius-medium);
     color: var(--color-text-2);
     font-style: italic;
+  }
+
+  /* LaTeX 公式样式 */
+  .ac-markdown-content :deep(.katex) {
+    font-size: 1.1em;
+  }
+
+  .ac-markdown-content :deep(.katex-display) {
+    margin: 1em 0;
+    text-align: center;
+  }
+
+  .ac-markdown-content :deep(.katex-error) {
+    color: var(--color-danger-6);
+    background: var(--color-danger-1);
+    padding: 4px 8px;
+    border-radius: var(--border-radius-small);
+    font-size: 0.9em;
+  }
+
+  /* Mermaid 图表样式 */
+  .ac-markdown-content :deep(.mermaid-container) {
+    margin: 16px 0;
+    text-align: center;
+  }
+
+  .ac-markdown-content :deep(.mermaid-loading) {
+    color: var(--color-text-3);
+    font-style: italic;
+  }
+
+  .ac-markdown-content :deep(.mermaid-error) {
+    color: var(--color-danger-6);
+    background: var(--color-danger-1);
+    border: 1px solid var(--color-danger-3);
+    border-radius: var(--border-radius-medium);
+    padding: 12px;
+    margin: 16px 0;
+  }
+
+  .ac-markdown-content :deep(.mermaid-error pre) {
+    background: var(--color-fill-2);
+    padding: 8px;
+    border-radius: var(--border-radius-small);
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--color-text-3);
   }
   </style>

@@ -25,6 +25,7 @@
     "pnpm": ">=9.12.0"
   },
   "dependencies": {
+    "@arco-design/web-vue": "2.57.0",
     "@changesets/changelog-github": "catalog:",
     "@changesets/cli": "catalog:",
     "@datatraccorporation/markdown-it-mermaid": "catalog:",
@@ -42,6 +43,7 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-dts": "catalog:",
+    "vue": "3.4.0",
     "vue-tsc": "catalog:"
   },
   "devDependencies": {

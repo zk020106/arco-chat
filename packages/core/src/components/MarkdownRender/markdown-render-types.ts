@@ -1,5 +1,7 @@
 // MarkdownRender 组件类型定义
 
+import type { MermaidPluginOptions, LatexPluginOptions, EmojiPluginOptions } from './plugins'
+
 /**
  * 打字机动效配置类型
  */
@@ -11,6 +13,18 @@ export interface TypingOptions {
     /** 打字样式：normal/cursor/gradient/color/stream */
     style?: string;
   }
+
+/**
+ * 插件配置类型
+ */
+export interface PluginConfig {
+  /** Mermaid 插件配置 */
+  mermaid?: MermaidPluginOptions
+  /** LaTeX 插件配置 */
+  latex?: LatexPluginOptions
+  /** Emoji 插件配置 */
+  emoji?: EmojiPluginOptions
+}
   
   /**
    * 插槽拦截器 Props 类型
@@ -119,6 +133,14 @@ export interface TypingOptions {
     supportedTags?: string[];
     /** 自定义块标签列表（如 agent-block, task-block 等） */
     customBlockTags?: string[];
+    /** 插件配置 */
+    pluginConfig?: PluginConfig;
+    /** 是否启用 Mermaid 支持 */
+    enableMermaid?: boolean;
+    /** 是否启用 LaTeX 支持 */
+    enableLatex?: boolean;
+    /** 是否启用 Emoji 支持 */
+    enableEmoji?: boolean;
   }
   
   /**
