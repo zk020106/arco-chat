@@ -9,13 +9,13 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AButton: typeof import('@arco-design/web-vue')['Button']
+    APopover: typeof import('@arco-design/web-vue')['Popover']
     Aside: typeof import('./components/Layout/Aside.vue')['default']
+    ATextarea: typeof import('@arco-design/web-vue')['Textarea']
     Bubble: typeof import('./components/Bubble/Bubble.vue')['default']
     BubbleList: typeof import('./components/Bubble/BubbleList.vue')['default']
     BubbleLoading: typeof import('./components/Bubble/BubbleLoading.vue')['default']
-    Button: typeof import('./components/Input/components/button.vue')['default']
     CodeBlock: typeof import('./components/MarkdownRender/components/CodeBlock.vue')['default']
-    CommandTrigger: typeof import('./components/Input/components/CommandTrigger.vue')['default']
     Content: typeof import('./components/Layout/Content.vue')['default']
     Header: typeof import('./components/Layout/Header.vue')['default']
     Input: typeof import('./components/Input/Input.vue')['default']
@@ -27,7 +27,6 @@ declare module 'vue' {
     Prompt: typeof import('./components/Prompt/Prompt.vue')['default']
     Sender: typeof import('./components/Layout/Sender.vue')['default']
     SendIcon: typeof import('./components/Input/components/SendIcon.vue')['default']
-    Textarea: typeof import('./components/Input/components/textarea.vue')['default']
     ThinkBlock: typeof import('./components/MarkdownRender/components/ThinkBlock.vue')['default']
     Typewriter: typeof import('./components/Typewriter/Typewriter.vue')['default']
     VoiceInput: typeof import('./components/Input/components/VoiceInput.vue')['default']

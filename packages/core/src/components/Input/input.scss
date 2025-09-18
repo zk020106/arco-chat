@@ -1,57 +1,61 @@
-// @use '@arco-design/web-vue/dist/arco.css';
-/* 输入框组件样式 */
+  /* 输入框组件样式 */
 .ac-input {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 12px 0;
-  border: 1px solid var(--color-fill-2);
-  border-radius: 16px;
+  border: 1px solid var(--color-border-2);
+  border-radius: 8px;
   box-sizing: border-box;
   background: var(--color-bg-1);
+  transition: all 0.2s ease;
 
-  &.ac-input-simple {
-    border-radius: 24px;
-
+  &.ac-input-default {
     .ac-input-content {
-      padding: 0 20px;
+      border-radius: 8px;
     }
   }
-  &.ac-input-borderless {
-    border: none;
-    box-shadow: 0 1px 8px 0 var( rgba(25, 25, 25, 0.06));
+
+  &.ac-input-updown {
+    .ac-input-content {
+      border-radius: 8px 8px 0 0;
+    }
+    
+    .ac-input-footer {
+      border-radius: 0 0 8px 8px;
+      border-top: 1px solid var(--color-border-2);
+    }
   }
+
   &.ac-input-disabled {
     background-color: var(--color-fill-1);
     cursor: not-allowed;
-    color: rgb(var(--color-text-4));
-  }
-  .ac-input-content {
-    display: flex;
-    align-items: flex-end;
-    padding: 0 16px;
-  }
-
-  .ac-input-foot {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 32px;
-    padding: 0 16px;
-
-    .ac-input-foot-left {
-      flex: 1;
-      height: 100%;
-      display: flex;
-      align-items: center;
-
-      .ac-input-foot-count {
-        color: #aeaeae;
-        font-size: var(--font-size-body-small);
-      }
+    color: var(--color-text-4);
+    
+    .ac-input-content {
+      background-color: var(--color-fill-2);
     }
   }
 
+  &.ac-input-readonly {
+    background-color: var(--color-fill-1);
+    
+    .ac-input-content {
+      background-color: var(--color-fill-2);
+    }
+  }
+
+  &.ac-input-loading {
+    .ac-input-content {
+      opacity: 0.7;
+    }
+  }
+
+  &.ac-input-recording {
+    .ac-input-content {
+      border-color: var(--color-danger-6);
+      box-shadow: 0 0 0 2px var(--color-danger-1);
+    }
+  }
 }
 
 .ac-input-content {

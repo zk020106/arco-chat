@@ -1,46 +1,26 @@
 import type { PropType, Ref } from 'vue'
 
 /**
- * 输入框显示类型
- * - simple: 简洁模式
- * - full: 完整模式
- */
-export enum DisplayType {
-  Simple = 'simple',
-  Full = 'full',
-}
-
-/**
- * 输入框样式类型
- * - bordered: 有边框
- * - borderless: 无边框
+ * 输入框变体类型
+ * - default: 默认样式
+ * - updown: 上下布局样式
  */
 export enum InputVariant {
-  Bordered = 'bordered',
-  BorderLess = 'borderless',
+  Default = 'default',
+  Updown = 'updown',
 }
 
 /**
- * 发送按钮样式类型
- * - full: 全按钮
- * - simple: 简洁按钮
+ * 提交方式类型
+ * - enter: 按 Enter 提交
+ * - shiftEnter: 按 Shift + Enter 提交
+ * - cmdOrCtrlEnter: 按 Command + Enter 或 Ctrl + Enter 提交
+ * - altEnter: 按 Alt + Enter 提交
  */
-export enum SendBtnVariant {
-  Full = 'full',
-  Simple = 'simple',
-}
-
-/**
- * 快捷提交键类型
- * - enter: 回车提交
- * - shiftEnter: Shift+Enter 提交
- * - ctrlEnter: Ctrl+Enter 提交
- * - altEnter: Alt+Enter 提交
- */
-export enum SubmitShortKey {
+export enum SubmitType {
   Enter = 'enter',
   ShiftEnter = 'shiftEnter',
-  CtrlEnter = 'ctrlEnter',
+  CmdOrCtrlEnter = 'cmdOrCtrlEnter',
   AltEnter = 'altEnter',
 }
 
@@ -55,164 +35,138 @@ export enum VoiceInputState {
 }
 
 /**
- * 指令建议项
+ * 触发指令事件类型
  */
-export interface CommandSuggestion {
-  /** 触发字符 */
-  trigger: string
-  /** 显示文本 */
-  text: string
-  /** 描述 */
-  description?: string
-  /** 插入值 */
-  value?: string
-  /** 图标 */
-  icon?: string
-  /** 额外数据 */
-  data?: Record<string, any>
+export interface TriggerEvent {
+  oldValue: string
+  newValue: string
+  isOpen: boolean
 }
 
 /**
- * 指令触发类型
+ * 粘贴文件事件类型
  */
-export interface CommandTrigger {
-  /** 触发字符 */
-  trigger: string
-  /** 是否显示弹窗 */
-  showPopup?: boolean
-  /** 弹窗内容 */
-  popupContent?: string
-  /** 建议列表 */
-  suggestions?: CommandSuggestion[]
-  /** 获取建议的函数 */
-  getSuggestions?: (trigger: string, cursorPosition: number) => CommandSuggestion[]
-  /** 自定义处理函数 */
-  handler?: (text: string, cursorPosition: number) => void
-  /** 自定义渲染函数 */
-  render?: (suggestion: CommandSuggestion) => any
+export interface PasteFileEvent {
+  firstFile: File
+  fileList: FileList
 }
 
 /**
- * 自定义语音识别接口
+ * 自动调整大小配置
  */
-export interface CustomVoiceRecognition {
-  start: (callbacks: {
-    onResult: (result: string) => void
-    onEnd: () => void
-    onError: (error: string) => void
-  }) => void
-  stop: () => void
-}
-
-/**
- * 语音输入配置
- */
-export interface VoiceInputConfig {
-  /** 是否启用语音输入 */
-  enabled: boolean
-  /** 语音识别语言 */
-  language?: string
-  /** 是否显示语音按钮 */
-  showButton?: boolean
-  /** 语音按钮位置 */
-  buttonPosition?: 'left' | 'right'
-  /** 最大录音时长（秒） */
-  maxDuration?: number
-  /** 自定义语音识别实现 */
-  customRecognition?: CustomVoiceRecognition
+export interface AutoSizeConfig {
+  minRows: number
+  maxRows: number
 }
 
 /**
  * 输入框 props 定义
  */
 export const inputProps = {
-  /** v-model 值（优先级高于 value） */
+  /** v-model 值 */
   modelValue: {
-    type: String,
-    default: '',
-  },
-  /** 输入框内容 */
-  value: {
     type: String,
     default: '',
   },
   /** 占位符 */
   placeholder: {
     type: String,
+    default: '',
+  },
+  /** 自动调整大小配置 */
+  autoSize: {
+    type: Object as PropType<AutoSizeConfig>,
+    default: () => ({ minRows: 1, maxRows: 6 }),
+  },
+  /** 是否只读 */
+  readOnly: {
+    type: Boolean,
+    default: false,
   },
   /** 是否禁用 */
   disabled: {
     type: Boolean,
     default: false,
   },
-  /** 显示类型 */
-  displayType: {
-    type: String as PropType<DisplayType>,
-    default: DisplayType.Full,
+  /** 内置发送按钮禁用状态 */
+  submitBtnDisabled: {
+    type: Boolean,
+    default: undefined,
   },
-  /** 输入框样式类型 */
-  variant: {
-    type: String as PropType<InputVariant>,
-    default: InputVariant.Bordered,
-  },
-  /** 发送按钮样式类型 */
-  sendBtnVariant: {
-    type: String as PropType<SendBtnVariant>,
-    default: SendBtnVariant.Full,
-  },
-  /** 是否显示加载动画 */
+  /** 是否显示加载状态 */
   loading: {
     type: Boolean,
     default: false,
   },
-  /** 是否显示字数统计 */
-  showCount: {
+  /** 是否可清空内容 */
+  clearable: {
     type: Boolean,
     default: false,
   },
-  /** 最大输入长度 */
-  maxLength: {
+  /** 是否允许语音输入 */
+  allowSpeech: {
+    type: Boolean,
+    default: false,
+  },
+  /** 提交方式 */
+  submitType: {
+    type: String as PropType<SubmitType>,
+    default: SubmitType.Enter,
+  },
+  /** 头部显示时长 */
+  headerAnimationTimer: {
     type: Number,
+    default: 300,
   },
-  /** 提交快捷键 */
-  submitShortKey: {
-    type: [String, null] as PropType<SubmitShortKey | null>,
-    default: SubmitShortKey.Enter,
+  /** 输入框宽度 */
+  inputWidth: {
+    type: String,
+    default: '100%',
   },
-  /** 是否只读 */
-  readonly: {
-    type: Boolean,
-    default: false,
+  /** 输入框变体类型 */
+  variant: {
+    type: String as PropType<InputVariant>,
+    default: InputVariant.Default,
   },
-  /** 语音输入配置 */
-  voiceInput: {
-    type: Object as PropType<VoiceInputConfig>,
-    default: () => ({ enabled: false }),
-  },
-  /** 指令触发配置 */
-  commandTriggers: {
-    type: Array as PropType<CommandTrigger[]>,
-    default: () => [],
-  },
-  /** 是否自动聚焦 */
-  autofocus: {
-    type: Boolean,
-    default: false,
-  },
-  /** 是否自动调整高度 */
-  autoResize: {
+  /** 当变体为 updown 时，是否展示内置样式 */
+  showUpdown: {
     type: Boolean,
     default: true,
   },
-  /** 最小行数 */
-  minRows: {
-    type: Number,
-    default: 1,
+  /** 输入框样式 */
+  inputStyle: {
+    type: Object,
+    default: () => ({}),
   },
-  /** 最大行数 */
-  maxRows: {
+  /** 触发指令的字符串数组 */
+  triggerStrings: {
+    type: Array as PropType<string[]>,
+    default: () => [],
+  },
+  /** 触发指令的弹框是否可见 */
+  triggerPopoverVisible: {
+    type: Boolean,
+    default: false,
+  },
+  /** 触发指令的弹框宽度 */
+  triggerPopoverWidth: {
+    type: String,
+    default: 'fit-content',
+  },
+  /** 触发指令的弹框左边距 */
+  triggerPopoverLeft: {
+    type: String,
+    default: '0px',
+  },
+  /** 触发指令的弹框间距 */
+  triggerPopoverOffset: {
     type: Number,
-    default: 6,
+    default: 8,
+  },
+  /** 触发指令的弹框位置 */
+  triggerPopoverPlacement: {
+    type: String,
+    default: 'top-start',
   },
 }
 
@@ -220,42 +174,48 @@ export const inputProps = {
  * Input 组件 props 类型
  */
 export interface InputProps {
-  /** v-model 值（优先级高于 value） */
+  /** v-model 值 */
   modelValue: string
-  /** 输入框内容 */
-  value: string
   /** 占位符 */
-  placeholder?: string
+  placeholder: string
+  /** 自动调整大小配置 */
+  autoSize: AutoSizeConfig
+  /** 是否只读 */
+  readOnly: boolean
   /** 是否禁用 */
   disabled: boolean
-  /** 是否只读 */
-  readonly: boolean
-  /** 显示类型 */
-  displayType: DisplayType
-  /** 输入框样式类型 */
-  variant: InputVariant
-  /** 发送按钮样式类型 */
-  sendBtnVariant: SendBtnVariant
-  /** 是否显示加载动画 */
+  /** 内置发送按钮禁用状态 */
+  submitBtnDisabled: boolean | undefined
+  /** 是否显示加载状态 */
   loading: boolean
-  /** 是否显示字数统计 */
-  showCount: boolean
-  /** 最大输入长度 */
-  maxLength?: number
-  /** 提交快捷键 */
-  submitShortKey: SubmitShortKey | null
-  /** 语音输入配置 */
-  voiceInput: VoiceInputConfig
-  /** 指令触发配置 */
-  commandTriggers: CommandTrigger[]
-  /** 是否自动聚焦 */
-  autofocus: boolean
-  /** 是否自动调整高度 */
-  autoResize: boolean
-  /** 最小行数 */
-  minRows: number
-  /** 最大行数 */
-  maxRows: number
+  /** 是否可清空内容 */
+  clearable: boolean
+  /** 是否允许语音输入 */
+  allowSpeech: boolean
+  /** 提交方式 */
+  submitType: SubmitType
+  /** 头部显示时长 */
+  headerAnimationTimer: number
+  /** 输入框宽度 */
+  inputWidth: string
+  /** 输入框变体类型 */
+  variant: InputVariant
+  /** 当变体为 updown 时，是否展示内置样式 */
+  showUpdown: boolean
+  /** 输入框样式 */
+  inputStyle: Record<string, any>
+  /** 触发指令的字符串数组 */
+  triggerStrings: string[]
+  /** 触发指令的弹框是否可见 */
+  triggerPopoverVisible: boolean
+  /** 触发指令的弹框宽度 */
+  triggerPopoverWidth: string
+  /** 触发指令的弹框左边距 */
+  triggerPopoverLeft: string
+  /** 触发指令的弹框间距 */
+  triggerPopoverOffset: number
+  /** 触发指令的弹框位置 */
+  triggerPopoverPlacement: string
 }
 
 /**
@@ -274,22 +234,45 @@ export interface InputContext {
  * Input 组件支持的事件
  */
 export const inputEmits = [
-  'change', 
-  'submit', 
+  'submit',
   'cancel', 
-  'focus', 
-  'blur',
-  'voice-start',
-  'voice-end',
-  'voice-result',
-  'voice-error',
-  'command-trigger',
-  'keydown',
-  'paste',
-  'resize'
+  'recordingChange',
+  'trigger',
+  'pasteFile',
+  'update:modelValue',
+  'update:triggerPopoverVisible'
 ]
 
 /**
  * Input 组件的 provide/inject key
  */
 export const inputInjectionKey = 'acs-input'
+
+/**
+ * Input 组件 Ref 实例方法类型
+ */
+export interface InputInstance {
+  /** 打开输入框的自定义头部 */
+  openHeader: () => void
+  /** 关闭输入框的自定义头部 */
+  closeHeader: () => void
+  /** 清空输入框的内容 */
+  clear: () => void
+  /** 移除输入框的焦点 */
+  blur: () => void
+  /** 聚焦输入框 */
+  focus: (position?: 'all' | 'start' | 'end') => void
+  /** 提交输入内容 */
+  submit: () => void
+  /** 取消加载状态 */
+  cancel: () => void
+  /** 开始语音识别 */
+  startRecognition: () => void
+  /** 停止语音识别 */
+  stopRecognition: () => void
+  /** 触发指令的弹框可见性 */
+  popoverVisible: boolean
+  /** 输入框实例 */
+  inputInstance: any
+}
+

@@ -1,99 +1,169 @@
 <template>
-  <div :class="inputClasses">
-    <slot name="head" />
+  <div 
+    :class="inputClasses" 
+    :style="{ width: inputWidth, ...inputStyle }"
+  >
+    <!-- 自定义头部 -->
+    <transition name="fade">
+      <div v-if="headerVisible" class="ac-input-header">
+        <slot name="header" />
+      </div>
+    </transition>
+    
     <div class="ac-input-content">
+      <!-- 前缀插槽 -->
       <slot name="prefix" />
       
       <!-- 语音输入按钮（左侧） -->
       <VoiceInput
-        v-if="voiceInput.enabled && voiceInput.buttonPosition === 'left'"
-        :config="voiceInput"
-        :disabled="disabled || readonly"
-        @voice-start="handleVoiceStart"
-        @voice-end="handleVoiceEnd"
-        @voice-result="handleVoiceResult"
-        @voice-error="handleVoiceError"
+        v-if="allowSpeech"
+        :disabled="disabled || readOnly"
+        :is-recording="isRecording"
+        @start="startRecognition"
+        @stop="stopRecognition"
       />
       
-      <Textarea />
+      <!-- 文本输入区域 -->
+      <a-textarea
+        ref="textareaRef"
+        v-model="inputValue"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        :readonly="readOnly"
+        :auto-size="autoSize"
+        :style="textareaStyle"
+        class="ac-input-textarea"
+        @keydown="handleKeydown"
+        @paste="handlePaste"
+      />
+      
+      <!-- 清空按钮 -->
+      <a-button
+        v-if="clearable && inputValue"
+        type="text"
+        size="mini"
+        class="ac-clear-button"
+        @click="clear"
+      >
+        <template #icon>
+          <icon-close />
+        </template>
+      </a-button>
       
       <!-- 语音输入按钮（右侧） -->
       <VoiceInput
-        v-if="voiceInput.enabled && voiceInput.buttonPosition === 'right'"
-        :config="voiceInput"
-        :disabled="disabled || readonly"
-        @voice-start="handleVoiceStart"
-        @voice-end="handleVoiceEnd"
-        @voice-result="handleVoiceResult"
-        @voice-error="handleVoiceError"
+        v-if="allowSpeech"
+        :disabled="disabled || readOnly"
+        :is-recording="isRecording"
+        position="right"
+        @start="startRecognition"
+        @stop="stopRecognition"
       />
       
+      <!-- 后缀插槽 -->
       <slot name="suffix" />
-      <slot v-if="displayType === DisplayType.Simple" name="button">
-        <Button />
-      </slot>
+      
+      <!-- 操作列表插槽 -->
+      <slot name="action-list" />
+      
+      <!-- 发送按钮 -->
+      <a-button
+        type="primary"
+        :disabled="submitBtnDisabled ?? (disabled || readOnly || !inputValue.trim())"
+        :loading="loading"
+        class="ac-submit-button"
+        @click="submit"
+      >
+        {{ loading ? '停止回答' : '发送' }}
+      </a-button>
     </div>
-    <div v-if="displayType === DisplayType.Full" class="ac-input-foot">
-      <div class="ac-input-foot-left">
-        <slot name="extra" />
-        <span v-if="showCount" class="ac-input-foot-count">
-          {{ inputValue.length }}{{ !(maxLength ?? false) ? "" : `/${maxLength}` }}
-        </span>
-      </div>
-      <slot name="button">
-        <Button />
-      </slot>
+    
+    <!-- 底部区域 -->
+    <div v-if="variant === InputVariant.Updown && showUpdown" class="ac-input-footer">
+      <slot name="footer" />
     </div>
+    
+    <!-- 指令触发弹窗 -->
+    <a-popover
+      v-model:popup-visible="popoverVisible"
+      :width="triggerPopoverWidth"
+      :position="triggerPopoverPlacement"
+      :offset="triggerPopoverOffset"
+      trigger="manual"
+    >
+      <template #content>
+        <div class="ac-trigger-popover-content">
+          <div
+            v-for="trigger in triggerStrings"
+            :key="trigger"
+            class="ac-trigger-item"
+            @click="selectTrigger(trigger)"
+          >
+            {{ trigger }}
+          </div>
+        </div>
+      </template>
+    </a-popover>
   </div>
 </template>
 
 <script setup lang="ts">
-import Textarea from './components/textarea.vue'
-import Button from './components/button.vue'
+import IconClose from '@arco-design/web-vue/es/icon/icon-close'
 import VoiceInput from './components/VoiceInput.vue'
 import {
-  DisplayType,
   InputVariant,
-  SendBtnVariant,
+  SubmitType,
   inputEmits,
 } from './input-types'
-import type { InputProps } from './input-types'
+import type { InputProps, TriggerEvent, PasteFileEvent } from './input-types'
 import { useInput } from './composables/useInput'
 
 const props = withDefaults(defineProps<InputProps>(), {
   modelValue: '',
-  value: '',
   placeholder: '',
+  autoSize: () => ({ minRows: 1, maxRows: 6 }),
+  readOnly: false,
   disabled: false,
-  readonly: false,
-  displayType: DisplayType.Full,
-  variant: InputVariant.Bordered,
-  sendBtnVariant: SendBtnVariant.Full,
+  submitBtnDisabled: undefined,
   loading: false,
-  showCount: false,
-  maxLength: undefined,
-  submitShortKey: null,
-  voiceInput: () => ({ enabled: false }),
-  commandTriggers: () => [],
-  autofocus: false,
-  autoResize: true,
-  minRows: 1,
-  maxRows: 6,
+  clearable: false,
+  allowSpeech: false,
+  submitType: SubmitType.Enter,
+  headerAnimationTimer: 300,
+  inputWidth: '100%',
+  variant: InputVariant.Default,
+  showUpdown: true,
+  inputStyle: () => ({}),
+  triggerStrings: () => [],
+  triggerPopoverVisible: false,
+  triggerPopoverWidth: 'fit-content',
+  triggerPopoverLeft: '0px',
+  triggerPopoverOffset: 8,
+  triggerPopoverPlacement: 'top-start',
 })
 
-const emits = defineEmits([...inputEmits, 'update:modelValue'])
+const emits = defineEmits([...inputEmits])
 
 // 使用组合式 API
 const {
   inputValue,
+  headerVisible,
+  popoverVisible,
+  isRecording,
+  inputRef,
   isDisabled,
   isReadonly,
   isLoading,
-  clearInput,
-  getInput,
-  setInput,
+  clear,
+  blur,
   focus,
-  blur
+  submit,
+  cancel,
+  startRecognition,
+  stopRecognition,
+  openHeader,
+  closeHeader,
+  instance
 } = useInput(props, emits)
 
 // 计算样式类
@@ -101,49 +171,103 @@ const inputClasses = computed(() => ({
   'ac-input': true,
   'ac-input-disabled': isDisabled.value,
   'ac-input-readonly': isReadonly.value,
-  'ac-input-simple': props.displayType === DisplayType.Simple,
-  'ac-input-borderless': props.variant === InputVariant.BorderLess,
   'ac-input-loading': isLoading.value,
+  'ac-input-default': props.variant === InputVariant.Default,
+  'ac-input-updown': props.variant === InputVariant.Updown,
+  'ac-input-recording': isRecording.value,
 }))
 
-// 语音输入事件处理
-const handleVoiceStart = () => {
-  emits('voice-start')
+// 计算 textarea 样式
+const textareaStyle = computed(() => ({
+  resize: 'none',
+  border: 'none',
+  outline: 'none',
+  background: 'transparent',
+  ...props.inputStyle
+}))
+
+// 事件处理
+const handleKeydown = (e: KeyboardEvent) => {
+  // 处理提交快捷键
+  if (e.key === 'Enter') {
+    const shouldSubmit = 
+      (props.submitType === SubmitType.Enter && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) ||
+      (props.submitType === SubmitType.ShiftEnter && e.shiftKey) ||
+      (props.submitType === SubmitType.CmdOrCtrlEnter && (e.ctrlKey || e.metaKey)) ||
+      (props.submitType === SubmitType.AltEnter && e.altKey)
+    
+    if (shouldSubmit) {
+      e.preventDefault()
+      submit()
+    }
+  }
+  
+  // 检查指令触发
+  checkTrigger(e)
 }
 
-const handleVoiceEnd = () => {
-  emits('voice-end')
+const handlePaste = (e: ClipboardEvent) => {
+  const files = e.clipboardData?.files
+  if (files && files.length > 0) {
+    const event: PasteFileEvent = {
+      firstFile: files[0],
+      fileList: files
+    }
+    emits('pasteFile', event)
+  }
 }
 
-const handleVoiceResult = (result: string, fullText: string) => {
-  emits('voice-result', result, fullText)
+// 检查指令触发
+const checkTrigger = (e: KeyboardEvent) => {
+  if (props.triggerStrings.length === 0) return
+  
+  const textarea = inputRef.value
+  if (!textarea) return
+  
+  const cursorPosition = textarea.selectionStart || 0
+  const text = inputValue.value.slice(0, cursorPosition)
+  const lastSpaceIndex = text.lastIndexOf(' ')
+  const lastChar = text.slice(lastSpaceIndex + 1)
+  
+  // 检查是否匹配任何触发字符
+  const matchedTrigger = props.triggerStrings.find(trigger => 
+    lastChar.startsWith(trigger)
+  )
+  
+  if (matchedTrigger && !popoverVisible.value) {
+    popoverVisible.value = true
+    const event: TriggerEvent = {
+      oldValue: '',
+      newValue: matchedTrigger,
+      isOpen: true
+    }
+    emits('trigger', event)
+  } else if (!matchedTrigger && popoverVisible.value) {
+    popoverVisible.value = false
+    const event: TriggerEvent = {
+      oldValue: '',
+      newValue: '',
+      isOpen: false
+    }
+    emits('trigger', event)
+  }
 }
 
-const handleVoiceError = (error: string) => {
-  emits('voice-error', error)
+// 选择指令
+const selectTrigger = (trigger: string) => {
+  popoverVisible.value = false
+  const event: TriggerEvent = {
+    oldValue: '',
+    newValue: trigger,
+    isOpen: false
+  }
+  emits('trigger', event)
 }
 
-// 暴露方法
-defineExpose({ 
-  clearInput, 
-  getInput, 
-  setInput, 
-  focus, 
-  blur,
-  inputValue: inputValue.value
-})
+// 暴露实例方法
+defineExpose(instance)
 </script>
 
 <style lang="scss" scoped>
 @use './input.scss';
-// 响应式
-@media (max-width: 600px) {
-  .ac-input {
-    padding: 10px 6px 8px 6px;
-  }
-  .ac-input-content {
-    padding: 6px 6px;
-    font-size: 15px;
-  }
-}
 </style>

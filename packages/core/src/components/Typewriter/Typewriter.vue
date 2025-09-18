@@ -43,8 +43,8 @@ const cursorBlinkSpeed = computed(() => props.config?.cursorBlinkSpeed ?? 530)
 const speed = computed(() => props.config?.speed ?? 50)
 const delayAfterComplete = computed(() => props.config?.delayAfterComplete ?? 0)
 
-let typingTimer: number | null = null
-let cursorTimer: number | null = null
+let typingTimer: ReturnType<typeof setTimeout> | null = null
+let cursorTimer: ReturnType<typeof setTimeout> | null = null
 
 // 开始打字动画
 const startTyping = async () => {

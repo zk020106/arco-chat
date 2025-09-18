@@ -1,6 +1,6 @@
 {
   "name": "arco-design-x",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "author": "mochou",
   "license": "MIT",
   "main": "dist/index.mjs",
@@ -20,6 +20,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@arco-design/web-vue": "catalog:",
     "@datatraccorporation/markdown-it-mermaid": "^0.5.0",
     "dayjs": "^1.11.18",
     "dompurify": "^3.2.6",

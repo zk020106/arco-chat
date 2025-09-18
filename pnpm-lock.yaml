@@ -6,6 +6,9 @@ settings:
 
 catalogs:
   default:
+    '@arco-design/web-vue':
+      specifier: ^2.57.0
+      version: 2.57.0
     '@changesets/changelog-github':
       specifier: ^0.5.1
       version: 0.5.1
@@ -141,6 +144,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@arco-design/web-vue':
+        specifier: 'catalog:'
+        version: 2.57.0(vue@3.5.17(typescript@5.8.3))
       '@datatraccorporation/markdown-it-mermaid':
         specifier: ^0.5.0
         version: 0.5.0
@@ -2525,6 +2531,18 @@ snapshots:
       scroll-into-view-if-needed: 2.2.31
       vue: 3.4.0(typescript@5.8.3)
 
+  '@arco-design/web-vue@2.57.0(vue@3.5.17(typescript@5.8.3))':
+    dependencies:
+      '@arco-design/color': 0.4.0
+      b-tween: 0.3.3
+      b-validate: 1.5.3
+      compute-scroll-into-view: 1.0.20
+      dayjs: 1.11.18
+      number-precision: 1.6.0
+      resize-observer-polyfill: 1.5.1
+      scroll-into-view-if-needed: 2.2.31
+      vue: 3.5.17(typescript@5.8.3)
+
   '@babel/helper-string-parser@7.27.1': {}
 
   '@babel/helper-validator-identifier@7.27.1': {}
@@ -3310,7 +3328,7 @@ snapshots:
       '@vue/compiler-ssr': 3.5.17
       '@vue/shared': 3.5.17
       estree-walker: 2.0.2
-      magic-string: 0.30.17
+      magic-string: 0.30.19
       postcss: 8.5.6
       source-map-js: 1.2.1
 
