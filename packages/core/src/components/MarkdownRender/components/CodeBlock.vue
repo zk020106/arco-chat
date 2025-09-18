@@ -22,7 +22,6 @@
 import { Message } from '@arco-design/web-vue';
 import { IconCopy, IconDown, IconUp } from '@arco-design/web-vue/es/icon';
 import hljs from 'highlight.js';
-import { computed, ref, withDefaults } from 'vue';
 
 const props = withDefaults(defineProps<{
   code: string;

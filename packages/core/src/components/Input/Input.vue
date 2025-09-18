@@ -48,7 +48,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import Textarea from './components/textarea.vue'
 import Button from './components/button.vue'
 import VoiceInput from './components/VoiceInput.vue'

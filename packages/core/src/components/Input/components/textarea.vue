@@ -38,7 +38,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, ref, watch, onMounted, onUnmounted } from 'vue'
 import { DisplayType, SubmitShortKey, inputInjectionKey } from '../input-types'
 import type { InputContext } from '../input-types'
 import CommandTrigger from './CommandTrigger.vue'

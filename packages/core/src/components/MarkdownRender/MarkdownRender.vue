@@ -7,24 +7,11 @@
   <script setup lang="ts">
   import DOMPurify from 'dompurify';
   import MarkdownIt from 'markdown-it';
-  import {
-    computed,
-    defineEmits,
-    defineProps,
-    getCurrentInstance,
-    h,
-    nextTick,
-    onBeforeUnmount,
-    onMounted,
-    ref,
-    render,
-    useSlots,
-    watch,
-  } from 'vue';
   import type { VNode, AppContext } from 'vue';
   import type { PluginSimple, PluginWithOptions } from 'markdown-it';
-  import CodeBlock from './components/CodeBlock.vue';
-  import ThinkBlock from './components/ThinkBlock.vue';
+import CodeBlock from './components/CodeBlock.vue';
+import ThinkBlock from './components/ThinkBlock.vue';
+import MermaidBlock from './components/MermaidBlock.vue';
   import type {
     MarkdownRenderProps,
     MarkdownRenderSlots,
@@ -461,6 +448,22 @@
             { default: () => h('div', { innerHTML: slotContent }) }
           );
         }
+        case 'mermaid-block': {
+          const code = decodeURIComponent(node.getAttribute('code') || '');
+          const theme = node.getAttribute('theme') || 'default';
+          const showCodeToggle = node.getAttribute('show-code-toggle') === 'true';
+          const showZoom = node.getAttribute('show-zoom') === 'true';
+          const showExport = node.getAttribute('show-export') === 'true';
+          const showFullscreen = node.getAttribute('show-fullscreen') === 'true';
+          return h(MermaidBlock, { 
+            code, 
+            theme, 
+            showCodeToggle, 
+            showZoom, 
+            showExport, 
+            showFullscreen 
+          });
+        }
         default:
           // 对于其他标签，保持原样（正常 markdown 渲染）
           return null;
@@ -486,7 +489,7 @@
         'h5',
         'h6',
       ];
-      const defaultCustomBlocks = ['code-block', 'think-block']; // 只保留组件库内置的
+      const defaultCustomBlocks = ['code-block', 'think-block', 'mermaid-block']; // 只保留组件库内置的
 
       // 默认 + 用户自定义追加，并去重
       const supportedTags = [...defaultSupportedTags, ...(props.supportedTags || [])];

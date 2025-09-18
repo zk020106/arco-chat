@@ -34,7 +34,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue'
 import { inputInjectionKey } from '../input-types'
 import type { InputContext, CommandTrigger } from '../input-types'
 
@@ -47,11 +46,15 @@ interface CommandSuggestion {
   value?: string
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   triggers: CommandTrigger[]
   cursorPosition: number
   showPopup: boolean
-}>()
+}>(), {
+  triggers: () => [],
+  cursorPosition: 0,
+  showPopup: false
+})
 
 const emit = defineEmits<{
   close: []

@@ -56,7 +56,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, ref, onMounted, onUnmounted } from 'vue'
 import { VoiceInputState, inputInjectionKey } from '../input-types'
 import type { InputContext, VoiceInputConfig } from '../input-types'
 

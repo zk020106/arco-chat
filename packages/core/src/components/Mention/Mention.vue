@@ -31,7 +31,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
 import type { MentionItem, Prefix, SearchChangeEvent } from './mention-types'
 
@@ -50,7 +49,14 @@ interface MentionProps {
   searchText?: string
 }
 
-const props = defineProps<MentionProps>()
+const props = withDefaults(defineProps<MentionProps>(), {
+  modelValue: false,
+  prefix: () => ['@'],
+  fitHostWidth: true,
+  menuClass: '',
+  items: () => [],
+  searchText: ''
+})
 const emit = defineEmits<{
   (e: 'searchChange', event: SearchChangeEvent): void
   (e: 'toggleChange', open: boolean): void

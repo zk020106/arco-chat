@@ -26,6 +26,8 @@ export type { PluginRegistration } from './plugin-manager'
 // 默认插件配置
 export const defaultPluginOptions = {
   mermaid: {
+    enabled: true,
+    mode: 'inline' as const,
     theme: 'default' as const,
     securityLevel: 'strict' as const,
     responsive: true,

@@ -1,6 +1,6 @@
 {
   "name": "arco-design-x",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": "mochou",
   "license": "MIT",
   "main": "dist/index.mjs",
@@ -40,6 +40,8 @@
     "sass": "^1.89.2",
     "turbo": "^2.5.5",
     "typescript": "^5.0.0",
+    "unplugin-auto-import": "^20.1.0",
+    "unplugin-vue-components": "^29.0.0",
     "vite": "^6.3.5",
     "vite-plugin-css-injected-by-js": "3.5.2",
     "vite-plugin-dts": "^3.0.0",

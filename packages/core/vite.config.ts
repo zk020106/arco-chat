@@ -3,6 +3,9 @@ import vue from '@vitejs/plugin-vue';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import * as path from 'node:path';
 import dtsPlugin from "vite-plugin-dts";
+import AutoImport from 'unplugin-auto-import/vite';
+import Components from 'unplugin-vue-components/vite';
+import { ArcoResolver } from 'unplugin-vue-components/resolvers';
 
 export default defineConfig({
     css: {
@@ -44,7 +47,19 @@ export default defineConfig({
             '@': path.resolve(__dirname, 'src'),
         },
     },
-    plugins: [vue(),
+    plugins: [
+        vue(),
+        AutoImport({
+            imports:['vue'],
+            resolvers: [ArcoResolver()],
+        }),
+        Components({
+            resolvers: [
+                ArcoResolver({
+                    sideEffect: true
+                })
+            ]
+        }),
         dtsPlugin({
             tsconfigPath: './tsconfig.build.json',
             insertTypesEntry: true,

@@ -63,7 +63,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Avatar } from '@arco-design/web-vue'
 import type { BubblePropsType } from './bubble-types'
 import type { TypingOptions } from '../MarkdownRender/markdown-render-types'

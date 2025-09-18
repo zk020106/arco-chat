@@ -4,7 +4,6 @@
  * 原作者拥有相关实现的著作权，遵循 MIT License。
  * 如需了解更多细节或贡献，请访问官方文档和仓库。
  */
-import { ref, shallowRef } from 'vue'
 
 const DEFAULT_STREAM_SEPARATOR = '\n\n'
 const DEFAULT_PART_SEPARATOR = '\n'

@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, reactive, ref } from 'vue'
 import { SendBtnVariant, inputInjectionKey } from '../input-types'
 import type { InputContext } from '../input-types'
 import LoadingIcon from './LoadingIcon.vue'

@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Button as AButton } from '@arco-design/web-vue'
 import { IconDown, IconUp, IconBulb } from '@arco-design/web-vue/es/icon'
 

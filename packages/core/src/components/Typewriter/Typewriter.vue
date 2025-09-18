@@ -13,7 +13,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import type { TypewriterProps, TypewriterEmits, TypewriterExpose } from './typewriter-types'
 
 const props = withDefaults(defineProps<TypewriterProps>(), {
