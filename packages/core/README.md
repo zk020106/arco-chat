@@ -195,7 +195,7 @@ const loadMore = () => {
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-org/arco-design-x.git
+git clone https://github.com/zk020106/arco-design-x.git
 
 # 安装依赖
 pnpm install
@@ -221,4 +221,4 @@ MIT License
 
 1. 查看 [文档](./src/components/)
 2. 查看 [示例项目](./examples/)
-3. 提交 [Issue](https://github.com/your-org/arco-design-x/issues)
+3. 提交 [Issue](https://github.com/zk020106/arco-design-x/issues)
