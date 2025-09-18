@@ -66,18 +66,38 @@
       </div>
 
       <!-- 第三方虚拟滚动列表 -->
-      <VirtualList
+      <RecycleScroller
         v-else
         class="ac-bubble-list-messages"
-        :data-key="dataKeyFn"
-        :data-sources="displayMessages"
-        :data-component="BubbleRow"
-        :keeps="keeps"
-        :estimate-size="itemHeight"
+        :items="displayMessages"
+        :item-size="itemHeight"
+        :key-field="'id'"
+        :buffer="bufferSize"
         :direction="reverse ? 'vertical' : 'vertical'"
-        @totop="onReachTop"
-        @tobottom="onReachBottom"
-      />
+        @update="onRecycleUpdate"
+      >
+        <template #default="{ item, index }">
+          <Bubble
+            :content="item.content"
+            :loading="item.loading"
+            :align="item.align"
+            :variant="item.variant"
+            :shape="item.shape"
+            :avatar-config="item.avatarConfig"
+            :failed="item.failed"
+            :timestamp="item.timestamp"
+            :max-width="item.maxWidth ?? defaultBubbleMaxWidth"
+            :typewriter="item.typewriter"
+            :typewriter-config="item.typewriterConfig"
+            :markdown="item.markdown"
+            :streaming="item.streaming"
+            @click="handleMessageClick(item, index)"
+            @typewriter-complete="handleTypewriterComplete(item, index)"
+            @typewriter-start="handleTypewriterStart(item, index)"
+            @typewriter-typing="(currentText, progress) => handleTypewriterTyping(item, index, currentText, progress)"
+          />
+        </template>
+      </RecycleScroller>
 
       <!-- 滚动到底部按钮 -->
       <div 
@@ -96,8 +116,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted, h, defineComponent } from 'vue'
-import VirtualList from 'vue-virtual-scroll-list'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { RecycleScroller } from 'vue-virtual-scroller'
 import Bubble from './Bubble.vue'
 import type { BubbleListProps, BubbleMessage } from './bubble-types'
 
@@ -172,38 +192,11 @@ const autoScrollToBottom = () => {
   }
 }
 
-// 行渲染组件（用于 VirtualList 的 data-component）
-const BubbleRow = defineComponent<{ source: BubbleMessage; index: number }>(() => ({
-  render(props) {
-    const message = props.source
-    const index = props.index
-    return h(
-      Bubble,
-      {
-        content: message.content,
-        loading: message.loading,
-        align: message.align,
-        variant: message.variant,
-        shape: message.shape,
-        avatarConfig: message.avatarConfig,
-        failed: message.failed,
-        timestamp: message.timestamp,
-        maxWidth: message.maxWidth ?? defaultBubbleMaxWidth,
-        typewriter: message.typewriter,
-        typewriterConfig: message.typewriterConfig,
-        markdown: message.markdown,
-        streaming: message.streaming,
-        onClick: () => handleMessageClick(message, index),
-        onTypewriterComplete: () => handleTypewriterComplete(message, index),
-        onTypewriterStart: () => handleTypewriterStart(message, index),
-        onTypewriterTyping: (currentText: string, progress: number) => handleTypewriterTyping(message, index, currentText, progress)
-      }
-    )
-  }
-}))
-
-const dataKeyFn = (item: BubbleMessage, index: number) => item.id ?? index
-const keeps = computed(() => Math.max(30, Math.ceil(((containerRef.value?.clientHeight || 600) / props.itemHeight)) + props.bufferSize * 2))
+// RecycleScroller 的可视区更新事件，用于触顶/触底检测
+function onRecycleUpdate({ firstVisibleIndex, lastVisibleIndex }: { firstVisibleIndex: number; lastVisibleIndex: number }) {
+  if (firstVisibleIndex === 0) onReachTop()
+  // 如需触底回调，可在此根据 lastVisibleIndex 判断
+}
 
 // 处理消息点击
 const handleMessageClick = (message: BubbleMessage, index: number) => {
