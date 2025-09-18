@@ -9,14 +9,39 @@
  */
 import type { CSSProperties } from 'vue'
 
-export type BubbleVariant = 'filled' | 'none' | 'bordered'
+export type BubbleVariant = 'filled' | 'borderless' | 'outlined' | 'shadow'
 
 /**
  * 气泡组件的对齐方式
- * - left: 左对齐
- * - right: 右对齐
+ * - start: 左对齐
+ * - end: 右对齐
  */
-export type BubbleAlign = 'left' | 'right'
+export type BubbleAlign = 'start' | 'end'
+
+/**
+ * 气泡组件的形状
+ * - round: 圆角
+ * - corner: 尖角
+ */
+export type BubbleShape = 'round' | 'corner'
+
+/**
+ * 打字机动画配置
+ */
+export interface TypewriterConfig {
+  /** 打字速度，每个字符的间隔时间（毫秒） */
+  speed?: number
+  /** 是否显示光标 */
+  showCursor?: boolean
+  /** 光标样式 */
+  cursorStyle?: string
+  /** 光标闪烁间隔时间（毫秒） */
+  cursorBlinkSpeed?: number
+  /** 是否自动开始打字动画 */
+  autoStart?: boolean
+  /** 打字完成后的延迟时间（毫秒） */
+  delayAfterComplete?: number
+}
 
 export type AvatarShape = 'circle' | 'square'
 export type AvatarTriggerType = 'mask' | 'button'
@@ -51,14 +76,30 @@ export interface BubblePropsType {
   loading?: boolean
   /** 气泡对齐方式 */
   align?: BubbleAlign
-  /** 气泡样式 */
+  /** 气泡样式变体 */
   variant?: BubbleVariant
+  /** 气泡形状 */
+  shape?: BubbleShape
   /** 头像配置对象 */
   avatarConfig?: AvatarProps
   /** 是否显示失败状态 */
   failed?: boolean
   /** 消息时间戳 */
   timestamp?: number
+  /** 是否显示头像 */
+  showAvatar?: boolean
+  /** 是否可点击 */
+  clickable?: boolean
+  /** 最大宽度 */
+  maxWidth?: string
+  /** 是否启用打字机动画 */
+  typewriter?: boolean
+  /** 打字机动画配置 */
+  typewriterConfig?: TypewriterConfig
+  /** 是否支持 Markdown 渲染 */
+  markdown?: boolean
+  /** 是否启用流式显示 */
+  streaming?: boolean
 }
 
 /**
@@ -77,8 +118,10 @@ export interface BubbleMessage {
   loading?: boolean
   /** 气泡对齐方式 */
   align?: BubbleAlign
-  /** 气泡样式 */
+  /** 气泡样式变体 */
   variant?: BubbleVariant
+  /** 气泡形状 */
+  shape?: BubbleShape
   /** 头像配置对象 */
   avatarConfig?: AvatarProps
   /** 是否显示失败状态 */
@@ -89,14 +132,29 @@ export interface BubbleMessage {
   type?: 'text' | 'image' | 'file' | 'system'
   /** 额外数据 */
   data?: Record<string, any>
+  /** 最大宽度 */
+  maxWidth?: string
+  /** 是否启用打字机动画 */
+  typewriter?: boolean
+  /** 打字机动画配置 */
+  typewriterConfig?: TypewriterConfig
+  /** 是否支持 Markdown 渲染 */
+  markdown?: boolean
+  /** 是否启用流式显示 */
+  streaming?: boolean
 }
+
+/**
+ * 打字完成触发策略
+ */
+export type TypewriterCompleteStrategy = 'only-last' | 'all' | number[]
 
 /**
  * 气泡列表组件 props 类型
  */
 export interface BubbleListProps {
   /** 消息列表 */
-  messages: BubbleMessage[]
+  list: BubbleMessage[]
   /** 是否自动滚动到底部 */
   autoScroll?: boolean
   /** 是否显示加载更多按钮 */
@@ -111,8 +169,14 @@ export interface BubbleListProps {
   maxHeight?: string
   /** 是否反向显示（最新消息在底部） */
   reverse?: boolean
-  /** 是否分组显示消息 */
-  groupMessages?: boolean
-  /** 消息分组时间阈值（毫秒） */
-  groupTimeThreshold?: number
+  /** 滚动到底部按钮显示阈值（像素） */
+  scrollToBottomThreshold?: number
+  /** 打字完成触发策略 */
+  typewriterCompleteStrategy?: TypewriterCompleteStrategy
+  /** 是否启用虚拟滚动 */
+  virtualScroll?: boolean
+  /** 虚拟滚动项高度 */
+  itemHeight?: number
+  /** 虚拟滚动缓冲区大小 */
+  bufferSize?: number
 }
