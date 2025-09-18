@@ -23,7 +23,7 @@
         class="ac-bubble-list-messages"
         :class="{ 'ac-bubble-list-reverse': reverse }"
       >
-        <template v-for="(message, index) in displayMessagesWithKeys" :key="message.__key">
+        <template v-for="(message, index) in displayMessages" :key="message.id || index">
           <!-- 气泡组件 -->
           <Bubble
             :content="message.content"

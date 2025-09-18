@@ -6,22 +6,14 @@
   border: 1px solid var(--color-border-2);
   border-radius: 8px;
   box-sizing: border-box;
-  background: var(--color-bg-1);
+  background: var(--color-bg-2);
   transition: all 0.2s ease;
+  padding: 12px; /* 统一外框内边距，整体一个框 */
+  min-height: 56px;
 
-  &.ac-input-default {
-    .ac-input-content {
-      border-radius: 8px;
-    }
-  }
-
+  &.ac-input-default {}
   &.ac-input-updown {
-    .ac-input-content {
-      border-radius: 8px 8px 0 0;
-    }
-    
     .ac-input-footer {
-      border-radius: 0 0 8px 8px;
       border-top: 1px solid var(--color-border-2);
     }
   }
@@ -31,43 +23,30 @@
     cursor: not-allowed;
     color: var(--color-text-4);
     
-    .ac-input-content {
-      background-color: var(--color-fill-2);
-    }
   }
 
   &.ac-input-readonly {
     background-color: var(--color-fill-1);
-    
-    .ac-input-content {
-      background-color: var(--color-fill-2);
-    }
   }
 
-  &.ac-input-loading {
-    .ac-input-content {
-      opacity: 0.7;
-    }
-  }
+  &.ac-input-loading { opacity: 0.7; }
 
   &.ac-input-recording {
-    .ac-input-content {
-      border-color: var(--color-danger-6);
-      box-shadow: 0 0 0 2px var(--color-danger-1);
-    }
+    border-color: var(--color-danger-6);
+    box-shadow: 0 0 0 2px var(--color-danger-1);
   }
 }
 
 .ac-input-content {
   display: flex;
   align-items: center;
-  background: var(--color-bg-2);
-  border: 1.5px solid var(--color-border-1);
-  border-radius: var(--border-radius-large);
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
-  margin: 16px ;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  min-height: 48px;
+  background: transparent; /* 让整个组件只有一层外框 */
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+  min-height: 32px;
+  gap: 8px;
 }
 
 /* 让文本域占据剩余空间，避免被按钮挤压 */
@@ -89,7 +68,7 @@
   flex: 0 0 auto;
 }
 
-.ac-input-content:focus-within {
+.ac-input:focus-within {
   color: rgb(var(--color-text-1));
   border-color: rgb(var(--primary-6));
   box-shadow: 0 0 0 2px var(--color-primary-1);
@@ -122,7 +101,7 @@
   font-size: var(--font-size-body-small);
 }
 
-.ac-input-disabled .ac-input-content {
+.ac-input-disabled {
   background: var(--color-fill-2);
   color: var(--color-text-4);
   cursor: not-allowed;
