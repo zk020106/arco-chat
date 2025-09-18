@@ -50,7 +50,12 @@ export default defineConfig({
     plugins: [
         vue(),
         AutoImport({
-            imports:['vue'],
+            imports: [
+                'vue',
+                {
+                    'vue': ['render']
+                }
+            ],
             resolvers: [ArcoResolver()],
         }),
         Components({
