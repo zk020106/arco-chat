@@ -37,9 +37,9 @@ export interface TypewriterProps {
  * Typewriter 组件的事件类型
  */
 export interface TypewriterEmits {
-  complete: []
-  start: []
-  typing: [currentText: string, progress: number]
+  (e: 'complete'): void
+  (e: 'start'): void
+  (e: 'typing', currentText: string, progress: number): void
 }
 
 /**
