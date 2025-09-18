@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<LayoutProps>(), {
 const defaultSize = props.asideWidth
 const size = ref(props.collapsed ? '0px' : defaultSize)
 
-const collapsedNow = computed(() => parseInt(size) <= 20)
+const collapsedNow = computed(() => parseInt(size.value) <= 20)
 
 function toggleCollapse() {
   size.value = collapsedNow.value ? defaultSize : '0px'
