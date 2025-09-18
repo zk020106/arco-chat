@@ -20,15 +20,20 @@
 
 <script setup lang="ts">
 import { Message } from '@arco-design/web-vue';
+import { IconCopy, IconDown, IconUp } from '@arco-design/web-vue/es/icon';
 import hljs from 'highlight.js';
-import { computed, ref } from 'vue';
+import { computed, ref, withDefaults } from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   code: string;
   lang?: string;
   foldable?: boolean;
   showCopy?: boolean;
-}>();
+}>(), {
+  lang: '',
+  foldable: true,
+  showCopy: true,
+});
 
 const folded = ref(false);
 const copied = ref(false);
