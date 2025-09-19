@@ -2,7 +2,7 @@
   <div 
     class="ac-bubble" 
     :class="bubbleClasses" 
-    :style="{ maxWidth }"
+    :style="bubbleStyles"
     @click="handleClick"
     :data-animate="isVisible"
   >
@@ -82,7 +82,7 @@ const props = withDefaults(defineProps<BubblePropsType>(), {
   timestamp: undefined,
   showAvatar: true,
   clickable: false,
-  maxWidth: '70%',
+  maxWidth: 'auto',
   typewriter: false,
   typewriterConfig: () => ({
     speed: 50,
@@ -117,6 +117,34 @@ const isVisible = ref(false)
 // 计算是否显示头像
 const showAvatar = computed(() => {
   return props.showAvatar && props.avatarConfig
+})
+
+// 智能计算气泡宽度
+const bubbleStyles = computed(() => {
+  const styles: Record<string, string> = {}
+  
+  // 根据内容类型和长度智能调整宽度
+  if (props.maxWidth === 'auto') {
+    const contentLength = props.content.length
+    const hasCode = props.content.includes('```') || props.markdown
+    const hasLongText = contentLength > 200
+    
+    if (hasCode || hasLongText) {
+      // 代码块或长文本使用更宽的宽度
+      styles.maxWidth = 'min(90%, 800px)'
+      styles.width = '100%'
+    } else if (contentLength > 100) {
+      // 中等长度文本
+      styles.maxWidth = 'min(75%, 600px)'
+    } else {
+      // 短文本
+      styles.maxWidth = 'min(60%, 400px)'
+    }
+  } else {
+    styles.maxWidth = props.maxWidth
+  }
+  
+  return styles
 })
 
 // 将 TypewriterConfig 转换为 MarkdownRender 的 typingOptions 格式
@@ -226,7 +254,10 @@ onMounted(() => {
     animation: avatarBounce 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
   }
   .ac-bubble-content-container {
-    max-width: 100%;
+    flex: 1;
+    min-width: 0; // 允许内容收缩
+    display: flex;
+    flex-direction: column;
   }
   .loading-container {
     display: inline-flex;
@@ -280,8 +311,12 @@ onMounted(() => {
   
   .ac-bubble-content {
     word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    width: 100%;
+    box-sizing: border-box;
     
     // 变体样式 - 使用Arco默认颜色
     &.filled {
@@ -347,36 +382,137 @@ onMounted(() => {
     // 特殊内容样式
     .ac-bubble-markdown {
       line-height: 1.6;
+      width: 100%;
+      
+      // 代码块特殊处理
+      :deep(pre) {
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      
+      // 表格特殊处理
+      :deep(table) {
+        width: 100%;
+        table-layout: auto;
+        overflow-x: auto;
+        display: block;
+        white-space: nowrap;
+      }
     }
     
     .ac-bubble-typewriter {
       line-height: 1.6;
+      width: 100%;
     }
     
     .ac-bubble-text {
       line-height: 1.6;
+      width: 100%;
+      
+      // 长文本处理
+      &:has-text-long {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
     }
   }
 }
-// 响应式
-@media (max-width: 600px) {
-  .ac-bubble-content {
-    font-size: 15px;
-    padding: 12px 12px;
-    max-width: 95vw;
+// 响应式设计 - 多断点适配
+@media (max-width: 1200px) {
+  .ac-bubble {
+    .ac-bubble-content {
+      &.filled,
+      &.outlined,
+      &.shadow {
+        padding: 10px 14px;
+      }
+    }
     
-    &.filled,
-    &.outlined,
-    &.shadow {
-      border-radius: 12px;
+    .loading-container {
+      &.filled,
+      &.outlined,
+      &.shadow {
+        padding: 10px 14px;
+      }
     }
   }
-  
-  .loading-container {
-    &.filled,
-    &.outlined,
-    &.shadow {
-      border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .ac-bubble {
+    gap: 6px;
+    margin-bottom: 6px;
+    
+    .ac-bubble-content {
+      font-size: 14px;
+      
+      &.filled,
+      &.outlined,
+      &.shadow {
+        padding: 10px 12px;
+        border-radius: 14px;
+      }
+    }
+    
+    .loading-container {
+      &.filled,
+      &.outlined,
+      &.shadow {
+        padding: 10px 12px;
+        border-radius: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .ac-bubble {
+    .ac-bubble-content {
+      font-size: 15px;
+      
+      &.filled,
+      &.outlined,
+      &.shadow {
+        padding: 12px 12px;
+        border-radius: 12px;
+      }
+    }
+    
+    .loading-container {
+      &.filled,
+      &.outlined,
+      &.shadow {
+        padding: 12px 12px;
+        border-radius: 12px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .ac-bubble {
+    gap: 4px;
+    margin-bottom: 4px;
+    
+    .ac-bubble-content {
+      font-size: 14px;
+      
+      &.filled,
+      &.outlined,
+      &.shadow {
+        padding: 8px 10px;
+        border-radius: 10px;
+      }
+    }
+    
+    .loading-container {
+      &.filled,
+      &.outlined,
+      &.shadow {
+        padding: 8px 10px;
+        border-radius: 10px;
+      }
     }
   }
 }

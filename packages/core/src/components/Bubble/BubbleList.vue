@@ -266,10 +266,12 @@ onUnmounted(() => {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
 
     // 自定义滚动条样式
     &::-webkit-scrollbar {
@@ -334,7 +336,9 @@ onUnmounted(() => {
   .ac-bubble-list-messages {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
+    width: 100%;
+    align-items: flex-start;
 
     &.ac-bubble-list-reverse {
       flex-direction: column-reverse;
@@ -378,11 +382,38 @@ onUnmounted(() => {
   100% { transform: rotate(360deg); }
 }
 
-// 响应式设计
+// 响应式设计 - 多断点适配
+@media (max-width: 1200px) {
+  .ac-bubble-list {
+    .ac-bubble-list-container {
+      padding: 14px;
+      gap: 10px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .ac-bubble-list {
+    .ac-bubble-list-container {
+      padding: 12px;
+      gap: 8px;
+    }
+    
+    .ac-bubble-list-messages {
+      gap: 6px;
+    }
+  }
+}
+
 @media (max-width: 600px) {
   .ac-bubble-list {
     .ac-bubble-list-container {
       padding: 8px;
+      gap: 6px;
+    }
+    
+    .ac-bubble-list-messages {
+      gap: 4px;
     }
 
     .ac-bubble-list-scroll-to-bottom {
@@ -392,6 +423,29 @@ onUnmounted(() => {
       .ac-bubble-list-scroll-btn {
         width: 36px;
         height: 36px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .ac-bubble-list {
+    .ac-bubble-list-container {
+      padding: 6px;
+      gap: 4px;
+    }
+    
+    .ac-bubble-list-messages {
+      gap: 3px;
+    }
+
+    .ac-bubble-list-scroll-to-bottom {
+      bottom: 12px;
+      right: 12px;
+
+      .ac-bubble-list-scroll-btn {
+        width: 32px;
+        height: 32px;
       }
     }
   }
