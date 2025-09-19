@@ -350,7 +350,6 @@ onUnmounted(() => {
     flex-direction: column;
     gap: 16px;
     width: 100%;
-    align-items: flex-start;
 
     &.ac-bubble-list-reverse {
       flex-direction: column-reverse;

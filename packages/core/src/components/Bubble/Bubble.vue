@@ -123,7 +123,11 @@ const showAvatar = computed(() => {
 const bubbleStyles = computed(() => {
   const styles: Record<string, string> = {}
   
-  // 根据内容类型和长度智能调整宽度
+  // 每个消息都占满一行
+  styles.width = '100%'
+  styles.display = 'flex'
+  
+  // 根据内容类型和长度智能调整内容区域的最大宽度
   if (props.maxWidth === 'auto') {
     const contentLength = props.content.length
     const hasCode = props.content.includes('```') || props.markdown
@@ -131,22 +135,18 @@ const bubbleStyles = computed(() => {
     
     if (hasCode || hasLongText) {
       // 代码块或长文本使用更宽的宽度
-      styles.width = '100%'
-      styles.maxWidth = 'min(90%, 800px)'
+      styles.maxWidth = '100%'
       styles.minWidth = '180px'
     } else if (contentLength > 100) {
       // 中等长度文本
-      styles.width = '100%'
-      styles.maxWidth = 'min(75%, 600px)'
+      styles.maxWidth = '100%'
       styles.minWidth = '180px'
     } else {
       // 短文本
-      styles.width = '100%'
-      styles.maxWidth = 'min(60%, 400px)'
+      styles.maxWidth = '100%'
       styles.minWidth = '180px'
     }
   } else {
-    styles.width = '100%'
     styles.maxWidth = props.maxWidth
     styles.minWidth = '180px'
   }
@@ -218,6 +218,7 @@ onMounted(() => {
   opacity: 0;
   transform: translateY(20px) scale(0.95);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
   
   &[data-animate="true"] {
     opacity: 1;
@@ -264,6 +265,7 @@ onMounted(() => {
     min-width: 0; // 允许内容收缩
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
   .loading-container {
     display: inline-flex;
@@ -321,7 +323,8 @@ onMounted(() => {
     overflow-wrap: break-word;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    width: 100%;
+    width: fit-content;
+    max-width: 100%;
     box-sizing: border-box;
     
     // 变体样式 - 使用Arco默认颜色

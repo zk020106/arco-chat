@@ -29,6 +29,15 @@ export default defineConfig({
                 'markdown-it',
                 'highlight.js',
                 'xss',
+                'mermaid',
+                'katex',
+                'dayjs',
+                'lodash-es',
+                'dompurify',
+                'markdown-it-emoji',
+                'markdown-it-katex',
+                'markdown-it-plantuml',
+                '@datatraccorporation/markdown-it-mermaid'
             ],
             output: {
                 globals: {
