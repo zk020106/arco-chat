@@ -4,7 +4,10 @@
     :class="{ 
       'code-block-visible': isVisible
     }"
-    :style="{ width: width || '180px' }"
+    :style="{ 
+      width: '75%', 
+      minWidth: width || '180px' 
+    }"
   >
     <div class="code-block-header">
       <div class="code-block-lang">
@@ -187,21 +190,25 @@ function onLeave(el: Element) {
 
 .code-block-copy,
 .code-block-toggle {
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 28px !important;
+  height: 28px !important;
   border-radius: 6px;
-  background: var(--color-fill-1);
-  color: var(--primary-6);
-  border: none;
+  background: var(--color-fill-1) !important;
+  color: var(--primary-6) !important;
+  border: none !important;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 14px;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  padding: 0 !important;
+  margin: 0 !important;
   
   &:hover {
-    background: var(--color-fill-2);
+    background: var(--color-fill-2) !important;
     transform: scale(1.05);
   }
   
@@ -210,9 +217,19 @@ function onLeave(el: Element) {
   }
   
   &.copy-success {
-    background: var(--color-success-1);
-    color: var(--color-success-6);
+    background: var(--color-success-1) !important;
+    color: var(--color-success-6) !important;
     animation: copySuccess 0.6s ease-out;
+  }
+  
+  // 覆盖 Arco Design 的默认样式
+  :deep(.arco-btn) {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 }
 

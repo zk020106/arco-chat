@@ -131,17 +131,24 @@ const bubbleStyles = computed(() => {
     
     if (hasCode || hasLongText) {
       // 代码块或长文本使用更宽的宽度
-      styles.maxWidth = 'min(90%, 800px)'
       styles.width = '100%'
+      styles.maxWidth = 'min(90%, 800px)'
+      styles.minWidth = '180px'
     } else if (contentLength > 100) {
       // 中等长度文本
+      styles.width = '100%'
       styles.maxWidth = 'min(75%, 600px)'
+      styles.minWidth = '180px'
     } else {
       // 短文本
+      styles.width = '100%'
       styles.maxWidth = 'min(60%, 400px)'
+      styles.minWidth = '180px'
     }
   } else {
+    styles.width = '100%'
     styles.maxWidth = props.maxWidth
+    styles.minWidth = '180px'
   }
   
   return styles
