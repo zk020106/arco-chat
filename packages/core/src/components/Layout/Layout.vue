@@ -51,9 +51,9 @@ import SplitButton from './SplitButton.vue'
 const props = withDefaults(defineProps<LayoutProps>(), {
   asideWidth: '260px',
   collapsed: false,
-  headerHeight: '15vh',
+  headerHeight: '10vh',
   contentHeight: '70vh',
-  senderHeight: '15vh'
+  senderHeight: '20vh'
 })
 
 const defaultSize = props.asideWidth

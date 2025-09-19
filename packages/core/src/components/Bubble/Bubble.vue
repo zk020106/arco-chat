@@ -125,16 +125,16 @@ const bubbleStyles = computed(() => {
   
   // 根据对齐方式设置宽度
   if (props.align === 'start') {
-    // 用户消息：右对齐，限制最大宽度
-    styles.width = 'fit-content'
-    styles.maxWidth = '70%'
-    styles.marginLeft = 'auto'
-    styles.display = 'flex'
-  } else {
     // AI消息：左对齐，限制最大宽度
     styles.width = 'fit-content'
     styles.maxWidth = '70%'
     styles.marginRight = 'auto'
+    styles.display = 'flex'
+  } else {
+    // 用户消息：右对齐，限制最大宽度
+    styles.width = 'fit-content'
+    styles.maxWidth = '70%'
+    styles.marginLeft = 'auto'
     styles.display = 'flex'
   }
   
@@ -631,19 +631,14 @@ onMounted(() => {
   animation: contentSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
 }
 
-/* 打字机效果增强 */
+/* 打字机效果增强 - 只在hover时显示 */
 .ac-bubble-typewriter-enabled {
   .ac-bubble-content {
-    animation: typewriterGlow 2s ease-in-out infinite;
-  }
-}
-
-@keyframes typewriterGlow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(var(--primary-6), 0.1);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(var(--primary-6), 0.2);
+    transition: box-shadow 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 0 15px rgba(var(--primary-6), 0.3);
+    }
   }
 }
 </style>
