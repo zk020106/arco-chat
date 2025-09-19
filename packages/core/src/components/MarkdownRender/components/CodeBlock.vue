@@ -1,7 +1,11 @@
 <template>
   <div 
     class="code-block"
-    :class="{ 'code-block-visible': isVisible }"
+    :class="{ 
+      'code-block-visible': isVisible,
+      'code-block-fullscreen': isFullscreen,
+      'code-block-fit': isFit
+    }"
   >
     <div class="code-block-header">
       <div class="code-block-lang">
@@ -18,6 +22,24 @@
         >
           <icon-copy v-if="!copied" />
           <icon-check v-else />
+        </a-button>
+        <a-button 
+          class="code-block-fullscreen" 
+          type="text" 
+          size="small" 
+          @click="toggleFullscreen"
+        >
+          <icon-fullscreen v-if="!isFullscreen" />
+          <icon-fullscreen-exit v-else />
+        </a-button>
+        <a-button 
+          class="code-block-fit" 
+          type="text" 
+          size="small" 
+          @click="toggleFit"
+        >
+          <icon-expand v-if="!isFit" />
+          <icon-shrink v-else />
         </a-button>
         <a-button v-if="foldable" class="code-block-toggle" type="text" size="small" @click="toggleFold">
           <icon-down v-if="folded" />
@@ -39,7 +61,7 @@
 
 <script setup lang="ts">
 import { Message } from '@arco-design/web-vue';
-import { IconCopy, IconDown, IconUp, IconCheck } from '@arco-design/web-vue/es/icon';
+import { IconCopy, IconDown, IconUp, IconCheck, IconFullscreen, IconFullscreenExit, IconExpand, IconShrink } from '@arco-design/web-vue/es/icon';
 import hljs from 'highlight.js';
 
 const props = withDefaults(defineProps<{
@@ -56,6 +78,8 @@ const props = withDefaults(defineProps<{
 const folded = ref(false);
 const copied = ref(false);
 const isVisible = ref(false);
+const isFullscreen = ref(false);
+const isFit = ref(false);
 
 const highlighted = computed(() => {
   if (props.lang && hljs.getLanguage(props.lang)) {
@@ -77,11 +101,31 @@ function copyCode() {
   }, 1200);
 }
 
+function toggleFullscreen() {
+  isFullscreen.value = !isFullscreen.value;
+  if (isFullscreen.value) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
+
+function toggleFit() {
+  isFit.value = !isFit.value;
+}
+
 // 组件进入动画
 onMounted(() => {
   setTimeout(() => {
     isVisible.value = true
   }, 150)
+})
+
+// 组件卸载时清理
+onBeforeUnmount(() => {
+  if (isFullscreen.value) {
+    document.body.style.overflow = '';
+  }
 })
 
 // 动画钩子
@@ -170,9 +214,6 @@ function onLeave(el: Element) {
   padding: 4px 8px;
   border-radius: 6px;
   border: 1px solid var(--color-border-2);
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
 }
 
 .code-block-actions {
@@ -182,7 +223,9 @@ function onLeave(el: Element) {
 }
 
 .code-block-copy,
-.code-block-toggle {
+.code-block-toggle,
+.code-block-fullscreen,
+.code-block-fit {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -195,8 +238,6 @@ function onLeave(el: Element) {
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 14px;
-  position: relative;
-  overflow: hidden;
   
   &:hover {
     background: var(--color-fill-2);
@@ -211,21 +252,6 @@ function onLeave(el: Element) {
     background: var(--color-success-1);
     color: var(--color-success-6);
     animation: copySuccess 0.6s ease-out;
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  &:hover::before {
-    left: 100%;
   }
 }
 
@@ -348,24 +374,39 @@ pre code {
   }
 }
 
-/* 语言标签动画 */
-@keyframes langLabelPulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.1);
+/* 全屏模式 */
+.code-block-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  margin: 0;
+  border-radius: 0;
+  max-width: none;
+  max-height: none;
+  
+  .code-block-content {
+    height: calc(100vh - 60px);
+    overflow-y: auto;
   }
-  70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  
+  pre {
+    max-height: none;
+    height: 100%;
   }
 }
 
-.lang-label {
-  animation: langLabelPulse 2s infinite;
+/* 自适应模式 */
+.code-block-fit {
+  max-width: 100vw;
+  width: 100%;
+  
+  .code-block-content {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
 }
 
 /* 深色模式适配 */
