@@ -1,6 +1,6 @@
 {
   "name": "arco-design-x",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "author": "mochou",
   "license": "MIT",
   "main": "dist/index.mjs",

@@ -1,5 +1,5 @@
 <template>
-  <div class="ac-bubble-list" :style="{ maxHeight }">
+  <div class="ac-bubble-list" :style="useVirtualScroll ? {} : { maxHeight }">
     <div class="ac-bubble-list-container" ref="containerRef">
       <!-- 加载更多按钮 -->
       <div v-if="showLoadMore && !loadingMore" class="ac-bubble-list-load-more">
@@ -140,7 +140,7 @@ const props = withDefaults(defineProps<BubbleListProps>(), {
   showScrollToBottom: true,
   loadMoreText: '加载更多',
   loadingMore: false,
-  maxHeight: '400px',
+  maxHeight: '100%',
   reverse: true,
   scrollToBottomThreshold: 100,
   typewriterCompleteStrategy: 'only-last',
@@ -366,6 +366,7 @@ onUnmounted(() => {
     flex-direction: column;
     gap: 0;
     width: 100%;
+    height: 100%;
     box-sizing: border-box;
     scroll-behavior: smooth;
 
