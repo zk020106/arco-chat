@@ -4,6 +4,7 @@
     :class="bubbleClasses" 
     :style="{ maxWidth }"
     @click="handleClick"
+    :data-animate="isVisible"
   >
     <div class="ac-bubble-avatar" v-if="showAvatar">
       <slot name="avatar">
@@ -102,6 +103,8 @@ const emit = defineEmits<{
   typewriterTyping: [currentText: string, progress: number]
 }>()
 
+const isVisible = ref(false)
+
 /**
  * 插槽说明：
  * avatar - 自定义头像
@@ -162,6 +165,13 @@ const handleTypewriterStart = () => {
 const handleTypewriterTyping = (currentText: string, progress: number) => {
   emit('typewriterTyping', currentText, progress)
 }
+
+// 组件进入动画
+onMounted(() => {
+  setTimeout(() => {
+    isVisible.value = true
+  }, 200)
+})
 </script>
 
 <style scoped lang="scss">
@@ -171,6 +181,15 @@ const handleTypewriterTyping = (currentText: string, progress: number) => {
   gap: 8px;
   font-size: 14px;
   margin-bottom: 8px;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &[data-animate="true"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    animation: bubbleAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
 
   &.ac-bubble-start {
     flex-direction: row;
@@ -204,6 +223,7 @@ const handleTypewriterTyping = (currentText: string, progress: number) => {
     flex-shrink: 0;
     display: flex;
     align-items: flex-start;
+    animation: avatarBounce 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
   }
   .ac-bubble-content-container {
     max-width: 100%;
@@ -213,71 +233,115 @@ const handleTypewriterTyping = (currentText: string, progress: number) => {
     align-items: center;
     justify-content: center;
     max-width: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
-    // 变体样式
+    // 变体样式 - 使用Arco默认颜色
     &.filled {
       padding: 12px 16px;
-      background-color: var(--color-bg-2, #fff);
-      border-radius: 12px;
+      background: var(--color-bg-2);
+      border: 1px solid var(--color-border-2);
+      border-radius: 16px;
+      box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(10px);
     }
     &.borderless {
       padding: 12px 16px;
-      background-color: transparent;
+      background: var(--color-bg-1);
+      backdrop-filter: blur(5px);
     }
     &.outlined {
       padding: 12px 16px;
-      border: 1px solid var(--color-neutral-3, #c9cdd4);
-      background-color: transparent;
-      border-radius: 12px;
+      border: 1px solid var(--color-border-2);
+      background: var(--color-bg-1);
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
     }
     &.shadow {
       padding: 12px 16px;
-      background-color: var(--color-bg-2, #fff);
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background: var(--color-bg-2);
+      border: 1px solid var(--color-border-2);
+      border-radius: 16px;
+      box-shadow: 
+        0 6px 25px rgba(0, 0, 0, 0.12),
+        0 2px 6px rgba(0, 0, 0, 0.16);
+      backdrop-filter: blur(10px);
     }
     
     // 形状样式
     &.round {
-      border-radius: 12px;
+      border-radius: 16px;
     }
     &.corner {
-      border-radius: 4px;
+      border-radius: 8px;
     }
   }
   
   .ac-bubble-content {
     word-wrap: break-word;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
     
-    // 变体样式
+    // 变体样式 - 使用Arco默认颜色
     &.filled {
       padding: 12px 16px;
-      background-color: var(--color-bg-2, #fff);
-      border-radius: 12px;
+      background: var(--color-bg-2);
+      border: 1px solid var(--color-border-2);
+      border-radius: 16px;
+      box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(10px);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--primary-6);
+        border-radius: 16px 16px 0 0;
+      }
     }
     &.borderless {
       padding: 12px 16px;
-      background-color: transparent;
+      background: var(--color-bg-1);
+      backdrop-filter: blur(5px);
     }
     &.outlined {
       padding: 12px 16px;
-      border: 1px solid var(--color-neutral-3, #c9cdd4);
-      background-color: transparent;
-      border-radius: 12px;
+      border: 1px solid var(--color-border-2);
+      background: var(--color-bg-1);
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
     }
     &.shadow {
       padding: 12px 16px;
-      background-color: var(--color-bg-2, #fff);
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background: var(--color-bg-2);
+      border: 1px solid var(--color-border-2);
+      border-radius: 16px;
+      box-shadow: 
+        0 6px 25px rgba(0, 0, 0, 0.12),
+        0 2px 6px rgba(0, 0, 0, 0.16);
+      backdrop-filter: blur(10px);
     }
     
     // 形状样式
     &.round {
-      border-radius: 12px;
+      border-radius: 16px;
     }
     &.corner {
-      border-radius: 4px;
+      border-radius: 8px;
+    }
+    
+    // 悬停效果
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 
+        0 8px 30px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.16);
     }
     
     // 特殊内容样式
@@ -300,6 +364,121 @@ const handleTypewriterTyping = (currentText: string, progress: number) => {
     font-size: 15px;
     padding: 12px 12px;
     max-width: 95vw;
+    
+    &.filled,
+    &.outlined,
+    &.shadow {
+      border-radius: 12px;
+    }
+  }
+  
+  .loading-container {
+    &.filled,
+    &.outlined,
+    &.shadow {
+      border-radius: 12px;
+    }
+  }
+}
+
+// 深色模式适配
+@media (prefers-color-scheme: dark) {
+  .ac-bubble-content {
+    &.filled {
+      background: var(--color-bg-2);
+      border-color: var(--color-border-2);
+    }
+    
+    &.outlined {
+      background: var(--color-bg-1);
+      border-color: var(--color-border-2);
+    }
+    
+    &.shadow {
+      background: var(--color-bg-2);
+      border-color: var(--color-border-2);
+    }
+  }
+  
+  .loading-container {
+    &.filled {
+      background: var(--color-bg-2);
+      border-color: var(--color-border-2);
+    }
+    
+    &.outlined {
+      background: var(--color-bg-1);
+      border-color: var(--color-border-2);
+    }
+    
+    &.shadow {
+      background: var(--color-bg-2);
+      border-color: var(--color-border-2);
+    }
+  }
+}
+
+/* 气泡出现动画 */
+@keyframes bubbleAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 头像弹跳动画 */
+@keyframes avatarBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-10deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* 内容滑入动画 */
+@keyframes contentSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ac-bubble-content-container {
+  animation: contentSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+}
+
+/* 打字机效果增强 */
+.ac-bubble-typewriter-enabled {
+  .ac-bubble-content {
+    animation: typewriterGlow 2s ease-in-out infinite;
+  }
+}
+
+@keyframes typewriterGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(var(--primary-6), 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(var(--primary-6), 0.2);
   }
 }
 </style>
