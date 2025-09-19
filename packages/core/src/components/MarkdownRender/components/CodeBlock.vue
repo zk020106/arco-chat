@@ -2,10 +2,9 @@
   <div 
     class="code-block"
     :class="{ 
-      'code-block-visible': isVisible,
-      'code-block-fullscreen': isFullscreen,
-      'code-block-fit': isFit
+      'code-block-visible': isVisible
     }"
+    :style="{ width: width || '180px' }"
   >
     <div class="code-block-header">
       <div class="code-block-lang">
@@ -22,24 +21,6 @@
         >
           <icon-copy v-if="!copied" />
           <icon-check v-else />
-        </a-button>
-        <a-button 
-          class="code-block-fullscreen" 
-          type="text" 
-          size="small" 
-          @click="toggleFullscreen"
-        >
-          <icon-fullscreen v-if="!isFullscreen" />
-          <icon-fullscreen-exit v-else />
-        </a-button>
-        <a-button 
-          class="code-block-fit" 
-          type="text" 
-          size="small" 
-          @click="toggleFit"
-        >
-          <icon-expand v-if="!isFit" />
-          <icon-shrink v-else />
         </a-button>
         <a-button v-if="foldable" class="code-block-toggle" type="text" size="small" @click="toggleFold">
           <icon-down v-if="folded" />
@@ -61,7 +42,7 @@
 
 <script setup lang="ts">
 import { Message } from '@arco-design/web-vue';
-import { IconCopy, IconDown, IconUp, IconCheck, IconFullscreen, IconFullscreenExit, IconExpand, IconShrink } from '@arco-design/web-vue/es/icon';
+import { IconCopy, IconDown, IconUp, IconCheck } from '@arco-design/web-vue/es/icon';
 import hljs from 'highlight.js';
 
 const props = withDefaults(defineProps<{
@@ -69,17 +50,17 @@ const props = withDefaults(defineProps<{
   lang?: string;
   foldable?: boolean;
   showCopy?: boolean;
+  width?: string;
 }>(), {
   lang: '',
   foldable: true,
   showCopy: true,
+  width: '180px',
 });
 
 const folded = ref(false);
 const copied = ref(false);
 const isVisible = ref(false);
-const isFullscreen = ref(false);
-const isFit = ref(false);
 
 const highlighted = computed(() => {
   if (props.lang && hljs.getLanguage(props.lang)) {
@@ -101,18 +82,6 @@ function copyCode() {
   }, 1200);
 }
 
-function toggleFullscreen() {
-  isFullscreen.value = !isFullscreen.value;
-  if (isFullscreen.value) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = '';
-  }
-}
-
-function toggleFit() {
-  isFit.value = !isFit.value;
-}
 
 // 组件进入动画
 onMounted(() => {
@@ -121,12 +90,6 @@ onMounted(() => {
   }, 150)
 })
 
-// 组件卸载时清理
-onBeforeUnmount(() => {
-  if (isFullscreen.value) {
-    document.body.style.overflow = '';
-  }
-})
 
 // 动画钩子
 function onEnter(el: Element) {
@@ -223,9 +186,7 @@ function onLeave(el: Element) {
 }
 
 .code-block-copy,
-.code-block-toggle,
-.code-block-fullscreen,
-.code-block-fit {
+.code-block-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -374,40 +335,6 @@ pre code {
   }
 }
 
-/* 全屏模式 */
-.code-block-fullscreen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9999;
-  margin: 0;
-  border-radius: 0;
-  max-width: none;
-  max-height: none;
-  
-  .code-block-content {
-    height: calc(100vh - 60px);
-    overflow-y: auto;
-  }
-  
-  pre {
-    max-height: none;
-    height: 100%;
-  }
-}
-
-/* 自适应模式 */
-.code-block-fit {
-  max-width: 100vw;
-  width: 100%;
-  
-  .code-block-content {
-    max-height: 70vh;
-    overflow-y: auto;
-  }
-}
 
 /* 深色模式适配 */
 @media (prefers-color-scheme: dark) {

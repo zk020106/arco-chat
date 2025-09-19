@@ -208,7 +208,6 @@ onMounted(() => {
   align-items: flex-start;
   gap: 8px;
   font-size: 14px;
-  margin-bottom: 8px;
   opacity: 0;
   transform: translateY(20px) scale(0.95);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -442,7 +441,6 @@ onMounted(() => {
 @media (max-width: 768px) {
   .ac-bubble {
     gap: 6px;
-    margin-bottom: 6px;
     
     .ac-bubble-content {
       font-size: 14px;
@@ -493,7 +491,6 @@ onMounted(() => {
 @media (max-width: 480px) {
   .ac-bubble {
     gap: 4px;
-    margin-bottom: 4px;
     
     .ac-bubble-content {
       font-size: 14px;

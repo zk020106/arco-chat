@@ -269,26 +269,38 @@ onUnmounted(() => {
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     width: 100%;
     box-sizing: border-box;
+    scroll-behavior: smooth;
 
-    // 自定义滚动条样式
+    // 自定义滚动条样式 - 参考优秀实现
     &::-webkit-scrollbar {
       width: 6px;
+      height: 8px;
     }
 
     &::-webkit-scrollbar-track {
       background: transparent;
+      border-radius: 10px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: var(--color-neutral-3, #c9cdd4);
-      border-radius: 3px;
+      background: transparent;
+      background-color: var(--color-neutral-3, rgba(0, 0, 0, 0.2));
+      border-radius: 10px;
+      transition: background-color 0.2s ease-in-out;
     }
 
-    &::-webkit-scrollbar-thumb:hover {
-      background: var(--color-neutral-4, #86909c);
+    // 悬停时显示滚动条
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        background: var(--color-neutral-4, #c1c1c1);
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: var(--color-neutral-5, #a8a8a8);
+      }
     }
   }
 
@@ -336,7 +348,7 @@ onUnmounted(() => {
   .ac-bubble-list-messages {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 16px;
     width: 100%;
     align-items: flex-start;
 
@@ -350,29 +362,35 @@ onUnmounted(() => {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    z-index: 10;
+    z-index: 100;
+    user-select: none;
     cursor: pointer;
+    width: fit-content;
+    height: fit-content;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-bg-2, #fff);
+    border-radius: 50%;
+    box-shadow: 
+      0 0 4px 0 var(--color-neutral-1, rgba(0, 0, 0, 0.02)),
+      0 6px 10px 0 var(--color-neutral-2, rgba(47, 53, 64, 0.1));
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--color-neutral-3, rgba(0, 0, 0, 0.15));
+    }
 
     .ac-bubble-list-scroll-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--color-bg-2, #fff);
-      border: 1px solid var(--color-neutral-3, #c9cdd4);
+      width: 20px;
+      height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--color-text-2, #4e5969);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.2s ease;
-
-      &:hover {
-        background-color: var(--color-primary-1, #f2f3ff);
-        border-color: var(--color-primary-6, #165dff);
-        color: var(--color-primary-6, #165dff);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
     }
   }
 }
@@ -382,12 +400,69 @@ onUnmounted(() => {
   100% { transform: rotate(360deg); }
 }
 
+/* 火狐浏览器滚动条样式 */
+@supports (scrollbar-color: auto) {
+  .ac-bubble-list-container {
+    scrollbar-color: transparent transparent;
+    scrollbar-width: thin;
+
+    &:hover {
+      scrollbar-color: var(--color-neutral-4, #c1c1c1) transparent;
+    }
+  }
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .ac-bubble-list-container {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-neutral-4, rgba(255, 255, 255, 0.2));
+    }
+
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        background: var(--color-neutral-5, #666);
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: var(--color-neutral-6, #888);
+      }
+    }
+  }
+
+  .ac-bubble-list-scroll-to-bottom {
+    background-color: var(--color-bg-2, #2a2a2a);
+    box-shadow: 
+      0 0 4px 0 var(--color-neutral-2, rgba(0, 0, 0, 0.3)),
+      0 6px 10px 0 var(--color-neutral-3, rgba(0, 0, 0, 0.2));
+
+    &:hover {
+      box-shadow: 0 4px 12px var(--color-neutral-4, rgba(0, 0, 0, 0.3));
+    }
+  }
+}
+
+/* 火狐浏览器深色模式 */
+@supports (scrollbar-color: auto) {
+  @media (prefers-color-scheme: dark) {
+    .ac-bubble-list-container {
+      &:hover {
+        scrollbar-color: var(--color-neutral-5, #666) transparent;
+      }
+    }
+  }
+}
+
 // 响应式设计 - 多断点适配
 @media (max-width: 1200px) {
   .ac-bubble-list {
     .ac-bubble-list-container {
       padding: 14px;
-      gap: 10px;
+      gap: 14px;
+    }
+    
+    .ac-bubble-list-messages {
+      gap: 14px;
     }
   }
 }
@@ -396,11 +471,11 @@ onUnmounted(() => {
   .ac-bubble-list {
     .ac-bubble-list-container {
       padding: 12px;
-      gap: 8px;
+      gap: 12px;
     }
     
     .ac-bubble-list-messages {
-      gap: 6px;
+      gap: 12px;
     }
   }
 }
@@ -409,11 +484,11 @@ onUnmounted(() => {
   .ac-bubble-list {
     .ac-bubble-list-container {
       padding: 8px;
-      gap: 6px;
+      gap: 10px;
     }
     
     .ac-bubble-list-messages {
-      gap: 4px;
+      gap: 10px;
     }
 
     .ac-bubble-list-scroll-to-bottom {
@@ -432,11 +507,11 @@ onUnmounted(() => {
   .ac-bubble-list {
     .ac-bubble-list-container {
       padding: 6px;
-      gap: 4px;
+      gap: 8px;
     }
     
     .ac-bubble-list-messages {
-      gap: 3px;
+      gap: 8px;
     }
 
     .ac-bubble-list-scroll-to-bottom {
@@ -451,3 +526,4 @@ onUnmounted(() => {
   }
 }
 </style>
+
