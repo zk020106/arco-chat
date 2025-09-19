@@ -155,10 +155,14 @@ export interface BubbleListProps {
   typewriterCompleteStrategy?: TypewriterCompleteStrategy
   /** 是否启用虚拟滚动 */
   virtualScroll?: boolean
-  /** 虚拟滚动项高度 */
-  itemHeight?: number
-  /** 虚拟滚动缓冲区大小 */
-  bufferSize?: number
+  /** 虚拟滚动配置参数 */
+  virtualListProps?: {
+    height?: number | string
+    threshold?: number
+    fixedSize?: boolean
+    estimatedSize?: number
+    buffer?: number
+  }
   /** 默认气泡最大宽度，如 '75%' */
   defaultBubbleMaxWidth?: string
 }

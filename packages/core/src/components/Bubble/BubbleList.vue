@@ -63,17 +63,15 @@
       </div>
 
       <!-- 虚拟滚动消息列表 -->
-      <virtual-list
+      <List
         v-else
-        :data-sources="displayMessages"
-        :data-component="Bubble"
-        :keeps="30"
-        :estimate-size="itemHeight"
+        :data="displayMessages"
+        :virtual-list-props="virtualListProps"
         class="ac-bubble-list-virtual"
         :class="{ 'ac-bubble-list-reverse': reverse }"
         @scroll="handleVirtualScroll"
       >
-        <template #default="{ item: message, index }">
+        <template #item="{ item: message, index }">
           <Bubble
             :content="message.content"
             :loading="message.loading"
@@ -110,7 +108,7 @@
             </template>
           </Bubble>
         </template>
-      </virtual-list>
+      </List>
 
       <!-- 滚动到底部按钮 -->
       <div 
@@ -130,7 +128,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import VirtualList from 'vue-virtual-scroll-list'
+import { List } from '@arco-design/web-vue'
  
 import Bubble from './Bubble.vue'
 import type { BubbleListProps, BubbleMessage } from './bubble-types'
@@ -147,8 +145,13 @@ const props = withDefaults(defineProps<BubbleListProps>(), {
   scrollToBottomThreshold: 100,
   typewriterCompleteStrategy: 'only-last',
   virtualScroll: false,
-  itemHeight: 80,
-  bufferSize: 5,
+  virtualListProps: () => ({
+    height: '100%',
+    threshold: 50,
+    fixedSize: true,
+    estimatedSize: 80,
+    buffer: 10
+  }),
   defaultBubbleMaxWidth: '100%'
 })
 
@@ -452,6 +455,52 @@ onUnmounted(() => {
   .ac-bubble-list-virtual {
     width: 100%;
     padding: 16px;
+    height: 100%;
+    
+    // 重置 Arco List 的默认样式
+    :deep(.arco-list) {
+      background: transparent;
+      border: none;
+    }
+    
+    :deep(.arco-list-item) {
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
+    
+    :deep(.arco-list-item-content) {
+      padding: 0;
+    }
+    
+    // 虚拟滚动容器样式
+    :deep(.arco-virtual-list) {
+      height: 100%;
+    }
+    
+    :deep(.arco-virtual-list-scrollbar) {
+      // 自定义滚动条样式
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 10px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: var(--color-neutral-3, rgba(0, 0, 0, 0.2));
+        border-radius: 10px;
+        transition: background-color 0.2s ease-in-out;
+      }
+      
+      &:hover {
+        &::-webkit-scrollbar-thumb {
+          background: var(--color-neutral-4, #c1c1c1);
+        }
+      }
+    }
   }
 
 
