@@ -101,7 +101,7 @@ const props = withDefaults(defineProps<BubbleListProps>(), {
   scrollToBottomThreshold: 100,
   typewriterCompleteStrategy: 'only-last',
   virtualScroll: false,
-  defaultBubbleMaxWidth: '75%'
+  defaultBubbleMaxWidth: '100%'
 })
 
 const emit = defineEmits<{

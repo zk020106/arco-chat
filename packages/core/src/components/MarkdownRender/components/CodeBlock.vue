@@ -5,7 +5,7 @@
       'code-block-visible': isVisible
     }"
     :style="{ 
-      width: '75%', 
+      width: '100%', 
       minWidth: width || '180px' 
     }"
   >
@@ -120,7 +120,7 @@ function onLeave(el: Element) {
   background: var(--color-bg-2);
   border: 1px solid var(--color-border-2);
   border-radius: 12px;
-  margin: 16px 0;
+  margin: 0;
   box-shadow: 
     0 4px 20px rgba(0, 0, 0, 0.08),
     0 1px 3px rgba(0, 0, 0, 0.12);
@@ -130,6 +130,7 @@ function onLeave(el: Element) {
   position: relative;
   opacity: 0;
   transform: translateY(20px) scale(0.95);
+  width: 100%;
   
   &.code-block-visible {
     opacity: 1;
@@ -240,7 +241,7 @@ function onLeave(el: Element) {
 
 pre {
   margin: 0;
-  padding: 16px;
+  padding: 12px;
   background: none;
   overflow-x: auto;
   font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
@@ -297,7 +298,7 @@ pre code {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .code-block {
-    margin: 12px 0;
+    margin: 0;
     border-radius: 10px;
   }
   
@@ -311,7 +312,7 @@ pre code {
   }
   
   pre {
-    padding: 12px;
+    padding: 8px;
     font-size: 12px;
   }
   

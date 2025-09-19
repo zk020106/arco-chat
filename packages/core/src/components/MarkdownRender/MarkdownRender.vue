@@ -609,8 +609,7 @@ import MermaidBlock from './components/MermaidBlock.vue';
     border-radius: var(--border-radius-medium);
     padding: 16px;
     overflow: auto;
-    margin-top: 0;
-    margin-bottom: 16px;
+    margin: 0;
   }
 
   .ac-markdown-content :deep(pre code) {

@@ -393,11 +393,19 @@ onMounted(() => {
       line-height: 1.6;
       width: 100%;
       
-      // 代码块特殊处理
+      // 代码块特殊处理 - 确保代码块铺满容器
+      :deep(.code-block) {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+      }
+      
       :deep(pre) {
         overflow-x: auto;
         white-space: pre-wrap;
         word-break: break-word;
+        margin: 0;
+        padding: 0;
       }
       
       // 表格特殊处理
