@@ -19,7 +19,7 @@
 
       <!-- 消息列表 -->
       <div
-        v-if="!virtualScroll"
+        v-if="!autoVirtualScroll"
         class="ac-bubble-list-messages"
         :class="{ 'ac-bubble-list-reverse': reverse }"
       >
@@ -101,6 +101,8 @@ const props = withDefaults(defineProps<BubbleListProps>(), {
   scrollToBottomThreshold: 100,
   typewriterCompleteStrategy: 'only-last',
   virtualScroll: false,
+  itemHeight: 60,
+  bufferSize: 5,
   defaultBubbleMaxWidth: '100%'
 })
 
@@ -116,10 +118,38 @@ const emit = defineEmits<{
 const containerRef = ref<HTMLElement>()
 const isAtBottom = ref(true)
 const lastScrollTop = ref(0)
+const shouldUseVirtualScroll = ref(false)
+const containerHeight = ref(0)
+const scrollHeight = ref(0)
+let resizeObserver: ResizeObserver | null = null
 
 // 计算显示的消息列表
 const displayMessages = computed(() => {
   return props.reverse ? [...props.list].reverse() : props.list
+})
+
+// 更新容器尺寸信息
+const updateContainerSize = () => {
+  if (containerRef.value) {
+    containerHeight.value = containerRef.value.clientHeight
+    scrollHeight.value = containerRef.value.scrollHeight
+  }
+}
+
+// 自动启用虚拟滚动的计算
+const autoVirtualScroll = computed(() => {
+  // 如果手动设置了 virtualScroll，则使用手动设置
+  if (props.virtualScroll !== false) {
+    return props.virtualScroll
+  }
+  
+  // 检查内容是否超出父容器高度
+  if (containerHeight.value > 0 && scrollHeight.value > 0) {
+    return scrollHeight.value > containerHeight.value
+  }
+  
+  // 如果容器还未挂载，返回 false，等待容器挂载后再判断
+  return false
 })
 
 // 处理加载更多
@@ -221,12 +251,25 @@ const scrollToTop = () => {
 // 监听消息变化，自动滚动
 watch(() => props.list.length, () => {
   autoScrollToBottom()
+  // 更新容器尺寸以检查是否需要虚拟滚动
+  nextTick(() => {
+    updateContainerSize()
+  })
 }, { flush: 'post' })
 
 // 监听消息内容变化
 watch(() => props.list, () => {
   autoScrollToBottom()
+  // 更新容器尺寸以检查是否需要虚拟滚动
+  nextTick(() => {
+    updateContainerSize()
+  })
 }, { deep: true, flush: 'post' })
+
+// 监听容器尺寸变化
+watch([containerHeight, scrollHeight], () => {
+  // 当容器尺寸变化时，重新计算是否需要虚拟滚动
+}, { flush: 'post' })
 
 // 暴露方法给父组件
 defineExpose({
@@ -237,18 +280,35 @@ defineExpose({
 })
 
 onMounted(() => {
-  if (!props.virtualScroll && containerRef.value) {
-    containerRef.value.addEventListener('scroll', handleScroll)
-    // 初始滚动到底部
-    if (props.reverse) {
-      scrollToBottom()
+  if (containerRef.value) {
+    // 初始化容器尺寸
+    updateContainerSize()
+    
+    // 使用 ResizeObserver 监听容器尺寸变化
+    resizeObserver = new ResizeObserver(() => {
+      updateContainerSize()
+    })
+    resizeObserver.observe(containerRef.value)
+    
+    if (!autoVirtualScroll.value) {
+      containerRef.value.addEventListener('scroll', handleScroll)
+      // 初始滚动到底部
+      if (props.reverse) {
+        scrollToBottom()
+      }
     }
   }
 })
 
 onUnmounted(() => {
-  if (!props.virtualScroll && containerRef.value) {
+  if (!autoVirtualScroll.value && containerRef.value) {
     containerRef.value.removeEventListener('scroll', handleScroll)
+  }
+  
+  // 清理 ResizeObserver
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+    resizeObserver = null
   }
 })
 </script>
@@ -348,7 +408,7 @@ onUnmounted(() => {
   .ac-bubble-list-messages {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 10px;
     width: 100%;
     padding: 16px;
 
@@ -463,7 +523,7 @@ onUnmounted(() => {
     
     .ac-bubble-list-messages {
       padding: 14px;
-      gap: 0;
+      gap: 10px;
     }
   }
 }
@@ -477,7 +537,7 @@ onUnmounted(() => {
     
     .ac-bubble-list-messages {
       padding: 12px;
-      gap: 0;
+      gap: 10px;
     }
   }
 }
@@ -491,7 +551,7 @@ onUnmounted(() => {
     
     .ac-bubble-list-messages {
       padding: 8px;
-      gap: 0;
+      gap: 10px;
     }
 
     .ac-bubble-list-scroll-to-bottom {
@@ -515,7 +575,7 @@ onUnmounted(() => {
     
     .ac-bubble-list-messages {
       padding: 6px;
-      gap: 0;
+      gap: 10px;
     }
 
     .ac-bubble-list-scroll-to-bottom {
