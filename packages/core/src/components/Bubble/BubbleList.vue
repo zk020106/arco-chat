@@ -17,14 +17,13 @@
         <span>加载中...</span>
       </div>
 
-      <!-- 消息列表 -->
+      <!-- 普通消息列表 -->
       <div
-        v-if="!autoVirtualScroll"
+        v-if="!useVirtualScroll"
         class="ac-bubble-list-messages"
         :class="{ 'ac-bubble-list-reverse': reverse }"
       >
         <template v-for="(message, index) in displayMessages" :key="message.id || index">
-          <!-- 气泡组件 -->
           <Bubble
             :content="message.content"
             :loading="message.loading"
@@ -44,7 +43,6 @@
             @typewriter-start="handleTypewriterStart(message, index)"
             @typewriter-typing="(currentText, progress) => handleTypewriterTyping(message, index, currentText, progress)"
           >
-            <!-- 传递插槽内容 -->
             <template v-if="$slots.avatar" #avatar="slotProps">
               <slot name="avatar" v-bind="slotProps" :message="message" :index="index"></slot>
             </template>
@@ -62,10 +60,57 @@
             </template>
           </Bubble>
         </template>
-
       </div>
 
-      
+      <!-- 虚拟滚动消息列表 -->
+      <virtual-list
+        v-else
+        :data-sources="displayMessages"
+        :data-component="Bubble"
+        :keeps="30"
+        :estimate-size="itemHeight"
+        class="ac-bubble-list-virtual"
+        :class="{ 'ac-bubble-list-reverse': reverse }"
+        @scroll="handleVirtualScroll"
+      >
+        <template #default="{ item: message, index }">
+          <Bubble
+            :content="message.content"
+            :loading="message.loading"
+            :align="message.align"
+            :variant="message.variant"
+            :shape="message.shape"
+            :avatar-config="message.avatarConfig"
+            :failed="message.failed"
+            :timestamp="message.timestamp"
+            :max-width="message.maxWidth ?? defaultBubbleMaxWidth"
+            :typewriter="message.typewriter"
+            :typewriter-config="message.typewriterConfig"
+            :markdown="message.markdown"
+            :streaming="message.streaming"
+            @click="handleMessageClick(message, index)"
+            @typewriter-complete="handleTypewriterComplete(message, index)"
+            @typewriter-start="handleTypewriterStart(message, index)"
+            @typewriter-typing="(currentText, progress) => handleTypewriterTyping(message, index, currentText, progress)"
+          >
+            <template v-if="$slots.avatar" #avatar="slotProps">
+              <slot name="avatar" v-bind="slotProps" :message="message" :index="index"></slot>
+            </template>
+            <template v-if="$slots.header" #header="slotProps">
+              <slot name="header" v-bind="slotProps" :message="message" :index="index"></slot>
+            </template>
+            <template v-if="$slots.content" #content="slotProps">
+              <slot name="content" v-bind="slotProps" :message="message" :index="index"></slot>
+            </template>
+            <template v-if="$slots.loading" #loading="slotProps">
+              <slot name="loading" v-bind="slotProps" :message="message" :index="index"></slot>
+            </template>
+            <template v-if="$slots.footer" #footer="slotProps">
+              <slot name="footer" v-bind="slotProps" :message="message" :index="index"></slot>
+            </template>
+          </Bubble>
+        </template>
+      </virtual-list>
 
       <!-- 滚动到底部按钮 -->
       <div 
@@ -85,6 +130,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import VirtualList from 'vue-virtual-scroll-list'
  
 import Bubble from './Bubble.vue'
 import type { BubbleListProps, BubbleMessage } from './bubble-types'
@@ -101,7 +147,7 @@ const props = withDefaults(defineProps<BubbleListProps>(), {
   scrollToBottomThreshold: 100,
   typewriterCompleteStrategy: 'only-last',
   virtualScroll: false,
-  itemHeight: 60,
+  itemHeight: 80,
   bufferSize: 5,
   defaultBubbleMaxWidth: '100%'
 })
@@ -118,38 +164,41 @@ const emit = defineEmits<{
 const containerRef = ref<HTMLElement>()
 const isAtBottom = ref(true)
 const lastScrollTop = ref(0)
-const shouldUseVirtualScroll = ref(false)
-const containerHeight = ref(0)
-const scrollHeight = ref(0)
-let resizeObserver: ResizeObserver | null = null
+const autoVirtualScroll = ref(false)
 
 // 计算显示的消息列表
 const displayMessages = computed(() => {
   return props.reverse ? [...props.list].reverse() : props.list
 })
 
-// 更新容器尺寸信息
-const updateContainerSize = () => {
-  if (containerRef.value) {
-    containerHeight.value = containerRef.value.clientHeight
-    scrollHeight.value = containerRef.value.scrollHeight
+// 检查是否需要自动启用虚拟滚动
+const checkAutoVirtualScroll = () => {
+  if (containerRef.value && props.virtualScroll === false) {
+    const { scrollHeight, clientHeight } = containerRef.value
+    // 当内容高度超过容器高度时，自动启用虚拟滚动
+    autoVirtualScroll.value = scrollHeight > clientHeight
+  } else {
+    autoVirtualScroll.value = false
   }
 }
 
-// 自动启用虚拟滚动的计算
-const autoVirtualScroll = computed(() => {
-  // 如果手动设置了 virtualScroll，则使用手动设置
+// 虚拟滚动事件处理
+const handleVirtualScroll = (event: Event) => {
+  // 处理虚拟滚动的滚动事件
+  if (containerRef.value) {
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.value
+    isAtBottom.value = scrollHeight - scrollTop - clientHeight < props.scrollToBottomThreshold
+  }
+}
+
+// 计算是否使用虚拟滚动
+const useVirtualScroll = computed(() => {
+  // 如果明确设置了 virtualScroll，使用设置的值
   if (props.virtualScroll !== false) {
     return props.virtualScroll
   }
-  
-  // 检查内容是否超出父容器高度
-  if (containerHeight.value > 0 && scrollHeight.value > 0) {
-    return scrollHeight.value > containerHeight.value
-  }
-  
-  // 如果容器还未挂载，返回 false，等待容器挂载后再判断
-  return false
+  // 否则使用自动判断
+  return autoVirtualScroll.value
 })
 
 // 处理加载更多
@@ -251,25 +300,18 @@ const scrollToTop = () => {
 // 监听消息变化，自动滚动
 watch(() => props.list.length, () => {
   autoScrollToBottom()
-  // 更新容器尺寸以检查是否需要虚拟滚动
   nextTick(() => {
-    updateContainerSize()
+    checkAutoVirtualScroll()
   })
 }, { flush: 'post' })
 
 // 监听消息内容变化
 watch(() => props.list, () => {
   autoScrollToBottom()
-  // 更新容器尺寸以检查是否需要虚拟滚动
   nextTick(() => {
-    updateContainerSize()
+    checkAutoVirtualScroll()
   })
 }, { deep: true, flush: 'post' })
-
-// 监听容器尺寸变化
-watch([containerHeight, scrollHeight], () => {
-  // 当容器尺寸变化时，重新计算是否需要虚拟滚动
-}, { flush: 'post' })
 
 // 暴露方法给父组件
 defineExpose({
@@ -281,16 +323,12 @@ defineExpose({
 
 onMounted(() => {
   if (containerRef.value) {
-    // 初始化容器尺寸
-    updateContainerSize()
-    
-    // 使用 ResizeObserver 监听容器尺寸变化
-    resizeObserver = new ResizeObserver(() => {
-      updateContainerSize()
+    // 初始检查是否需要虚拟滚动
+    nextTick(() => {
+      checkAutoVirtualScroll()
     })
-    resizeObserver.observe(containerRef.value)
     
-    if (!autoVirtualScroll.value) {
+    if (!useVirtualScroll.value) {
       containerRef.value.addEventListener('scroll', handleScroll)
       // 初始滚动到底部
       if (props.reverse) {
@@ -301,14 +339,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (!autoVirtualScroll.value && containerRef.value) {
+  if (containerRef.value && !useVirtualScroll.value) {
     containerRef.value.removeEventListener('scroll', handleScroll)
-  }
-  
-  // 清理 ResizeObserver
-  if (resizeObserver) {
-    resizeObserver.disconnect()
-    resizeObserver = null
   }
 })
 </script>
@@ -415,6 +447,11 @@ onUnmounted(() => {
     &.ac-bubble-list-reverse {
       flex-direction: column-reverse;
     }
+  }
+
+  .ac-bubble-list-virtual {
+    width: 100%;
+    padding: 16px;
   }
 
 
