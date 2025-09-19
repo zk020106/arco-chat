@@ -123,9 +123,20 @@ const showAvatar = computed(() => {
 const bubbleStyles = computed(() => {
   const styles: Record<string, string> = {}
   
-  // 每个消息都占满一行
-  styles.width = '100%'
-  styles.display = 'flex'
+  // 根据对齐方式设置宽度
+  if (props.align === 'start') {
+    // 用户消息：右对齐，限制最大宽度
+    styles.width = 'fit-content'
+    styles.maxWidth = '70%'
+    styles.marginLeft = 'auto'
+    styles.display = 'flex'
+  } else {
+    // AI消息：左对齐，限制最大宽度
+    styles.width = 'fit-content'
+    styles.maxWidth = '70%'
+    styles.marginRight = 'auto'
+    styles.display = 'flex'
+  }
   
   // 根据内容类型和长度智能调整内容区域的最大宽度
   if (props.maxWidth === 'auto') {
@@ -135,20 +146,20 @@ const bubbleStyles = computed(() => {
     
     if (hasCode || hasLongText) {
       // 代码块或长文本使用更宽的宽度
-      styles.maxWidth = '100%'
+      styles.maxWidth = '85%'
       styles.minWidth = '180px'
     } else if (contentLength > 100) {
       // 中等长度文本
-      styles.maxWidth = '100%'
+      styles.maxWidth = '70%'
       styles.minWidth = '180px'
     } else {
       // 短文本
-      styles.maxWidth = '100%'
-      styles.minWidth = '180px'
+      styles.maxWidth = '60%'
+      styles.minWidth = '120px'
     }
   } else {
     styles.maxWidth = props.maxWidth
-    styles.minWidth = '180px'
+    styles.minWidth = '120px'
   }
   
   return styles
@@ -395,9 +406,12 @@ onMounted(() => {
       
       // 代码块特殊处理 - 确保代码块铺满容器
       :deep(.code-block) {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 !important;
+        width: calc(100% + 32px) !important;
+        max-width: calc(100% + 32px) !important;
+        margin-left: -16px !important;
+        margin-right: -16px !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
       }
       
       :deep(pre) {

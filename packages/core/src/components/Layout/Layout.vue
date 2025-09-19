@@ -14,13 +14,24 @@
       </template>
       <template #second>
         <div class="ac-layout-main">
-          <div v-if="$slots.header" class="ac-layout-header">
+          <div 
+            v-if="$slots.header" 
+            class="ac-layout-header"
+            :style="{ height: props.headerHeight, flex: `0 0 ${props.headerHeight}` }"
+          >
             <slot name="header" />
           </div>
-          <div class="ac-layout-content">
+          <div 
+            class="ac-layout-content"
+            :style="{ height: props.contentHeight }"
+          >
             <slot name="content" />
           </div>
-          <div v-if="$slots.sender" class="ac-layout-sender">
+          <div 
+            v-if="$slots.sender" 
+            class="ac-layout-sender"
+            :style="{ height: props.senderHeight, flex: `0 0 ${props.senderHeight}` }"
+          >
             <slot name="sender" />
           </div>
         </div>
@@ -39,7 +50,10 @@ import SplitButton from './SplitButton.vue'
 
 const props = withDefaults(defineProps<LayoutProps>(), {
   asideWidth: '260px',
-  collapsed: false
+  collapsed: false,
+  headerHeight: '15vh',
+  contentHeight: '70vh',
+  senderHeight: '15vh'
 })
 
 const defaultSize = props.asideWidth
@@ -69,11 +83,15 @@ function toggleCollapse() {
 /* 使用 Split 作为主体布局容器 */
 .ac-layout-split {
   flex: 1;
+  height: 100%; /* 确保占满父容器高度 */
 }
 
 /* 头部区域 */
 .ac-layout-header {
   border-bottom: 1px solid var(--color-border-2);
+  overflow: hidden; /* 防止内容溢出 */
+  display: flex;
+  align-items: center; /* 垂直居中 */
 }
 
 /* 侧边栏区域 */
@@ -90,6 +108,7 @@ function toggleCollapse() {
   flex-direction: column;
   overflow: hidden;
   min-height: 0; /* 关键：允许内容区成为滚动容器 */
+  height: 100%; /* 确保占满父容器高度 */
 }
 
 /* 内容区 */
@@ -104,7 +123,9 @@ function toggleCollapse() {
 .ac-layout-sender {
   border-top: 1px solid var(--color-border-2);
   padding: 16px;
-  flex: 0 0 auto; /* 锁定底部输入区高度，不被内容挤压 */
+  overflow: hidden; /* 防止内容溢出 */
+  display: flex;
+  align-items: center; /* 垂直居中 */
 }
 
 /* 触发器样式 */

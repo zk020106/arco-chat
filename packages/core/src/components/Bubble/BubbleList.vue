@@ -266,10 +266,10 @@ onUnmounted(() => {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 16px;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 0;
     width: 100%;
     box-sizing: border-box;
     scroll-behavior: smooth;
@@ -348,8 +348,9 @@ onUnmounted(() => {
   .ac-bubble-list-messages {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 0;
     width: 100%;
+    padding: 16px;
 
     &.ac-bubble-list-reverse {
       flex-direction: column-reverse;
@@ -456,12 +457,13 @@ onUnmounted(() => {
 @media (max-width: 1200px) {
   .ac-bubble-list {
     .ac-bubble-list-container {
-      padding: 14px;
-      gap: 14px;
+      padding: 0;
+      gap: 0;
     }
     
     .ac-bubble-list-messages {
-      gap: 14px;
+      padding: 14px;
+      gap: 0;
     }
   }
 }
@@ -469,12 +471,13 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .ac-bubble-list {
     .ac-bubble-list-container {
-      padding: 12px;
-      gap: 12px;
+      padding: 0;
+      gap: 0;
     }
     
     .ac-bubble-list-messages {
-      gap: 12px;
+      padding: 12px;
+      gap: 0;
     }
   }
 }
@@ -482,12 +485,13 @@ onUnmounted(() => {
 @media (max-width: 600px) {
   .ac-bubble-list {
     .ac-bubble-list-container {
-      padding: 8px;
-      gap: 10px;
+      padding: 0;
+      gap: 0;
     }
     
     .ac-bubble-list-messages {
-      gap: 10px;
+      padding: 8px;
+      gap: 0;
     }
 
     .ac-bubble-list-scroll-to-bottom {
@@ -505,12 +509,13 @@ onUnmounted(() => {
 @media (max-width: 480px) {
   .ac-bubble-list {
     .ac-bubble-list-container {
-      padding: 6px;
-      gap: 8px;
+      padding: 0;
+      gap: 0;
     }
     
     .ac-bubble-list-messages {
-      gap: 8px;
+      padding: 6px;
+      gap: 0;
     }
 
     .ac-bubble-list-scroll-to-bottom {
