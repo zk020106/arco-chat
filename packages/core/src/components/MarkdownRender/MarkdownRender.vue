@@ -5,6 +5,7 @@
   </template>
 
   <script setup lang="ts">
+  import { ref, computed, watch, onMounted,useSlots,onBeforeUnmount,nextTick  } from 'vue'
   import DOMPurify from 'dompurify';
   import MarkdownIt from 'markdown-it';
   import type { VNode, AppContext } from 'vue';

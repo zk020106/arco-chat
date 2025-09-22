@@ -134,7 +134,7 @@ export interface BubbleMessage {
  */
 export interface BubbleListProps {
   /** 消息列表 */
-  list: BubbleMessage[]
+  list?: BubbleMessage[]
   /** 是否自动滚动到底部 */
   autoScroll?: boolean
   /** 是否显示加载更多按钮 */

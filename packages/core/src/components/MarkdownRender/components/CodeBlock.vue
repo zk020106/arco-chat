@@ -44,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { Message } from '@arco-design/web-vue';
 import { IconCopy, IconDown, IconUp, IconCheck } from '@arco-design/web-vue/es/icon';
 import hljs from 'highlight.js';

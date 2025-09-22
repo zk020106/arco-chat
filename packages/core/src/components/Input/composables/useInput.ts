@@ -3,8 +3,9 @@
  * 提供更优雅的 API 设计
  */
 
+import { ref, computed, watch, provide } from 'vue'
 import { inputInjectionKey } from '../input-types'
-import type { InputProps, InputContext, InputInstance, TriggerEvent, PasteFileEvent } from '../input-types'
+import type { InputProps, InputContext, InputInstance } from '../input-types'
 
 /**
  * 创建 Input 实例

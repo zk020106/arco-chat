@@ -45,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import type { LayoutProps } from './layout-types'
 import SplitButton from './SplitButton.vue'
 

@@ -28,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import type { PromptItem, PromptProps } from './prompt-types'
 import { ListDirection, ListVariant } from './prompt-types'
 

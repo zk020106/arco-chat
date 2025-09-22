@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import IconVoice from '@arco-design/web-vue/es/icon/icon-voice'
 import IconRecordStop from '@arco-design/web-vue/es/icon/icon-record-stop'
 

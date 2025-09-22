@@ -175,47 +175,47 @@ export const inputProps = {
  */
 export interface InputProps {
   /** v-model 值 */
-  modelValue: string
+  modelValue?: string
   /** 占位符 */
-  placeholder: string
+  placeholder?: string
   /** 自动调整大小配置 */
-  autoSize: AutoSizeConfig
+  autoSize?: AutoSizeConfig
   /** 是否只读 */
-  readOnly: boolean
+  readOnly?: boolean
   /** 是否禁用 */
-  disabled: boolean
+  disabled?: boolean
   /** 内置发送按钮禁用状态 */
-  submitBtnDisabled: boolean | undefined
+  submitBtnDisabled?: boolean | undefined
   /** 是否显示加载状态 */
-  loading: boolean
+  loading?: boolean
   /** 是否可清空内容 */
-  clearable: boolean
+  clearable?: boolean
   /** 是否允许语音输入 */
-  allowSpeech: boolean
+  allowSpeech?: boolean
   /** 提交方式 */
-  submitType: SubmitType
+  submitType?: SubmitType
   /** 头部显示时长 */
-  headerAnimationTimer: number
+  headerAnimationTimer?: number
   /** 输入框宽度 */
-  inputWidth: string
+  inputWidth?: string
   /** 输入框变体类型 */
-  variant: InputVariant
+  variant?: InputVariant
   /** 当变体为 updown 时，是否展示内置样式 */
-  showUpdown: boolean
+  showUpdown?: boolean
   /** 输入框样式 */
-  inputStyle: Record<string, any>
+  inputStyle?: Record<string, any>
   /** 触发指令的字符串数组 */
-  triggerStrings: string[]
+  triggerStrings?: string[]
   /** 触发指令的弹框是否可见 */
-  triggerPopoverVisible: boolean
+  triggerPopoverVisible?: boolean
   /** 触发指令的弹框宽度 */
-  triggerPopoverWidth: string
+  triggerPopoverWidth?: string
   /** 触发指令的弹框左边距 */
-  triggerPopoverLeft: string
+  triggerPopoverLeft?: string
   /** 触发指令的弹框间距 */
-  triggerPopoverOffset: number
+  triggerPopoverOffset?: number
   /** 触发指令的弹框位置 */
-  triggerPopoverPlacement: string
+  triggerPopoverPlacement?: string
 }
 
 /**

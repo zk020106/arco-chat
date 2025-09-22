@@ -1,6 +1,6 @@
 {
   "name": "arco-design-x",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "author": "mochou",
   "license": "MIT",
   "main": "dist/index.mjs",
@@ -16,6 +16,7 @@
   ],
   "packageManager": "pnpm@10.13.1",
   "scripts": {
+    "dev": "vite build --watch",
     "build": "vite build",
     "preview": "vite preview"
   },
