@@ -5,22 +5,22 @@
 // Read more: https://github.com/vuejs/core/pull/3399
 export {}
 
-declare module "vue" {
+declare module 'vue' {
   export interface GlobalComponents {
-    AAvatar: (typeof import("@arco-design/web-vue"))["Avatar"];
-    ABadge: (typeof import("@arco-design/web-vue"))["Badge"];
-    AButton: (typeof import("@arco-design/web-vue"))["Button"];
-    ACard: (typeof import("@arco-design/web-vue"))["Card"];
-    ACollapse: (typeof import("@arco-design/web-vue"))["Collapse"];
-    ACollapseItem: (typeof import("@arco-design/web-vue"))["CollapseItem"];
-    ADivider: (typeof import("@arco-design/web-vue"))["Divider"];
-    APopover: (typeof import("@arco-design/web-vue"))["Popover"];
-    ASpin: (typeof import("@arco-design/web-vue"))["Spin"];
-    ASplit: (typeof import("@arco-design/web-vue"))["Split"];
-    ASwitch: (typeof import("@arco-design/web-vue"))["Switch"];
-    ATag: (typeof import("@arco-design/web-vue"))["Tag"];
-    ATextarea: (typeof import("@arco-design/web-vue"))["Textarea"];
-    ATooltip: (typeof import("@arco-design/web-vue"))["Tooltip"];
-    MarkdownTestToolbar: (typeof import("./src/components/MarkdownTestToolbar.vue"))["default"];
+    AAvatar: (typeof import("@arco-design/web-vue"))["Avatar"]
+    ABadge: typeof import('@arco-design/web-vue')['Badge']
+    AButton: typeof import('@arco-design/web-vue')['Button']
+    ACard: (typeof import("@arco-design/web-vue"))["Card"]
+    ACollapse: (typeof import("@arco-design/web-vue"))["Collapse"]
+    ACollapseItem: (typeof import("@arco-design/web-vue"))["CollapseItem"]
+    ADivider: typeof import('@arco-design/web-vue')['Divider']
+    APopover: typeof import('@arco-design/web-vue')['Popover']
+    ASpin: typeof import('@arco-design/web-vue')['Spin']
+    ASplit: typeof import('@arco-design/web-vue')['Split']
+    ASwitch: (typeof import("@arco-design/web-vue"))["Switch"]
+    ATag: typeof import('@arco-design/web-vue')['Tag']
+    ATextarea: typeof import('@arco-design/web-vue')['Textarea']
+    ATooltip: typeof import('@arco-design/web-vue')['Tooltip']
+    MarkdownTestToolbar: typeof import('./src/components/MarkdownTestToolbar.vue')['default']
   }
 }
