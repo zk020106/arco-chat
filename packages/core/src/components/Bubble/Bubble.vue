@@ -146,15 +146,14 @@ const contentStyles = computed(() => {
       styles.width = '100%'
       styles.maxWidth = '100%'
     } else {
-      console.log('Text content, using fit-content')
       // 普通文本内容，使用 fit-content 保持紧凑
       styles.width = 'fit-content'
       styles.maxWidth = '100%'
-      styles.minWidth = '120px'
+      // styles.minWidth = '120px'
     }
   } else {
     styles.maxWidth = props.maxWidth
-    styles.minWidth = '120px'
+    // styles.minWidth = '120px'
   }
   
   return styles

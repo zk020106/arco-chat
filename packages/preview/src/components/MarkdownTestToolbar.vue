@@ -2,10 +2,22 @@
   <div class="markdown-test-toolbar">
     <div class="toolbar-title">
       <icon-code class="toolbar-icon" />
-      <span>Markdown 测试工具</span>
-      <a-tag size="small" color="blue">开发模式</a-tag>
+      <span class="title-text">Markdown 测试工具</span>
+      <a-tag size="small" color="blue" class="dev-tag">开发模式</a-tag>
     </div>
     <div class="test-buttons">
+      <a-tooltip :content="localTypewriterEnabled ? '关闭打字机效果' : '开启打字机效果'">
+        <a-button
+          size="small"
+          :type="localTypewriterEnabled ? 'primary' : 'outline'"
+          @click="toggleTypewriter"
+          class="typewriter-btn"
+        >
+          <template #icon>
+            <icon-edit />
+          </template>
+        </a-button>
+      </a-tooltip>
       <a-tooltip content="基础 Markdown 语法">
         <a-button size="small" @click="testBasicMarkdown">
           <template #icon>
@@ -76,7 +88,9 @@
 </template>
   
   <script setup lang="ts">
+  import { ref } from 'vue'
   import { Message } from '@arco-design/web-vue'
+  import { IconCode, IconFile, IconList, IconBranch, IconNav, IconSun, IconApps, IconDelete, IconEdit } from '@arco-design/web-vue/es/icon'
   import type { BubbleMessage } from 'arco-design-x'
   
 // 定义 emits
@@ -86,15 +100,45 @@ interface Emits {
 }
 
 const emit = defineEmits<Emits>()
+
+// 本地打字机状态
+const localTypewriterEnabled = ref(true)
+
+// 切换打字机状态
+const toggleTypewriter = () => {
+  localTypewriterEnabled.value = !localTypewriterEnabled.value
+  Message.success(localTypewriterEnabled.value ? '已开启打字机效果' : '已关闭打字机效果')
+}
   
   // 生成唯一 ID
   const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9)
   
+  // 创建基础消息对象
+  const createBaseMessage = (content: string): BubbleMessage => ({
+    id: generateId(),
+    content,
+    userId: 'assistant',
+    userName: 'AI 助手',
+    align: 'start',
+    timestamp: Date.now(),
+    markdown: true,
+    typewriter: localTypewriterEnabled.value,
+    typewriterConfig: localTypewriterEnabled.value ? {
+      speed: 50,
+      showCursor: true,
+      cursorStyle: '|',
+      cursorBlinkSpeed: 530,
+      autoStart: true,
+      delayAfterComplete: 0,
+    } : undefined,
+    avatarConfig: {
+      imageUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
+    },
+  })
+  
   // 测试基础 Markdown
   const testBasicMarkdown = () => {
-    const message: BubbleMessage = {
-      id: generateId(),
-      content: `# 基础 Markdown 测试
+    const message = createBaseMessage(`# 基础 Markdown 测试
   
 这是一个 **粗体文本** 和 *斜体文本* 的测试。
 
@@ -122,16 +166,7 @@ const emit = defineEmits<Emits>()
 
 ## 行内代码
 
-这里有一个 \`console.log('Hello World')\` 的示例。`,
-      userId: 'assistant',
-      userName: 'AI 助手',
-      align: 'start',
-      timestamp: Date.now(),
-      markdown: true,
-      avatarConfig: {
-        imageUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
-      },
-    }
+这里有一个 \`console.log('Hello World')\` 的示例。`)
   
     emit('add-message', message)
     Message.success('已添加基础 Markdown 测试消息')
@@ -139,23 +174,12 @@ const emit = defineEmits<Emits>()
   
   // 测试代码块
   const testCodeBlock = () => {
-    const message: BubbleMessage = {
-      id: generateId(),
-      content: `\`\`\`javascript
+    const message = createBaseMessage(`\`\`\`javascript
 function padEnd(string, length, chars) {
   const strLength = length ? stringSize(string) : 0
   return (length && strLength < length) ? (string + createPadding(length - strLength, chars)) : (string || '')
 }
-\`\`\``,
-      userId: 'assistant',
-      userName: 'AI 助手',
-      align: 'start',
-      timestamp: Date.now(),
-      markdown: true,
-      avatarConfig: {
-        imageUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
-      },
-    }
+\`\`\``)
   
     emit('add-message', message)
     Message.success('已添加代码块测试消息')
@@ -458,10 +482,19 @@ const clearAllMessages = () => {
     font-size: 13px;
     color: var(--color-text-2);
     font-weight: 600;
+    flex-shrink: 0;
 
     .toolbar-icon {
       font-size: 16px;
       color: var(--color-primary-6);
+    }
+
+    .title-text {
+      white-space: nowrap;
+    }
+
+    .dev-tag {
+      flex-shrink: 0;
     }
   }
 
@@ -469,6 +502,8 @@ const clearAllMessages = () => {
     display: flex;
     gap: 6px;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 
     .arco-btn {
       width: 32px;
@@ -476,6 +511,7 @@ const clearAllMessages = () => {
       padding: 0;
       border-radius: 8px;
       transition: all 0.2s ease;
+      flex-shrink: 0;
 
       &:hover {
         transform: translateY(-1px);
@@ -489,6 +525,85 @@ const clearAllMessages = () => {
 
     .arco-divider {
       margin: 0 4px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .markdown-test-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 16px;
+
+    .toolbar-title {
+      justify-content: center;
+      font-size: 12px;
+
+      .title-text {
+        display: none; // 在移动端隐藏标题文字
+      }
+
+      .dev-tag {
+        font-size: 10px;
+      }
+    }
+
+    .typewriter-control {
+      justify-content: center;
+
+      .typewriter-btn {
+        font-size: 10px;
+        min-width: 60px;
+        
+        .arco-icon {
+          font-size: 11px;
+        }
+      }
+    }
+
+    .test-buttons {
+      justify-content: center;
+      gap: 4px;
+
+      .arco-btn {
+        width: 28px;
+        height: 28px;
+
+        .arco-icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .markdown-test-toolbar {
+    padding: 8px 12px;
+    gap: 8px;
+
+    .toolbar-title {
+      font-size: 11px;
+
+      .toolbar-icon {
+        font-size: 14px;
+      }
+    }
+
+    .test-buttons {
+      gap: 3px;
+
+      .arco-btn {
+        width: 26px;
+        height: 26px;
+
+        .arco-icon {
+          font-size: 12px;
+        }
+      }
     }
   }
 }

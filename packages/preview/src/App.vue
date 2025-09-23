@@ -83,13 +83,7 @@
               </span>
             </div>
           </div>
-          <div class="header-right">
-            <a-button type="text" @click="handleSettings">
-              <template #icon>
-                <icon-settings />
-              </template>
-            </a-button>
-          </div>
+          
         </div>
       </template>
       
@@ -146,8 +140,9 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { 
   Layout, 
   BubbleList, 
-  Input
+  Input,
 } from 'arco-design-x'
+import { IconMenu, IconDelete, IconPlus } from '@arco-design/web-vue/es/icon'
 import type { BubbleMessage } from 'arco-design-x'
 import MarkdownTestToolbar from './components/MarkdownTestToolbar.vue'
 
@@ -157,6 +152,9 @@ const asideCollapsed = ref(false)
 const headerHeight = ref('8vh')
 const contentHeight = ref('70vh')
 const senderHeight = ref('22vh')
+
+// 打字机效果开关
+const typewriterEnabled = ref(true)
 
 // 数据状态
 const conversations = ref([
@@ -186,7 +184,6 @@ const conversations = ref([
 const currentConversationId = ref('1')
 const loading = ref(false)
 const inputValue = ref('')
-const layoutRef = ref()
 
 // 模拟消息数据
 const messagesData = ref<Record<string, BubbleMessage[]>>({
@@ -351,9 +348,26 @@ const handleSendMessage = async (content: string) => {
   // 模拟AI回复
   loading.value = true
   setTimeout(() => {
+    // 深度思考内容示例
+    const deepThoughtContent = `这是一个深度思考的示例内容：
+    
+**问题分析**：
+- 用户询问了关于 "${messageContent.trim()}" 的问题
+- 这个问题涉及多个层面的思考
+
+**解决思路**：
+1. 首先需要理解问题的核心要点
+2. 然后分析可能的解决方案
+3. 最后给出最优建议
+
+**结论**：
+通过以上分析，我们可以得出一个全面且深入的解答。`;
+    
     const aiMessage: BubbleMessage = {
       id: `ai-${Date.now()}`,
-      content: `我收到了你的消息："${messageContent.trim()}"。这是一个模拟的AI回复，展示了聊天界面的各种功能。`,
+      content: typewriterEnabled.value 
+        ? `我收到了你的消息："${messageContent.trim()}"。这是一个模拟的AI回复，展示了聊天界面的各种功能。\n\n${deepThoughtContent}` 
+        : `我收到了你的消息："${messageContent.trim()}"。这是一个模拟的AI回复，展示了聊天界面的各种功能。`,
       align: 'start',
       variant: 'filled',
       timestamp: Date.now(),
@@ -361,10 +375,11 @@ const handleSendMessage = async (content: string) => {
         imageUrl: 'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp',
         displayName: 'AI助手'
       },
-      typewriter: true,
+      typewriter: typewriterEnabled.value,
       typewriterConfig: {
         speed: 50
-      }
+      },
+      markdown: typewriterEnabled.value
     }
     
     messagesData.value[currentConversationId.value].push(aiMessage)
@@ -411,9 +426,7 @@ const handleClearAllMessages = () => {
   }
 }
 
-const handleSettings = () => {
-  console.log('打开设置')
-}
+
 
 const formatTime = (timestamp: Date) => {
   const now = new Date()
@@ -592,6 +605,10 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     gap: 8px;
+    
+    .typewriter-switch {
+      margin-right: 8px;
+    }
   }
 }
 
@@ -624,6 +641,7 @@ onUnmounted(() => {
 .input-container {
   .chat-input {
     width: 100%;
+    margin-bottom: 10px;
   }
 }
 
@@ -658,5 +676,23 @@ onUnmounted(() => {
     }
   }
 
+  // 输入区移动端优化
+  .input-container {
+    padding: 0 8px;
+    
+    .chat-input {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .input-container {
+    padding: 0 4px;
+    
+    .chat-input {
+      margin-bottom: 6px;
+    }
+  }
 }
 </style>

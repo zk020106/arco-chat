@@ -17,6 +17,7 @@ declare module 'vue' {
     APopover: typeof import('@arco-design/web-vue')['Popover']
     ASpin: typeof import('@arco-design/web-vue')['Spin']
     ASplit: typeof import('@arco-design/web-vue')['Split']
+    ASwitch: typeof import('@arco-design/web-vue')['Switch']
     ATag: typeof import('@arco-design/web-vue')['Tag']
     ATextarea: typeof import('@arco-design/web-vue')['Textarea']
     ATooltip: typeof import('@arco-design/web-vue')['Tooltip']

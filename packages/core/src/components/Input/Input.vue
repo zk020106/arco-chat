@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineExpose } from 'vue'
+import { computed } from 'vue'
 import IconClose from '@arco-design/web-vue/es/icon/icon-close'
 import IconSend from '@arco-design/web-vue/es/icon/icon-send'
 import VoiceInput from './components/VoiceInput.vue'
