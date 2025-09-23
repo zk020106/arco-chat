@@ -412,7 +412,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@use "./markdown-render.scss";
+@use "./markdown-render.scss" as *;
 .ac-markdown-renderer {
   .ac-markdown-content {
     width: 100%;

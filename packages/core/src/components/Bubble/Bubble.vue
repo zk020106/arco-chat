@@ -261,7 +261,9 @@ onMounted(() => {
       background-color: var(--color-danger-1, #ffece8);
     }
   }
-
+  .ac-bubble-content {
+    color: var(--color-text-2);
+  }
   &.ac-bubble-clickable {
     cursor: pointer;
     transition: all 0.2s ease;

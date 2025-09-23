@@ -12,6 +12,9 @@
   background-color: var(--color-bg-1);
   /* 主文本色 */
 }
+.ac-markdown-renderer p{
+  color: var(--color-text-2);
+}
 
 /* 标题样式 */
 .ac-markdown-content :deep(h1),
