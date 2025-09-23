@@ -1,5 +1,8 @@
-import "./style.css";
 import "@arco-design/web-vue/dist/arco.css";
+// 导入组件样式
+import "./components/Bubble/bubble.scss";
+
+// 导出组件
 export { Bubble, BubbleList } from "./components/Bubble";
 export { Typewriter } from "./components/Typewriter";
 export { Input } from "./components/Input";

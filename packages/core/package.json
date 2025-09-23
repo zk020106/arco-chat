@@ -1,15 +1,17 @@
 {
   "name": "arco-design-x",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "author": "mochou",
   "license": "MIT",
-  "main": "dist/index.mjs",
-  "module": "dist/index.mjs",
+  "main": "dist/arco-chat.es.js",
+  "module": "dist/arco-chat.es.js",
   "types": "dist/types/index.d.ts",
+  "style": "dist/style.css",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs"
-    }
+      "import": "./dist/arco-chat.es.js"
+    },
+    "./style.css": "./dist/style.css"
   },
   "files": [
     "dist"

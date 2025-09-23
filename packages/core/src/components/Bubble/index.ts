@@ -1,6 +1,7 @@
 import type { App } from "vue";
 import Bubble from "./Bubble.vue";
 import BubbleList from "./BubbleList.vue";
+import "./bubble.scss";
 
 Bubble.install = (app: App) => {
   app.component("Bubble", Bubble);

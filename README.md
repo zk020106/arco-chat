@@ -33,6 +33,25 @@ npm install arco-design-x
 yarn add arco-design-x
 ```
 
+### 样式导入
+
+组件库支持多种样式导入方式：
+
+```javascript
+// 方式1：自动导入（推荐）
+import { Bubble, BubbleList } from "arco-design-x";
+// 样式会自动包含在组件中
+
+// 方式2：手动导入全局样式
+import { Bubble, BubbleList } from "arco-design-x";
+import "arco-design-x/styles";
+
+// 方式3：在 HTML 中引入
+<link rel="stylesheet" href="node_modules/arco-design-x/dist/styles/index.css">
+```
+
+**注意：** 如果你使用方式1（自动导入），样式会自动包含。如果你使用方式2或3，需要确保在组件导入之前先导入样式。
+
 ## 🚀 快速开始
 
 ### 基础用法

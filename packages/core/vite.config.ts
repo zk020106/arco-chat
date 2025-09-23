@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import * as path from "node:path";
 import dtsPlugin from "vite-plugin-dts";
 import AutoImport from "unplugin-auto-import/vite";
@@ -19,9 +18,10 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
       name: "ArcoChatCore",
-      fileName: "index",
+      fileName: (format) => `arco-chat.${format}.js`,
       formats: ["es"],
     },
+    cssCodeSplit: true, // ✅ 关键：独立输出 CSS
     rollupOptions: {
       external: [
         "vue",
@@ -47,6 +47,12 @@ export default defineConfig({
           "highlight.js": "hljs",
           xss: "XSS",
         },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'style.css'; // 统一输出为 style.css
+          }
+          return assetInfo.name || 'assets/[name].[ext]';
+        },
       },
     },
     outDir: "dist",
@@ -71,13 +77,12 @@ export default defineConfig({
         }),
       ],
     }),
-    dtsPlugin({
-      tsconfigPath: "./tsconfig.build.json",
-      insertTypesEntry: true,
-      outDir: "dist/types", // 输出目录统一
-      rollupTypes: false, // 不在入口目录生成文件
-      include: ["src/**/*.ts", "src/**/*.vue"],
-    }),
-    cssInjectedByJsPlugin(),
+           dtsPlugin({
+             tsconfigPath: "./tsconfig.build.json",
+             insertTypesEntry: true,
+             outDir: "dist/types", // 输出目录统一
+             rollupTypes: false, // 不在入口目录生成文件
+             include: ["src/**/*.ts", "src/**/*.vue"],
+           }),
   ],
 });
