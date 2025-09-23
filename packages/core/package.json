@@ -1,36 +1,32 @@
 {
   "name": "arco-design-x",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "author": "mochou",
   "license": "MIT",
-
   "main": "dist/arco-chat.cjs.js",
   "module": "dist/arco-chat.es.js",
   "types": "dist/types/index.d.ts",
-
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/arco-design-x.es.js",
-      "require": "./dist/arco-design-x.cjs.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/arco-design-x.cjs.js"
     },
     "./style": {
+      "types": "./dist/types/style.d.ts",
       "import": "./dist/style.js",
       "require": "./dist/style.cjs.js"
     },
     "./style.css": "./dist/style.css"
   },
-
   "files": [
     "dist"
   ],
-
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
     "preview": "vite preview"
   },
-
   "packageManager": "pnpm@10.13.1",
   "dependencies": {
     "@arco-design/web-vue": "^2.57.0",
