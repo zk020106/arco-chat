@@ -286,6 +286,7 @@ onMounted(() => {
     .ac-bubble-markdown {
       width: 100%;
       min-width: 100%;
+      padding: auto;
     }
   }
   .loading-container {
@@ -353,6 +354,7 @@ onMounted(() => {
     .ac-bubble-markdown {
       width: 100% !important;
       max-width: 100% !important;
+      padding: auto;
     }
     
     // 变体样式 - 使用Arco默认颜色
@@ -423,14 +425,14 @@ onMounted(() => {
       
       // 代码块特殊处理 - 确保代码块铺满容器
       :deep(.code-block) {
-        width: calc(100% + 32px) !important;
-        // max-width: calc(100% + 32px) !important;
-        margin-left: -16px !important;
-        margin-right: -16px !important;
-        margin-top: 8px !important;
-        margin-bottom: 8px !important;
-        border-radius: 8px;
-        overflow: hidden;
+        // width: calc(100% + 32px) !important;
+        // // max-width: calc(100% + 32px) !important;
+        // margin-left: -16px !important;
+        // margin-right: -16px !important;
+        // margin-top: 8px !important;
+        // margin-bottom: 8px !important;
+        // border-radius: 8px;
+        // overflow: hidden;
       }
       
       :deep(pre) {
