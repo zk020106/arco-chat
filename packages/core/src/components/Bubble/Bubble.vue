@@ -146,20 +146,24 @@ const contentStyles = computed(() => {
     const hasTable = props.content.includes("|");
     const hasList =
       props.content.includes("- ") || props.content.includes("* ");
+    const contentLength = props.content.length;
 
     if (hasMarkdown || hasCode || hasTable || hasList) {
       // Markdown 内容（表格、代码块、列表等）完全展开
       styles.width = "100%";
       styles.maxWidth = "100%";
+    } else if (contentLength < 20) {
+      // 短消息，使用 fit-content 保持紧凑
+      styles.width = "fit-content";
+      styles.maxWidth = "fit-content";
+      styles.minWidth = "auto";
     } else {
-      // 普通文本内容，使用 fit-content 保持紧凑
+      // 普通文本内容，使用 fit-content 但限制最大宽度
       styles.width = "fit-content";
       styles.maxWidth = "100%";
-      // styles.minWidth = '120px'
     }
   } else {
     styles.maxWidth = props.maxWidth;
-    // styles.minWidth = '120px'
   }
 
   return styles;
@@ -244,7 +248,7 @@ onMounted(() => {
     margin-right: auto !important;
     justify-content: flex-start;
     width: auto !important;
-    max-width: calc(100% - 20px); /* 限制最大宽度，留出边距 */
+    max-width: 85%; /* 使用百分比，给短消息更多空间 */
     min-width: 0; /* 允许收缩 */
   }
   &.ac-bubble-end {
@@ -252,7 +256,7 @@ onMounted(() => {
     margin-left: auto !important;
     justify-content: flex-end;
     width: auto !important;
-    max-width: calc(100% - 20px); /* 限制最大宽度，留出边距 */
+    max-width: 85%; /* 使用百分比，给短消息更多空间 */
     min-width: 0; /* 允许收缩 */
   }
 
@@ -494,7 +498,7 @@ onMounted(() => {
 
     &.ac-bubble-start,
     &.ac-bubble-end {
-      max-width: calc(100% - 16px); // 减少最大宽度，留出更多边距
+      max-width: 80%; // 使用百分比，给短消息更多空间
     }
 
     .ac-bubble-avatar {
@@ -535,7 +539,7 @@ onMounted(() => {
 
     &.ac-bubble-start,
     &.ac-bubble-end {
-      max-width: calc(100% - 12px); // 进一步减少最大宽度
+      max-width: 75%; // 使用百分比，给短消息更多空间
     }
 
     .ac-bubble-avatar {
@@ -575,7 +579,7 @@ onMounted(() => {
 
     &.ac-bubble-start,
     &.ac-bubble-end {
-      max-width: calc(100% - 8px); // 最小最大宽度
+      max-width: 70%; // 使用百分比，给短消息更多空间
     }
 
     .ac-bubble-avatar {
