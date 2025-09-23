@@ -146,21 +146,16 @@ const contentStyles = computed(() => {
     const hasTable = props.content.includes("|");
     const hasList =
       props.content.includes("- ") || props.content.includes("* ");
-    const contentLength = props.content.length;
 
     if (hasMarkdown || hasCode || hasTable || hasList) {
       // Markdown 内容（表格、代码块、列表等）完全展开
       styles.width = "100%";
       styles.maxWidth = "100%";
-    } else if (contentLength < 20) {
-      // 短消息，使用 fit-content 保持紧凑
-      styles.width = "fit-content";
-      styles.maxWidth = "fit-content";
-      styles.minWidth = "auto";
     } else {
-      // 普通文本内容，使用 fit-content 但限制最大宽度
+      // 所有文本内容都使用 fit-content，让内容自然显示
       styles.width = "fit-content";
-      styles.maxWidth = "100%";
+      styles.maxWidth = "none";
+      styles.minWidth = "auto";
     }
   } else {
     styles.maxWidth = props.maxWidth;
@@ -248,7 +243,7 @@ onMounted(() => {
     margin-right: auto !important;
     justify-content: flex-start;
     width: auto !important;
-    max-width: 85%; /* 使用百分比，给短消息更多空间 */
+    max-width: none; /* 不限制最大宽度 */
     min-width: 0; /* 允许收缩 */
   }
   &.ac-bubble-end {
@@ -256,7 +251,7 @@ onMounted(() => {
     margin-left: auto !important;
     justify-content: flex-end;
     width: auto !important;
-    max-width: 85%; /* 使用百分比，给短消息更多空间 */
+    max-width: none; /* 不限制最大宽度 */
     min-width: 0; /* 允许收缩 */
   }
 
@@ -292,7 +287,7 @@ onMounted(() => {
     min-width: 0; // 允许内容收缩
     display: flex;
     flex-direction: column;
-    max-width: calc(100% - 50px); // 确保内容不会挤压头像
+    max-width: none; // 不限制最大宽度，让内容自然展开
 
     // 对于 Markdown 内容，允许完全展开
     .ac-bubble-markdown {
@@ -498,7 +493,7 @@ onMounted(() => {
 
     &.ac-bubble-start,
     &.ac-bubble-end {
-      max-width: 80%; // 使用百分比，给短消息更多空间
+      max-width: none; // 不限制最大宽度
     }
 
     .ac-bubble-avatar {
@@ -508,7 +503,7 @@ onMounted(() => {
     }
 
     .ac-bubble-content-container {
-      max-width: calc(100% - 44px); // 调整内容最大宽度
+      max-width: none; // 不限制内容最大宽度
     }
 
     .ac-bubble-content {
@@ -539,7 +534,7 @@ onMounted(() => {
 
     &.ac-bubble-start,
     &.ac-bubble-end {
-      max-width: 75%; // 使用百分比，给短消息更多空间
+      max-width: none; // 不限制最大宽度
     }
 
     .ac-bubble-avatar {
@@ -547,7 +542,7 @@ onMounted(() => {
     }
 
     .ac-bubble-content-container {
-      max-width: calc(100% - 38px); // 调整内容最大宽度
+      max-width: none; // 不限制内容最大宽度
     }
 
     .ac-bubble-content {
@@ -579,7 +574,7 @@ onMounted(() => {
 
     &.ac-bubble-start,
     &.ac-bubble-end {
-      max-width: 70%; // 使用百分比，给短消息更多空间
+      max-width: none; // 不限制最大宽度
     }
 
     .ac-bubble-avatar {
@@ -587,7 +582,7 @@ onMounted(() => {
     }
 
     .ac-bubble-content-container {
-      max-width: calc(100% - 32px); // 最小内容最大宽度
+      max-width: none; // 不限制内容最大宽度
     }
 
     .ac-bubble-content {
