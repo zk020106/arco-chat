@@ -423,18 +423,6 @@ onMounted(() => {
       line-height: 1.6;
       width: 100%;
       
-      // 代码块特殊处理 - 确保代码块铺满容器
-      :deep(.code-block) {
-        // width: calc(100% + 32px) !important;
-        // // max-width: calc(100% + 32px) !important;
-        // margin-left: -16px !important;
-        // margin-right: -16px !important;
-        // margin-top: 8px !important;
-        // margin-bottom: 8px !important;
-        // border-radius: 8px;
-        // overflow: hidden;
-      }
-      
       :deep(pre) {
         overflow-x: auto;
         white-space: pre-wrap;
