@@ -1,5 +1,5 @@
-import '@arco-design/web-vue/dist/arco.css'
 import './style.css'
+import '@arco-design/web-vue/dist/arco.css'
 export { Bubble, BubbleList } from './components/Bubble'
 export { Typewriter } from './components/Typewriter'
 export { Input } from './components/Input'

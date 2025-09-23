@@ -1,97 +1,76 @@
 <template>
-  <div class="code-block">
-    <!-- 工具栏 -->
-    <div class="code-toolbar">
-      <div class="lang-tag">
-        {{ language.toUpperCase() }}
-      </div>
-      <div class="actions">
-        <a-tooltip content="折叠/展开">
-          <a-button
-            size="mini"
-            type="text"
-            @click="toggleFold"
-            class="action-btn"
-          >
-            <icon-down v-if="folded" />
-            <icon-up v-else />
-          </a-button>
-        </a-tooltip>
-        <a-tooltip :content="copied ? '已复制' : '复制代码'">
-          <a-button
-            size="mini"
-            type="text"
-            @click="copyCode"
-            class="action-btn"
-            :class="{ 'copy-success': copied }"
-          >
-            <icon-copy v-if="!copied" />
-            <icon-check v-else />
-          </a-button>
-        </a-tooltip>
-      </div>
-    </div>
-
-    <!-- 代码区 -->
-    <div
-      v-show="!folded"
-      ref="codeContainer"
-      class="code-container"
-    >
-      <pre><code :class="`language-${language}`" ref="codeEl">{{ code }}</code></pre>
+<div class="code-block">
+  <!-- 工具栏 -->
+  <div class="code-toolbar">
+    <div class="lang-tag">{{ props.language.toUpperCase() }}</div>
+    <div class="actions">
+      <a-tooltip content="折叠/展开">
+        <a-button size="mini" type="text" @click="toggleFold" class="action-btn">
+          <icon-down v-if="folded" />
+          <icon-up v-else />
+        </a-button>
+      </a-tooltip>
+      <a-tooltip :content="copied ? '已复制' : '复制代码'">
+        <a-button size="mini" type="text" @click="copyCode" class="action-btn" :class="{ 'copy-success': copied }">
+          <icon-copy v-if="!copied" />
+          <icon-check v-else />
+        </a-button>
+      </a-tooltip>
     </div>
   </div>
+
+  <!-- 代码区 -->
+  <div v-show="!folded" class="code-container">
+    <pre><code ref="codeEl" v-html="displayedHTML"></code></pre>
+  </div>
+</div>
+
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
-import hljs from "highlight.js";
-import "highlight.js/styles/github.css"; // 你可以换成自己喜欢的主题
-import { Message } from "@arco-design/web-vue";
-import { IconDown, IconUp, IconCopy, IconCheck } from "@arco-design/web-vue/es/icon";
+import { ref, computed } from 'vue'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css'
+import { Message } from '@arco-design/web-vue'
+import { IconDown, IconUp, IconCopy, IconCheck } from '@arco-design/web-vue/es/icon'
 
 interface Props {
-  code: string;
-  language?: string;
+  code: string
+  language?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  language: "javascript"
-});
+  language: 'javascript'
+})
 
-const codeEl = ref<HTMLElement | null>(null);
-const codeContainer = ref<HTMLElement | null>(null);
+const codeEl = ref<HTMLElement | null>(null)
+const folded = ref(false)
+const copied = ref(false)
 
-const folded = ref(false);
-const copied = ref(false);
-
-const highlight = () => {
-  if (codeEl.value) {
-    hljs.highlightElement(codeEl.value);
-  }
-};
-
-const toggleFold = () => {
-  folded.value = !folded.value;
-};
+const toggleFold = () => folded.value = !folded.value
 
 const copyCode = async () => {
   try {
-    await navigator.clipboard.writeText(String(props.code));
-    copied.value = true;
-    Message.success("复制成功");
-    setTimeout(() => (copied.value = false), 1500);
+    await navigator.clipboard.writeText(props.code)
+    copied.value = true
+    Message.success('复制成功')
+    setTimeout(() => (copied.value = false), 1500)
   } catch (err) {
-    Message.error("复制失败");
+    Message.error('复制失败')
   }
-};
+}
 
-onMounted(highlight);
+// 生成高亮 HTML
+const getHighlightedHTML = () => {
+  return hljs.highlight(props.code, { language: props.language }).value
+}
 
-watch(() => props.code, highlight);
+// 计算属性：直接显示高亮后的HTML
+const displayedHTML = computed(() => getHighlightedHTML())
 </script>
 
-<style scoped lang="scss">
+
+<style lang="scss">
 .code-block {
   margin: 16px 0;
   border-radius: 4px;
@@ -159,6 +138,20 @@ watch(() => props.code, highlight);
     overflow-x: auto;
     white-space: pre;
     word-wrap: normal;
+    
+    /* 基本样式 */
+    code {
+      font-family: Monaco, Consolas, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    
+    /* highlight.js 样式 */
+    .hljs {
+      background: transparent;
+      padding: 0;
+      margin: 0;
+    }
 
     &::-webkit-scrollbar {
       height: 6px;
