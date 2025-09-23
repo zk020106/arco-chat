@@ -244,14 +244,16 @@ onMounted(() => {
     margin-right: auto !important;
     justify-content: flex-start;
     width: auto !important;
-    max-width: 100%; /* 限制最大宽度，确保换行 */
+    max-width: calc(100% - 20px); /* 限制最大宽度，留出边距 */
+    min-width: 0; /* 允许收缩 */
   }
   &.ac-bubble-end {
     flex-direction: row-reverse;
     margin-left: auto !important;
     justify-content: flex-end;
     width: auto !important;
-    max-width: 100%; /* 限制最大宽度，确保换行 */
+    max-width: calc(100% - 20px); /* 限制最大宽度，留出边距 */
+    min-width: 0; /* 允许收缩 */
   }
 
   &.ac-bubble-failed {
@@ -286,6 +288,7 @@ onMounted(() => {
     min-width: 0; // 允许内容收缩
     display: flex;
     flex-direction: column;
+    max-width: calc(100% - 50px); // 确保内容不会挤压头像
 
     // 对于 Markdown 内容，允许完全展开
     .ac-bubble-markdown {
@@ -487,6 +490,22 @@ onMounted(() => {
 @media (max-width: 768px) {
   .ac-bubble {
     gap: 6px;
+    padding: 0 8px; // 添加左右边距，防止头像超出屏幕
+
+    &.ac-bubble-start,
+    &.ac-bubble-end {
+      max-width: calc(100% - 16px); // 减少最大宽度，留出更多边距
+    }
+
+    .ac-bubble-avatar {
+      flex-shrink: 0;
+      // 确保头像在移动端不会超出屏幕
+      max-width: 36px;
+    }
+
+    .ac-bubble-content-container {
+      max-width: calc(100% - 44px); // 调整内容最大宽度
+    }
 
     .ac-bubble-content {
       font-size: 14px;
@@ -512,6 +531,21 @@ onMounted(() => {
 
 @media (max-width: 600px) {
   .ac-bubble {
+    padding: 0 6px; // 进一步减少边距
+
+    &.ac-bubble-start,
+    &.ac-bubble-end {
+      max-width: calc(100% - 12px); // 进一步减少最大宽度
+    }
+
+    .ac-bubble-avatar {
+      max-width: 32px; // 减小头像尺寸
+    }
+
+    .ac-bubble-content-container {
+      max-width: calc(100% - 38px); // 调整内容最大宽度
+    }
+
     .ac-bubble-content {
       font-size: 15px;
 
@@ -537,6 +571,20 @@ onMounted(() => {
 @media (max-width: 480px) {
   .ac-bubble {
     gap: 4px;
+    padding: 0 4px; // 最小边距
+
+    &.ac-bubble-start,
+    &.ac-bubble-end {
+      max-width: calc(100% - 8px); // 最小最大宽度
+    }
+
+    .ac-bubble-avatar {
+      max-width: 28px; // 最小头像尺寸
+    }
+
+    .ac-bubble-content-container {
+      max-width: calc(100% - 32px); // 最小内容最大宽度
+    }
 
     .ac-bubble-content {
       font-size: 14px;

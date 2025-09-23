@@ -510,6 +510,7 @@ onUnmounted(() => {
     width: 100%;
     padding: 16px;
     align-items: flex-start; /* 允许子元素控制自己的对齐 */
+    box-sizing: border-box; /* 确保 padding 包含在宽度内 */
   }
 
   .ac-bubble-list-virtual {
@@ -690,7 +691,7 @@ onUnmounted(() => {
     }
 
     .ac-bubble-list-messages {
-      padding: 12px;
+      padding: 12px 8px; // 减少左右边距，但保持上下边距
       gap: 10px;
     }
   }
@@ -704,7 +705,7 @@ onUnmounted(() => {
     }
 
     .ac-bubble-list-messages {
-      padding: 8px;
+      padding: 8px 6px; // 进一步减少左右边距
       gap: 10px;
     }
 
@@ -728,7 +729,7 @@ onUnmounted(() => {
     }
 
     .ac-bubble-list-messages {
-      padding: 6px;
+      padding: 6px 4px; // 最小边距
       gap: 10px;
     }
 
