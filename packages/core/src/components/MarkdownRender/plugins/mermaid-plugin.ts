@@ -81,7 +81,7 @@ export const mermaidPlugin: PluginSimple = (md, options: MermaidPluginOptions = 
 export async function processMermaidDiagrams(container: HTMLElement): Promise<void> {
   // 现在 MermaidBlock 组件会自己处理渲染
   // 这个函数保留是为了兼容性，但实际不需要做任何事情
-  console.log('Mermaid diagrams are now handled by MermaidBlock components')
+  // 移除 console.log 避免重复输出
 }
 
 export default mermaidPlugin

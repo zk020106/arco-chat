@@ -9,141 +9,133 @@
     >
       <!-- 侧边栏 -->
       <template #aside>
-        <Aside>
-          <div class="conversation-sidebar">
-            <!-- 新建对话按钮 -->
-            <div class="sidebar-header">
-              <a-button 
-                type="primary" 
-                long 
-                @click="handleNewConversation"
-                class="new-chat-btn"
-              >
-                <template #icon>
-                  <icon-plus />
-                </template>
-                新建对话
-              </a-button>
-            </div>
-            
-            <!-- 对话列表 -->
-            <div class="conversation-list">
-              <div
-                v-for="conversation in conversations"
-                :key="conversation.id"
-                :class="[
-                  'conversation-item',
-                  { 'active': conversation.id === currentConversationId }
-                ]"
-                @click="handleSelectConversation(conversation.id)"
-              >
-                <div class="conversation-content">
-                  <div class="conversation-title">{{ conversation.title }}</div>
-                  <div class="conversation-preview">{{ conversation.lastMessage || '暂无消息' }}</div>
-                  <div class="conversation-time">{{ formatTime(conversation.timestamp) }}</div>
-                </div>
-                <div class="conversation-actions">
-                  <a-button
-                    type="text"
-                    size="mini"
-                    @click.stop="handleDeleteConversation(conversation.id)"
-                    class="delete-btn"
-                  >
-                    <template #icon>
-                      <icon-delete />
-                    </template>
-                  </a-button>
-                  <a-badge 
-                    v-if="conversation.unread > 0" 
-                    :count="conversation.unread" 
-                    class="unread-badge"
-                  />
-                </div>
+        <div class="conversation-sidebar">
+          <!-- 新建对话按钮 -->
+          <div class="sidebar-header">
+            <a-button 
+              type="primary" 
+              long 
+              @click="handleNewConversation"
+              class="new-chat-btn"
+            >
+              <template #icon>
+                <icon-plus />
+              </template>
+              新建对话
+            </a-button>
+          </div>
+          
+          <!-- 对话列表 -->
+          <div class="conversation-list">
+            <div
+              v-for="conversation in conversations"
+              :key="conversation.id"
+              :class="[
+                'conversation-item',
+                { 'active': conversation.id === currentConversationId }
+              ]"
+              @click="handleSelectConversation(conversation.id)"
+            >
+              <div class="conversation-content">
+                <div class="conversation-title">{{ conversation.title }}</div>
+                <div class="conversation-preview">{{ conversation.lastMessage || '暂无消息' }}</div>
+                <div class="conversation-time">{{ formatTime(conversation.timestamp) }}</div>
+              </div>
+              <div class="conversation-actions">
+                <a-button
+                  type="text"
+                  size="mini"
+                  @click.stop="handleDeleteConversation(conversation.id)"
+                  class="delete-btn"
+                >
+                  <template #icon>
+                    <icon-delete />
+                  </template>
+                </a-button>
+                <a-badge 
+                  v-if="conversation.unread > 0" 
+                  :count="conversation.unread" 
+                  class="unread-badge"
+                />
               </div>
             </div>
           </div>
-        </Aside>
+        </div>
       </template>
       
       <!-- 头部 -->
       <template #header>
-        <Header>
-          <div class="chat-header">
-            <div class="header-left">
-              <a-button
-                type="text"
-                @click="toggleAside"
-                class="menu-btn mobile-only"
-              >
-                <template #icon>
-                  <icon-menu />
-                </template>
-              </a-button>
-              <div class="conversation-info">
-                <h3>{{ currentConversation?.title || '选择对话' }}</h3>
-                <span v-if="currentConversation" class="conversation-subtitle">
-                  {{ currentMessages.length }} 条消息
-                </span>
-              </div>
-            </div>
-            <div class="header-right">
-              <a-button type="text" @click="handleSettings">
-                <template #icon>
-                  <icon-settings />
-                </template>
-              </a-button>
+        <div class="chat-header">
+          <div class="header-left">
+            <a-button
+              type="text"
+              @click="toggleAside"
+              class="menu-btn mobile-only"
+            >
+              <template #icon>
+                <icon-menu />
+              </template>
+            </a-button>
+            <div class="conversation-info">
+              <h3>{{ currentConversation?.title || '选择对话' }}</h3>
+              <span v-if="currentConversation" class="conversation-subtitle">
+                {{ currentMessages.length }} 条消息
+              </span>
             </div>
           </div>
-        </Header>
+          <div class="header-right">
+            <a-button type="text" @click="handleSettings">
+              <template #icon>
+                <icon-settings />
+              </template>
+            </a-button>
+          </div>
+        </div>
       </template>
       
       <!-- 主内容区 -->
       <template #content>
-        <Content>
-          <div class="chat-content">
-            <BubbleList
-              :list="currentMessages"
-              :loading="loading"
-              :reverse="true"
-              :show-load-more="true"
-              :load-more-text="'加载更多消息'"
-              @load-more="handleLoadMore"
-              @message-click="handleMessageClick"
-            >
-              
-            </BubbleList>
+        <div class="chat-content">
+          <BubbleList
+            :list="currentMessages"
+            :loading="loading"
+            :reverse="false"
+            :show-load-more="true"
+            :load-more-text="'加载更多消息'"
+            @load-more="handleLoadMore"
+            @message-click="handleMessageClick"
+          >
             
-            <!-- 加载状态 -->
-            <div v-if="loading" class="loading-indicator">
-              <a-spin :size="16" />
-              <span>AI 正在思考中...</span>
-            </div>
+          </BubbleList>
+          
+          <!-- 加载状态 -->
+          <div v-if="loading" class="loading-indicator">
+            <a-spin :size="16" />
+            <span>AI 正在思考中...</span>
           </div>
-        </Content>
+        </div>
       </template>
       
       <!-- 输入区 -->
       <template #sender>
-        <Sender>
-          <!-- Markdown 测试工具栏 -->
-          <MarkdownTestToolbar 
-            @add-message="handleAddMessage" 
-            @clear-all="handleClearAllMessages" 
+        <!-- Markdown 测试工具栏 -->
+        <MarkdownTestToolbar 
+          @add-message="handleAddMessage" 
+          @clear-all="handleClearAllMessages" 
+        />
+        
+        <div class="input-container">
+          <Input
+            v-model="inputValue"
+            :disabled="loading"
+            :placeholder="loading ? 'AI 正在回复中...' : '输入消息，按 Enter 发送'"
+            :allow-speech="true"
+            :clearable="true"
+            @submit="handleSendMessage"
+            @voice-input="handleVoiceInput"
+            class="chat-input"
           />
-          
-          <div class="input-container">
-            <Input
-              v-model="inputValue"
-              :disabled="loading"
-              :placeholder="loading ? 'AI 正在回复中...' : '输入消息，按 Enter 发送'"
-              :allow-speech="true"
-              :clearable="true"
-              @submit="handleSendMessage"
-              @voice-input="handleVoiceInput"
-              class="chat-input"
-            />
-          </div>
-        </Sender>
+        </div>
       </template>
     </Layout>
   </div>
@@ -153,10 +145,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { 
   Layout, 
-  Aside, 
-  Header, 
-  Content, 
-  Sender, 
   BubbleList, 
   Input
 } from 'arco-design-x'
@@ -198,6 +186,7 @@ const conversations = ref([
 const currentConversationId = ref('1')
 const loading = ref(false)
 const inputValue = ref('')
+const layoutRef = ref()
 
 // 模拟消息数据
 const messagesData = ref<Record<string, BubbleMessage[]>>({
@@ -386,7 +375,7 @@ const handleSendMessage = async (content: string) => {
       conversation.lastMessage = aiMessage.content
       conversation.timestamp = new Date()
     }
-  }, 2000)
+  }, 1000)
 }
 
 const handleVoiceInput = (audioData: any) => {
@@ -633,10 +622,6 @@ onUnmounted(() => {
 
 // 输入区样式
 .input-container {
-  padding: 16px;
-  background: var(--color-bg-2);
-  border-top: 1px solid var(--color-border-2);
-  
   .chat-input {
     width: 100%;
   }
@@ -672,9 +657,6 @@ onUnmounted(() => {
       font-size: 14px;
     }
   }
-  
-  .input-container {
-    padding: 12px;
-  }
+
 }
 </style>

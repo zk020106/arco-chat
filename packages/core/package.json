@@ -1,6 +1,6 @@
 {
   "name": "arco-design-x",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "author": "mochou",
   "license": "MIT",
   "main": "dist/index.mjs",
@@ -23,6 +23,7 @@
   "dependencies": {
     "@arco-design/web-vue": "^2.57.0",
     "@datatraccorporation/markdown-it-mermaid": "^0.5.0",
+    "@vueuse/core": "^13.9.0",
     "dayjs": "^1.11.18",
     "dompurify": "^3.2.6",
     "highlight.js": "^11.11.1",

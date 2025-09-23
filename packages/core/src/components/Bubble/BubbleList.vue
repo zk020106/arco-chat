@@ -21,7 +21,6 @@
       <div
         v-if="!useVirtualScroll"
         class="ac-bubble-list-messages"
-        :class="{ 'ac-bubble-list-reverse': reverse }"
       >
         <template v-for="(message, index) in displayMessages" :key="message.id || index">
           <Bubble
@@ -68,7 +67,6 @@
         :data="displayMessages"
         :virtual-list-props="virtualListProps"
         class="ac-bubble-list-virtual"
-        :class="{ 'ac-bubble-list-reverse': reverse }"
         @scroll="handleVirtualScroll"
       >
         <template #item="{ item: message, index }">
@@ -147,12 +145,13 @@ const props = withDefaults(defineProps<BubbleListProps>(), {
   virtualScroll: false,
   virtualListProps: () => ({
     height: '100%',
-    threshold: 50,
-    fixedSize: true,
-    estimatedSize: 80,
-    buffer: 10
+    threshold: 30, // 降低阈值，更早启用虚拟滚动
+    fixedSize: false, // 消息高度不固定
+    estimatedSize: 150, // 增加估算高度，适应 Markdown 内容
+    buffer: 3, // 减少缓冲区，提升性能
+    itemKey: 'id' // 使用消息 ID 作为 key
   }),
-  defaultBubbleMaxWidth: '100%'
+  defaultBubbleMaxWidth: 'auto'
 })
 
 const emit = defineEmits<{
@@ -165,21 +164,39 @@ const emit = defineEmits<{
 }>()
 
 const containerRef = ref<HTMLElement>()
+const autoVirtualScroll = ref(false)
+
+// 手动管理滚动状态，避免 useScroll 导致的循环
 const isAtBottom = ref(true)
 const lastScrollTop = ref(0)
-const autoVirtualScroll = ref(false)
+
+// 手动滚动处理
+const handleScroll = () => {
+  if (props.virtualScroll) return
+  
+  if (containerRef.value) {
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.value
+    // 统一使用正常的滚动逻辑，因为现在使用数据处理
+    isAtBottom.value = scrollTop + clientHeight >= scrollHeight - 10
+    lastScrollTop.value = scrollTop
+  }
+}
 
 // 计算显示的消息列表
 const displayMessages = computed(() => {
-  return props.reverse ? [...props.list].reverse() : props.list
+  // 简化实现，直接返回消息列表，最新消息在底部
+  return props.list
 })
 
 // 检查是否需要自动启用虚拟滚动
 const checkAutoVirtualScroll = () => {
+  // 当消息数量较多时启用虚拟滚动，提升性能
   if (containerRef.value && props.virtualScroll === false) {
+    const messageCount = props.list.length
     const { scrollHeight, clientHeight } = containerRef.value
-    // 当内容高度超过容器高度时，自动启用虚拟滚动
-    autoVirtualScroll.value = scrollHeight > clientHeight
+    
+    // 消息数量超过 30 条时启用虚拟滚动，适应 Markdown 渲染的性能需求
+    autoVirtualScroll.value = messageCount > 30 && scrollHeight > clientHeight
   } else {
     autoVirtualScroll.value = false
   }
@@ -188,10 +205,7 @@ const checkAutoVirtualScroll = () => {
 // 虚拟滚动事件处理
 const handleVirtualScroll = (event: Event) => {
   // 处理虚拟滚动的滚动事件
-  if (containerRef.value) {
-    const { scrollTop, scrollHeight, clientHeight } = containerRef.value
-    isAtBottom.value = scrollHeight - scrollTop - clientHeight < props.scrollToBottomThreshold
-  }
+  // 注意：对于虚拟滚动，滚动状态由 useScroll 自动处理
 }
 
 // 计算是否使用虚拟滚动
@@ -212,26 +226,14 @@ const handleLoadMore = () => {
 // 滚动到底部（仅对非虚拟列表容器）
 const scrollToBottom = () => {
   if (containerRef.value) {
+    // 统一使用正常的滚动逻辑，因为现在使用数据处理
     containerRef.value.scrollTop = containerRef.value.scrollHeight
     emit('scrollToBottom')
   }
 }
 
-// 检查是否在底部（仅非虚拟）
-const checkIsAtBottom = () => {
-  if (!containerRef.value) return
-  const { scrollTop, scrollHeight, clientHeight } = containerRef.value
-  isAtBottom.value = scrollHeight - scrollTop - clientHeight < props.scrollToBottomThreshold
-}
 
-// 监听滚动事件（仅非虚拟）
-const handleScroll = () => {
-  if (props.virtualScroll) return
-  checkIsAtBottom()
-  lastScrollTop.value = containerRef.value?.scrollTop || 0
-}
-
-// 自动滚动到底部
+// 简化的自动滚动逻辑
 const autoScrollToBottom = () => {
   if (props.autoScroll && isAtBottom.value) {
     nextTick(() => {
@@ -239,8 +241,6 @@ const autoScrollToBottom = () => {
     })
   }
 }
-
-// RecycleScroller 的可视区更新事件，用于触顶/触底检测
  
 
 // 处理消息点击
@@ -300,21 +300,13 @@ const scrollToTop = () => {
   }
 }
 
-// 监听消息变化，自动滚动
+// 简化的监听逻辑
 watch(() => props.list.length, () => {
-  autoScrollToBottom()
   nextTick(() => {
+    autoScrollToBottom()
     checkAutoVirtualScroll()
   })
 }, { flush: 'post' })
-
-// 监听消息内容变化
-watch(() => props.list, () => {
-  autoScrollToBottom()
-  nextTick(() => {
-    checkAutoVirtualScroll()
-  })
-}, { deep: true, flush: 'post' })
 
 // 暴露方法给父组件
 defineExpose({
@@ -326,26 +318,24 @@ defineExpose({
 
 onMounted(() => {
   if (containerRef.value) {
+    // 添加滚动事件监听
+    containerRef.value.addEventListener('scroll', handleScroll)
+    
     // 初始检查是否需要虚拟滚动
     nextTick(() => {
       checkAutoVirtualScroll()
+      // 最新消息在底部，需要滚动到底部
+      scrollToBottom()
     })
-    
-    if (!useVirtualScroll.value) {
-      containerRef.value.addEventListener('scroll', handleScroll)
-      // 初始滚动到底部
-      if (props.reverse) {
-        scrollToBottom()
-      }
-    }
   }
 })
 
 onUnmounted(() => {
-  if (containerRef.value && !useVirtualScroll.value) {
+  if (containerRef.value) {
     containerRef.value.removeEventListener('scroll', handleScroll)
   }
 })
+
 </script>
 
 <style scoped lang="scss">
@@ -367,35 +357,39 @@ onUnmounted(() => {
     gap: 0;
     width: 100%;
     height: 100%;
+    min-height: 0; /* 关键：允许容器收缩 */
     box-sizing: border-box;
     scroll-behavior: smooth;
+    
+    /* 强制显示滚动条用于调试 */
+    scrollbar-gutter: stable;
 
-    // 自定义滚动条样式 - 参考优秀实现
+    // 默认滚动条样式（透明）
     &::-webkit-scrollbar {
       width: 6px;
       height: 8px;
     }
 
-    &::-webkit-scrollbar-track {
-      background: transparent;
-      border-radius: 10px;
-    }
-
     &::-webkit-scrollbar-thumb {
       background: transparent;
-      background-color: var(--color-neutral-3, rgba(0, 0, 0, 0.2));
+      background-color: rgba(0, 0, 0, 0.2);
       border-radius: 10px;
       transition: background-color 0.2s ease-in-out;
+    }
+
+    &::-webkit-scrollbar-track {
+      border-radius: 10px;
+      background: transparent;
     }
 
     // 悬停时显示滚动条
     &:hover {
       &::-webkit-scrollbar-thumb {
-        background: var(--color-neutral-4, #c1c1c1);
+        background: #c1c1c1;
       }
 
       &::-webkit-scrollbar-thumb:hover {
-        background: var(--color-neutral-5, #a8a8a8);
+        background: #a8a8a8;
       }
     }
   }
@@ -444,13 +438,10 @@ onUnmounted(() => {
   .ac-bubble-list-messages {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px; /* 参考 Element Plus，使用 16px 间隙 */
     width: 100%;
     padding: 16px;
-
-    &.ac-bubble-list-reverse {
-      flex-direction: column-reverse;
-    }
+    align-items: flex-start; /* 允许子元素控制自己的对齐 */
   }
 
   .ac-bubble-list-virtual {
@@ -477,12 +468,14 @@ onUnmounted(() => {
     // 虚拟滚动容器样式
     :deep(.arco-virtual-list) {
       height: 100%;
+      overflow-y: auto !important; // 强制显示滚动条
     }
     
     :deep(.arco-virtual-list-scrollbar) {
-      // 自定义滚动条样式
+      // 默认滚动条样式（透明）
       &::-webkit-scrollbar {
         width: 6px;
+        background: transparent;
       }
       
       &::-webkit-scrollbar-track {
@@ -491,14 +484,15 @@ onUnmounted(() => {
       }
       
       &::-webkit-scrollbar-thumb {
-        background: var(--color-neutral-3, rgba(0, 0, 0, 0.2));
+        background: transparent;
+        background-color: rgba(0, 0, 0, 0.2);
         border-radius: 10px;
         transition: background-color 0.2s ease-in-out;
       }
       
       &:hover {
         &::-webkit-scrollbar-thumb {
-          background: var(--color-neutral-4, #c1c1c1);
+          background: #c1c1c1;
         }
       }
     }
@@ -554,7 +548,7 @@ onUnmounted(() => {
     scrollbar-width: thin;
 
     &:hover {
-      scrollbar-color: var(--color-neutral-4, #c1c1c1) transparent;
+      scrollbar-color: #c1c1c1 transparent;
     }
   }
 }
@@ -563,16 +557,16 @@ onUnmounted(() => {
 @media (prefers-color-scheme: dark) {
   .ac-bubble-list-container {
     &::-webkit-scrollbar-thumb {
-      background-color: var(--color-neutral-4, rgba(255, 255, 255, 0.2));
+      background-color: rgba(255, 255, 255, 0.2);
     }
 
     &:hover {
       &::-webkit-scrollbar-thumb {
-        background: var(--color-neutral-5, #666);
+        background: #666;
       }
 
       &::-webkit-scrollbar-thumb:hover {
-        background: var(--color-neutral-6, #888);
+        background: #888;
       }
     }
   }
@@ -593,8 +587,10 @@ onUnmounted(() => {
 @supports (scrollbar-color: auto) {
   @media (prefers-color-scheme: dark) {
     .ac-bubble-list-container {
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+
       &:hover {
-        scrollbar-color: var(--color-neutral-5, #666) transparent;
+        scrollbar-color: #666 transparent;
       }
     }
   }
@@ -677,4 +673,5 @@ onUnmounted(() => {
   }
 }
 </style>
+
 

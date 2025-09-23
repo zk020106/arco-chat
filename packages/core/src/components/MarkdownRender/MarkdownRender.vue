@@ -5,7 +5,7 @@
   </template>
 
   <script setup lang="ts">
-  import { ref, computed, watch, onMounted,useSlots,onBeforeUnmount,nextTick  } from 'vue'
+  import { ref, computed, watch, onMounted,useSlots,onBeforeUnmount,nextTick,h,getCurrentInstance,render  } from 'vue'
   import DOMPurify from 'dompurify';
   import MarkdownIt from 'markdown-it';
   import type { VNode, AppContext } from 'vue';
@@ -342,6 +342,11 @@ import MermaidBlock from './components/MermaidBlock.vue';
     () => [props.content, props.typing, props.typingOptions],
     ([content, typing, typingOptions]) => {
       clearTyping();
+      // 重置处理状态，允许重新处理
+      if (contentEl.value) {
+        contentEl.value.dataset.processed = 'false';
+      }
+      
       if (typing) {
         const step = (typingOptions as TypingOptions)?.step ?? 8;
         const interval = (typingOptions as TypingOptions)?.interval ?? 50;
@@ -368,6 +373,11 @@ import MermaidBlock from './components/MermaidBlock.vue';
   watch(
     () => [props.mdOptions, props.mdPlugins, props.enableMermaid, props.enableLatex, props.enableEmoji, props.pluginConfig],
     () => {
+      // 重置处理状态，允许重新处理
+      if (contentEl.value) {
+        contentEl.value.dataset.processed = 'false';
+      }
+      
       md.value = createMarkdownIt();
       const html = md.value.render(props.content || ('' as string));
       typingContent.value = props.safeMode ? sanitizeHtml(html) : html;
@@ -382,8 +392,12 @@ import MermaidBlock from './components/MermaidBlock.vue';
     { deep: true }
   );
 
-  // 处理自定义标签的函数
+  // 处理自定义标签的函数 - 完全简化
   function processCustomBlocks(el: HTMLElement) {
+    // 防止重复处理
+    if (el.dataset.processed === 'true') return;
+    el.dataset.processed = 'true';
+    
     // 处理 Mermaid 图表
     if (props.enableMermaid) {
       processMermaidDiagrams(el).catch(console.error);
@@ -438,7 +452,7 @@ import MermaidBlock from './components/MermaidBlock.vue';
           const lang = node.getAttribute('lang') || '';
           const foldable = node.hasAttribute('foldable');
           const showCopy = node.hasAttribute('showCopy');
-          return h(CodeBlock, { code, lang, foldable, showCopy });
+          return h(CodeBlock, { code, language: lang, foldable, showCopy });
         }
         case 'think-block': {
           const slotContent = node.innerHTML;
@@ -511,15 +525,9 @@ import MermaidBlock from './components/MermaidBlock.vue';
     }
   }
 
-  // 注册自定义指令
+  // 注册自定义指令 - 完全简化
   const vCustomBlocks = {
     mounted(el: HTMLElement) {
-      if (isTyping.value) return;
-      nextTick(() => {
-        processCustomBlocks(el);
-      });
-    },
-    updated(el: HTMLElement) {
       if (isTyping.value) return;
       nextTick(() => {
         processCustomBlocks(el);

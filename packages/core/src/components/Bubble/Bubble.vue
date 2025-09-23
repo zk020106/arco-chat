@@ -28,7 +28,7 @@
           <BubbleLoading></BubbleLoading>
         </slot>
       </div>
-      <div v-if="!loading" class="ac-bubble-content" :class="[variant, shape]">
+      <div v-if="!loading" class="ac-bubble-content" :class="[variant, shape]" :style="contentStyles">
         <slot name="content">
           <div v-if="markdown" class="ac-bubble-markdown">
             <MarkdownRender 
@@ -124,38 +124,32 @@ const showAvatar = computed(() => {
 const bubbleStyles = computed(() => {
   const styles: Record<string, string> = {}
   
-  // 根据对齐方式设置宽度
-  if (props.align === 'start') {
-    // AI消息：左对齐，限制最大宽度
-    styles.width = 'fit-content'
-    styles.maxWidth = '70%'
-    styles.marginRight = 'auto'
-    styles.display = 'flex'
-  } else {
-    // 用户消息：右对齐，限制最大宽度
-    styles.width = 'fit-content'
-    styles.maxWidth = '70%'
-    styles.marginLeft = 'auto'
-    styles.display = 'flex'
-  }
+  // 样式现在通过 CSS 类来处理，这里只保留必要的动态样式
+  // 如果需要其他动态样式，可以在这里添加
   
-  // 根据内容类型和长度智能调整内容区域的最大宽度
+  return styles
+})
+
+// 智能计算内容宽度
+const contentStyles = computed(() => {
+  const styles: Record<string, string> = {}
+  
+  // 根据内容类型智能调整宽度
   if (props.maxWidth === 'auto') {
-    const contentLength = props.content.length
-    const hasCode = props.content.includes('```') || props.markdown
-    const hasLongText = contentLength > 200
-    
-    if (hasCode || hasLongText) {
-      // 代码块或长文本使用更宽的宽度
-      styles.maxWidth = '85%'
-      styles.minWidth = '180px'
-    } else if (contentLength > 100) {
-      // 中等长度文本
-      styles.maxWidth = '70%'
-      styles.minWidth = '180px'
+    const hasMarkdown = props.markdown
+    const hasCode = props.content.includes('```')
+    const hasTable = props.content.includes('|')
+    const hasList = props.content.includes('- ') || props.content.includes('* ')
+
+    if (hasMarkdown || hasCode || hasTable || hasList) {
+      // Markdown 内容（表格、代码块、列表等）完全展开
+      styles.width = '100%'
+      styles.maxWidth = '100%'
     } else {
-      // 短文本
-      styles.maxWidth = '60%'
+      console.log('Text content, using fit-content')
+      // 普通文本内容，使用 fit-content 保持紧凑
+      styles.width = 'fit-content'
+      styles.maxWidth = '100%'
       styles.minWidth = '120px'
     }
   } else {
@@ -231,6 +225,8 @@ onMounted(() => {
   transform: translateY(20px) scale(0.95);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
   
   &[data-animate="true"] {
     opacity: 1;
@@ -240,9 +236,17 @@ onMounted(() => {
 
   &.ac-bubble-start {
     flex-direction: row;
+    margin-right: auto !important;
+    justify-content: flex-start;
+    width: auto !important;
+    max-width: 100%; /* 限制最大宽度，确保换行 */
   }
   &.ac-bubble-end {
     flex-direction: row-reverse;
+    margin-left: auto !important;
+    justify-content: flex-end;
+    width: auto !important;
+    max-width: 100%; /* 限制最大宽度，确保换行 */
   }
   
   &.ac-bubble-failed {
@@ -277,7 +281,12 @@ onMounted(() => {
     min-width: 0; // 允许内容收缩
     display: flex;
     flex-direction: column;
-    width: 100%;
+    
+    // 对于 Markdown 内容，允许完全展开
+    .ac-bubble-markdown {
+      width: 100%;
+      min-width: 100%;
+    }
   }
   .loading-container {
     display: inline-flex;
@@ -335,9 +344,16 @@ onMounted(() => {
     overflow-wrap: break-word;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    width: fit-content;
+    width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    min-width: 0; /* 允许内容收缩 */
+    
+    // 对于 Markdown 内容，允许完全展开
+    .ac-bubble-markdown {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
     
     // 变体样式 - 使用Arco默认颜色
     &.filled {
@@ -408,11 +424,13 @@ onMounted(() => {
       // 代码块特殊处理 - 确保代码块铺满容器
       :deep(.code-block) {
         width: calc(100% + 32px) !important;
-        max-width: calc(100% + 32px) !important;
+        // max-width: calc(100% + 32px) !important;
         margin-left: -16px !important;
         margin-right: -16px !important;
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
+        margin-top: 8px !important;
+        margin-bottom: 8px !important;
+        border-radius: 8px;
+        overflow: hidden;
       }
       
       :deep(pre) {

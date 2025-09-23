@@ -1,374 +1,316 @@
 <template>
-  <div 
-    class="code-block"
-    :class="{ 
-      'code-block-visible': isVisible
-    }"
-    :style="{ 
-      width: '100%', 
-      minWidth: width || '180px' 
-    }"
-  >
-    <div class="code-block-header">
-      <div class="code-block-lang">
-        <span class="lang-label">{{ lang || 'text' }}</span>
-      </div>
-      <div class="code-block-actions">
-        <a-button 
-          v-if="showCopy" 
-          class="code-block-copy" 
-          type="text" 
-          size="small" 
-          @click="copyCode"
-          :class="{ 'copy-success': copied }"
-        >
-          <icon-copy v-if="!copied" />
-          <icon-check v-else />
-        </a-button>
-        <a-button v-if="foldable" class="code-block-toggle" type="text" size="small" @click="toggleFold">
-          <icon-down v-if="folded" />
-          <icon-up v-else />
-        </a-button>
+  <div class="code-block">
+    <!-- 工具栏 -->
+    <div class="code-toolbar">
+      <a-tag size="small" color="blue" class="lang-tag">
+        {{ language.toUpperCase() }}
+      </a-tag>
+      <div class="actions">
+        <a-tooltip content="折叠/展开">
+          <a-button
+            size="mini"
+            type="text"
+            @click="toggleFold"
+            class="action-btn"
+          >
+            <icon-down v-if="folded" />
+            <icon-up v-else />
+          </a-button>
+        </a-tooltip>
+        <a-tooltip :content="copied ? '已复制' : '复制代码'">
+          <a-button
+            size="mini"
+            type="text"
+            @click="copyCode"
+            class="action-btn"
+            :class="{ 'copy-success': copied }"
+          >
+            <icon-copy v-if="!copied" />
+            <icon-check v-else />
+          </a-button>
+        </a-tooltip>
       </div>
     </div>
-    <transition 
-      name="code-expand"
-      @enter="onEnter"
-      @leave="onLeave"
+
+    <!-- 代码区 -->
+    <div
+      v-show="!folded"
+      ref="codeContainer"
+      class="code-container"
     >
-      <div v-show="!folded" class="code-block-content">
-        <pre><code v-html="highlighted"></code></pre>
-      </div>
-    </transition>
+      <pre><code :class="`language-${language}`" ref="codeEl">{{ code }}</code></pre>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { Message } from '@arco-design/web-vue';
-import { IconCopy, IconDown, IconUp, IconCheck } from '@arco-design/web-vue/es/icon';
-import hljs from 'highlight.js';
+import { ref, onMounted, watch } from "vue";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css"; // 你可以换成自己喜欢的主题
+import { Message } from "@arco-design/web-vue";
+import { IconDown, IconUp, IconCopy, IconCheck } from "@arco-design/web-vue/es/icon";
 
-const props = withDefaults(defineProps<{
+interface Props {
   code: string;
-  lang?: string;
-  foldable?: boolean;
-  showCopy?: boolean;
-  width?: string;
-}>(), {
-  lang: '',
-  foldable: true,
-  showCopy: true,
-  width: '180px',
+  language?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  language: "javascript"
 });
+
+const codeEl = ref<HTMLElement | null>(null);
+const codeContainer = ref<HTMLElement | null>(null);
 
 const folded = ref(false);
 const copied = ref(false);
-const isVisible = ref(false);
 
-const highlighted = computed(() => {
-  if (props.lang && hljs.getLanguage(props.lang)) {
-    return hljs.highlight(props.code, { language: props.lang }).value;
+const highlight = () => {
+  if (codeEl.value) {
+    hljs.highlightElement(codeEl.value);
   }
-  return hljs.highlightAuto(props.code).value;
-});
+};
 
-function toggleFold() {
+const toggleFold = () => {
   folded.value = !folded.value;
-}
+};
 
-function copyCode() {
-  navigator.clipboard.writeText(props.code);
-  copied.value = true;
-  Message.success('复制成功');
-  setTimeout(() => {
-    copied.value = false;
-  }, 1200);
-}
+const copyCode = async () => {
+  try {
+    await navigator.clipboard.writeText(String(props.code));
+    copied.value = true;
+    Message.success("复制成功");
+    setTimeout(() => (copied.value = false), 1500);
+  } catch (err) {
+    Message.error("复制失败");
+  }
+};
 
+onMounted(highlight);
 
-// 组件进入动画
-onMounted(() => {
-  setTimeout(() => {
-    isVisible.value = true
-  }, 150)
-})
-
-
-// 动画钩子
-function onEnter(el: Element) {
-  const element = el as HTMLElement
-  element.style.transform = 'translateY(-10px)'
-  element.style.opacity = '0'
-  
-  requestAnimationFrame(() => {
-    element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-    element.style.transform = 'translateY(0)'
-    element.style.opacity = '1'
-  })
-}
-
-function onLeave(el: Element) {
-  const element = el as HTMLElement
-  element.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-  element.style.transform = 'translateY(-10px)'
-  element.style.opacity = '0'
-}
+watch(() => props.code, highlight);
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .code-block {
-  background: var(--color-bg-2);
-  border: 1px solid var(--color-border-2);
+  margin: 16px 0;
   border-radius: 12px;
-  margin: 0;
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(10px);
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  opacity: 0;
-  transform: translateY(20px) scale(0.95);
-  width: 100%;
-  
-  &.code-block-visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    animation: codeBlockAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--primary-6);
-    border-radius: 12px 12px 0 0;
-  }
-  
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 
-      0 6px 25px rgba(0, 0, 0, 0.12),
-      0 2px 6px rgba(0, 0, 0, 0.16);
-  }
-}
-
-.code-block-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--color-fill-1);
-  border-bottom: 1px solid var(--color-border-1);
-  position: relative;
-}
-
-.code-block-lang {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.lang-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: rgb(var(--color-text-3));
-  background: var(--color-fill-2);
-  padding: 4px 8px;
-  border-radius: 6px;
   border: 1px solid var(--color-border-2);
-}
+  background: var(--color-fill-1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
 
-.code-block-actions {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-.code-block-copy,
-.code-block-toggle {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  width: 28px !important;
-  height: 28px !important;
-  border-radius: 6px;
-  background: var(--color-fill-1) !important;
-  color: var(--primary-6) !important;
-  border: none !important;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 14px;
-  min-width: 28px !important;
-  min-height: 28px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  
   &:hover {
-    background: var(--color-fill-2) !important;
-    transform: scale(1.05);
-  }
-  
-  &:active {
-    transform: scale(0.95);
-  }
-  
-  &.copy-success {
-    background: var(--color-success-1) !important;
-    color: var(--color-success-6) !important;
-    animation: copySuccess 0.6s ease-out;
-  }
-  
-  // 覆盖 Arco Design 的默认样式
-  :deep(.arco-btn) {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    min-height: 28px !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
 }
 
-.code-block-content {
-  overflow: hidden;
-  background: var(--color-bg-1);
+.code-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  backdrop-filter: blur(8px);
+  background: rgba(250, 250, 250, 0.7);
+  border-bottom: 1px solid var(--color-border-2);
+  font-size: 12px;
+
+  .lang-tag {
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--color-primary-1);
+    color: var(--color-primary-6);
+    border-radius: 6px;
+    padding: 0 6px;
+  }
 }
 
-pre {
-  margin: 0;
-  padding: 12px;
-  background: none;
-  overflow-x: auto;
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-  font-size: 13px;
-  line-height: 1.5;
-  
-  /* 自定义滚动条 */
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: var(--color-fill-1);
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-border-2);
-    border-radius: 3px;
-    
+.actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+
+  .action-btn {
+    padding: 4px;
+    min-width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    color: var(--color-text-2);
+
     &:hover {
-      background: var(--color-border-3);
+      background: var(--color-fill-2);
+      color: var(--color-text-1);
+      transform: scale(1.08);
+    }
+
+    &:active {
+      transform: scale(0.92);
+    }
+
+    &.copy-success {
+      color: var(--color-success-6);
+      background: var(--color-success-1);
+      animation: flash 0.4s ease;
     }
   }
 }
 
-pre,
-pre code {
-  color: rgb(var(--color-text-1));
-  background: none;
+@keyframes flash {
+  from {
+    box-shadow: 0 0 0px rgba(0, 255, 120, 0.6);
+  }
+  to {
+    box-shadow: 0 0 10px rgba(0, 255, 120, 0);
+  }
 }
 
-/* 展开/收起动画 */
-.code-expand-enter-active,
-.code-expand-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: top;
+.code-container {
+  padding: 14px 16px;
+  background: var(--color-fill-1);
+
+  pre {
+    margin: 0;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--color-text-1);
+    overflow-x: auto;
+    white-space: pre-wrap; /* 启用自动换行 */
+    word-wrap: break-word; /* 长单词换行 */
+    word-break: break-all; /* 强制换行 */
+
+    /* 确保代码块滚动条样式不被全局样式覆盖 */
+    &::-webkit-scrollbar {
+      height: 6px !important;
+      width: 6px !important;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--color-fill-2) !important;
+      border-radius: 3px !important;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border-2) !important;
+      border-radius: 3px !important;
+      transition: background-color 0.2s ease !important;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--color-border-3) !important;
+    }
+  }
 }
 
-.code-expand-enter-from,
-.code-expand-leave-to {
-  opacity: 0;
-  transform: scaleY(0);
-  max-height: 0;
+/* 火狐浏览器滚动条样式 - 代码块保持滚动条 */
+@supports (scrollbar-color: auto) {
+  .code-container pre {
+    scrollbar-color: var(--color-border-2) var(--color-fill-2) !important;
+    scrollbar-width: thin !important;
+  }
 }
 
-.code-expand-enter-to,
-.code-expand-leave-from {
-  opacity: 1;
-  transform: scaleY(1);
-  max-height: 500px;
+/* Dark 模式 */
+@media (prefers-color-scheme: dark) {
+  .code-toolbar {
+    background: rgba(30, 30, 30, 0.6);
+    border-bottom-color: var(--color-border-3);
+
+    .lang-tag {
+      background: var(--color-primary-2);
+      color: var(--color-primary-5);
+    }
+  }
+
+  .code-container {
+    background: var(--color-fill-2);
+    
+    pre {
+      &::-webkit-scrollbar-thumb {
+        background: var(--color-border-3) !important;
+      }
+      
+      &::-webkit-scrollbar-thumb:hover {
+        background: var(--color-border-4) !important;
+      }
+    }
+  }
 }
 
-/* 响应式设计 */
+/* 火狐浏览器深色模式 */
+@supports (scrollbar-color: auto) {
+  @media (prefers-color-scheme: dark) {
+    .code-container pre {
+      scrollbar-color: var(--color-border-3) var(--color-fill-2) !important;
+    }
+  }
+}
+
+/* 响应式设计 - 移动端优化 */
 @media (max-width: 768px) {
   .code-block {
-    margin: 0;
-    border-radius: 10px;
+    margin: 12px 0;
+    border-radius: 8px;
   }
   
-  .code-block-header {
+  .code-toolbar {
+    padding: 4px 8px;
+    font-size: 11px;
+    
+    .lang-tag {
+      font-size: 10px;
+      padding: 0 4px;
+    }
+    
+    .actions .action-btn {
+      min-width: 24px;
+      height: 24px;
+      padding: 2px;
+    }
+  }
+  
+  .code-container {
     padding: 10px 12px;
-  }
-  
-  .lang-label {
-    font-size: 12px;
-    padding: 3px 6px;
-  }
-  
-  pre {
-    padding: 8px;
-    font-size: 12px;
-  }
-  
-  .code-block-copy,
-  .code-block-toggle {
-    width: 24px;
-    height: 24px;
-    font-size: 12px;
+    
+    pre {
+      font-size: 12px;
+      line-height: 1.5;
+      
+      /* 移动端优先使用换行，减少滚动 */
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      word-break: break-all;
+      overflow-x: auto;
+    }
   }
 }
 
-/* 组件出现动画 */
-@keyframes codeBlockAppear {
-  0% {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  50% {
-    opacity: 0.8;
-    transform: translateY(-5px) scale(1.02);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* 复制成功动画 */
-@keyframes copySuccess {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-
-/* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
+@media (max-width: 480px) {
   .code-block {
-    background: var(--color-bg-2);
-    border-color: var(--color-border-2);
+    margin: 8px 0;
+    border-radius: 6px;
   }
   
-  .code-block-content {
-    background: var(--color-bg-1);
+  .code-toolbar {
+    padding: 3px 6px;
+    font-size: 10px;
+    
+    .actions {
+      gap: 4px;
+    }
   }
   
-  .lang-label {
-    background: var(--color-fill-2);
-    border-color: var(--color-border-2);
+  .code-container {
+    padding: 8px 10px;
+    
+    pre {
+      font-size: 11px;
+      line-height: 1.4;
+    }
   }
 }
+
 </style>

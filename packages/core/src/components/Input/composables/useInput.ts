@@ -3,7 +3,7 @@
  * 提供更优雅的 API 设计
  */
 
-import { ref, computed, watch, provide } from 'vue'
+import { ref, computed, watch, provide, inject } from 'vue'
 import { inputInjectionKey } from '../input-types'
 import type { InputProps, InputContext, InputInstance } from '../input-types'
 
@@ -11,9 +11,9 @@ import type { InputProps, InputContext, InputInstance } from '../input-types'
  * 创建 Input 实例
  */
 export function useInput(props: InputProps, emit: any) {
-  const inputValue = ref(props.modelValue)
+  const inputValue = ref(props.modelValue || '')
   const headerVisible = ref(false)
-  const popoverVisible = ref(props.triggerPopoverVisible)
+  const popoverVisible = ref(props.triggerPopoverVisible || false)
   const isRecording = ref(false)
   const inputRef = ref<HTMLTextAreaElement>()
   
@@ -48,7 +48,7 @@ export function useInput(props: InputProps, emit: any) {
   }
   
   const submit = () => {
-    if (!isDisabled.value && !isReadonly.value && inputValue.value.trim()) {
+    if (!isDisabled.value && !isReadonly.value && inputValue.value?.trim()) {
       emit('submit')
     }
   }
@@ -92,7 +92,7 @@ export function useInput(props: InputProps, emit: any) {
   watch(
     () => props.modelValue,
     (val) => {
-      inputValue.value = val
+      inputValue.value = val || ''
     },
     { immediate: true }
   )
@@ -100,7 +100,7 @@ export function useInput(props: InputProps, emit: any) {
   watch(
     () => props.triggerPopoverVisible,
     (val) => {
-      popoverVisible.value = val
+      popoverVisible.value = val || false
     }
   )
   
@@ -122,7 +122,7 @@ export function useInput(props: InputProps, emit: any) {
   
   // 提供上下文
   const context: InputContext = {
-    inputValue,
+    inputValue: inputValue as Ref<string>,
     rootProps: props,
     rootEmits: emit
   }
@@ -141,7 +141,7 @@ export function useInput(props: InputProps, emit: any) {
     startRecognition,
     stopRecognition,
     get popoverVisible() { return popoverVisible.value },
-    set popoverVisible(val) { popoverVisible.value = val },
+    set popoverVisible(val: boolean) { popoverVisible.value = val },
     get inputInstance() { return inputRef.value }
   }
   

@@ -5,7 +5,7 @@ export { Typewriter } from './components/Typewriter'
 export { Input } from './components/Input'
 export { Mention } from './components/Mention'
 export { Prompt } from './components/Prompt'
-export { Layout, Aside, Content, Header, Sender } from './components/Layout'
+export { Layout} from './components/Layout'
 export { MarkdownRender } from './components/MarkdownRender'
 // Re-export types
 export * from './components/Bubble/bubble-types'
