@@ -54,7 +54,8 @@
     "node": "22.17.1"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx,vue}": [
+    "*.{js,ts,jsx,tsx,vue,md}": [
+      "prettier --write",
       "oxlint --fix"
     ]
   }

@@ -7,7 +7,8 @@
     "pedantic": "warn",
     "cargo": "warn",
     "rust": "warn",
-    "nursery": "warn"
+    "nursery": "warn",
+    "indent": "warn"
   },
   "ignore": [
     "**/node_modules/**",

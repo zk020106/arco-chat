@@ -18,14 +18,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, h, VNode, getCurrentInstance } from 'vue';
-import MarkdownIt from 'markdown-it';
-import DOMPurify from 'dompurify';
-import CodeBlock from './components/CodeBlock.vue';
-import ThinkBlock from './components/ThinkBlock.vue';
-import MermaidBlock from './components/MermaidBlock.vue';
-import { pluginManager, processMermaidDiagrams, defaultPluginOptions } from './plugins';
-import type { MarkdownRenderProps, TypingOptions, SlotInterceptorProps } from './markdown-render-types';
+import {
+  ref,
+  computed,
+  watch,
+  nextTick,
+  h,
+  VNode,
+  getCurrentInstance,
+} from "vue";
+import MarkdownIt from "markdown-it";
+import DOMPurify from "dompurify";
+import CodeBlock from "./components/CodeBlock.vue";
+import ThinkBlock from "./components/ThinkBlock.vue";
+import MermaidBlock from "./components/MermaidBlock.vue";
+import "katex/dist/katex.min.css";
+import {
+  pluginManager,
+  processMermaidDiagrams,
+  defaultPluginOptions,
+} from "./plugins";
+import type {
+  MarkdownRenderProps,
+  TypingOptions,
+  SlotInterceptorProps,
+} from "./markdown-render-types";
 
 const rawProps = defineProps<MarkdownRenderProps>();
 
@@ -44,8 +61,8 @@ const props = computed(() => ({
   customBlockTags: rawProps.customBlockTags ?? [],
   customTags: rawProps.customTags ?? {},
   sanitizeOptions: rawProps.sanitizeOptions ?? {
-    ADD_TAGS: ['code-block', 'think-block'],
-    ADD_ATTR: ['code', 'lang', 'foldable', 'showCopy', 'class', 'style'],
+    ADD_TAGS: ["code-block", "think-block"],
+    ADD_ATTR: ["code", "lang", "foldable", "showCopy", "class", "style"],
     ALLOW_DATA_ATTR: true,
     USE_PROFILES: { html: true },
   },
@@ -68,7 +85,7 @@ function createMarkdownIt() {
     html: true,
     highlight(str: string, lang: string) {
       const encoded = encodeURIComponent(str);
-      return `<code-block code="${encoded}" lang="${lang || ''}" foldable showCopy></code-block>`;
+      return `<code-block code="${encoded}" lang="${lang || ""}" foldable showCopy></code-block>`;
     },
     ...props.value.mdOptions,
   };
@@ -76,9 +93,9 @@ function createMarkdownIt() {
 
   // 应用插件
   const enabledPlugins: string[] = [];
-  if (props.value.enableMermaid) enabledPlugins.push('mermaid');
-  if (props.value.enableLatex) enabledPlugins.push('latex');
-  if (props.value.enableEmoji) enabledPlugins.push('emoji');
+  if (props.value.enableMermaid) enabledPlugins.push("mermaid");
+  if (props.value.enableLatex) enabledPlugins.push("latex");
+  if (props.value.enableEmoji) enabledPlugins.push("emoji");
   pluginManager.applyPlugins(instance, enabledPlugins);
 
   const mdPlugins = props.value.mdPlugins;
@@ -102,41 +119,55 @@ function parseContentWithThink(content: string) {
 
 // 拆分 Markdown 为块
 const splitMarkdownBlocks = (src: string) => {
-  const blocks: Array<{ type: string; value: string; inner?: string; tagName?: string }> = [];
-  
+  const blocks: Array<{
+    type: string;
+    value: string;
+    inner?: string;
+    tagName?: string;
+  }> = [];
+
   // 使用一个通用的正则表达式来匹配所有自定义块
   // 匹配 <tag>...</tag> 格式的块，包括代码块和 mermaid 标签
-  const allBlocksRegex = /(```[\s\S]*?```|<(\w+)-block>[\s\S]*?<\/\2-block>|<mermaid>[\s\S]*?<\/mermaid>)/g;
-  
-  const matches: { type: string; value: string; index: number; inner?: string; tagName?: string }[] = [];
+  const allBlocksRegex =
+    /(```[\s\S]*?```|<(\w+)-block>[\s\S]*?<\/\2-block>|<mermaid>[\s\S]*?<\/mermaid>)/g;
+
+  const matches: {
+    type: string;
+    value: string;
+    index: number;
+    inner?: string;
+    tagName?: string;
+  }[] = [];
   let match: RegExpExecArray | null;
 
   match = allBlocksRegex.exec(src);
   while (match) {
     const fullMatch = match[0];
     const tagMatch = match[2]; // 捕获的标签名
-    
+
     let type: string;
     let inner: string;
     let tagName: string;
-    
-    if (fullMatch.startsWith('```')) {
+
+    if (fullMatch.startsWith("```")) {
       // 代码块
-      type = 'code';
-      tagName = 'code-block';
-      inner = fullMatch.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '');
-    } else if (fullMatch.startsWith('<mermaid>')) {
+      type = "code";
+      tagName = "code-block";
+      inner = fullMatch.replace(/^```[a-zA-Z]*\n?/, "").replace(/```$/, "");
+    } else if (fullMatch.startsWith("<mermaid>")) {
       // Mermaid 标签
-      type = 'mermaid';
-      tagName = 'mermaid-block';
-      inner = fullMatch.replace(/^<mermaid>/, '').replace(/<\/mermaid>$/, '');
+      type = "mermaid";
+      tagName = "mermaid-block";
+      inner = fullMatch.replace(/^<mermaid>/, "").replace(/<\/mermaid>$/, "");
     } else {
       // 自定义块
-      type = tagMatch || 'unknown';
+      type = tagMatch || "unknown";
       tagName = type;
-      inner = fullMatch.replace(new RegExp(`^<${type}-block>`), '').replace(new RegExp(`<\\/${type}-block>$`), '');
+      inner = fullMatch
+        .replace(new RegExp(`^<${type}-block>`), "")
+        .replace(new RegExp(`<\\/${type}-block>$`), "");
     }
-    
+
     matches.push({
       type,
       value: fullMatch,
@@ -144,7 +175,7 @@ const splitMarkdownBlocks = (src: string) => {
       inner,
       tagName,
     });
-    
+
     match = allBlocksRegex.exec(src);
   }
 
@@ -153,26 +184,37 @@ const splitMarkdownBlocks = (src: string) => {
   let lastIndex = 0;
   for (const m of matches) {
     if (m.index > lastIndex) {
-      blocks.push({ type: 'text', value: src.slice(lastIndex, m.index) });
+      blocks.push({ type: "text", value: src.slice(lastIndex, m.index) });
     }
-    blocks.push({ type: m.type, value: m.value, inner: m.inner, tagName: m.tagName });
+    blocks.push({
+      type: m.type,
+      value: m.value,
+      inner: m.inner,
+      tagName: m.tagName,
+    });
     lastIndex = m.index + m.value.length;
   }
-  if (lastIndex < src.length) blocks.push({ type: 'text', value: src.slice(lastIndex) });
+  if (lastIndex < src.length)
+    blocks.push({ type: "text", value: src.slice(lastIndex) });
 
   return blocks;
 };
 
 // 将块转为 VNode
-function createVNodeForBlock(block: { type: string; value: string; inner?: string; tagName?: string }) {
+function createVNodeForBlock(block: {
+  type: string;
+  value: string;
+  inner?: string;
+  tagName?: string;
+}) {
   switch (block.type) {
-    case 'code':
-      const language = block.value.match(/^```(\w*)/)?.[1] || '';
+    case "code":
+      const language = block.value.match(/^```(\w*)/)?.[1] || "";
       // 如果是 mermaid 代码块，使用 MermaidBlock 组件
-      if (language === 'mermaid') {
+      if (language === "mermaid") {
         return h(MermaidBlock, {
-          code: block.inner || '',
-          theme: 'default',
+          code: block.inner || "",
+          theme: "default",
           showCodeToggle: true,
           showZoom: true,
           showExport: true,
@@ -181,50 +223,60 @@ function createVNodeForBlock(block: { type: string; value: string; inner?: strin
       }
       // 其他代码块使用 CodeBlock 组件
       return h(CodeBlock, {
-        code: decodeURIComponent(block.inner || ''),
+        code: decodeURIComponent(block.inner || ""),
         language: language,
         foldable: true,
         showCopy: true,
       });
-    case 'mermaid':
+    case "mermaid":
       // Mermaid 图表块
       return h(MermaidBlock, {
-        code: block.inner || '',
-        theme: 'default',
+        code: block.inner || "",
+        theme: "default",
         showCodeToggle: true,
         showZoom: true,
         showExport: true,
         showFullscreen: true,
       });
-    case 'think':
-      return h(ThinkBlock, null, { default: () => h('div', { innerHTML: block.inner || '' }) });
-    case 'agent':
-    case 'task':
+    case "think":
+      return h(ThinkBlock, null, {
+        default: () => h("div", { innerHTML: block.inner || "" }),
+      });
+    case "agent":
+    case "task":
       // 使用动态组件渲染自定义块
       const tagName = block.tagName || block.type;
-      return h(tagName, null, { default: () => h('div', { innerHTML: block.inner || '' }) });
-    case 'text':
+      return h(tagName, null, {
+        default: () => h("div", { innerHTML: block.inner || "" }),
+      });
+    case "text":
       // 使用 markdown-it 渲染文本块
       const html = md.value?.render(block.value) || block.value;
-      return h('div', { innerHTML: props.value.safeMode ? sanitizeHtml(html) : html });
+      return h("div", {
+        innerHTML: props.value.safeMode ? sanitizeHtml(html) : html,
+      });
     default:
       // 处理其他自定义块类型
       if (block.tagName) {
-        return h(block.tagName, null, { default: () => h('div', { innerHTML: block.inner || '' }) });
+        return h(block.tagName, null, {
+          default: () => h("div", { innerHTML: block.inner || "" }),
+        });
       }
-      return h('div', block.value);
+      return h("div", block.value);
   }
 }
 
 // 打字机效果
 function startTypingEffect(step: number | [number, number] = 2, interval = 50) {
-  const src = props.value.enableThink ? parseContentWithThink(props.value.content || '') : props.value.content || '';
+  const src = props.value.enableThink
+    ? parseContentWithThink(props.value.content || "")
+    : props.value.content || "";
   const blocks = splitMarkdownBlocks(src);
 
   // 初始化所有块为空白状态
   renderedBlocks.value = blocks.map((block, i) => ({
     key: `block-${i}`,
-    vnode: h('div', ''),
+    vnode: h("div", ""),
     type: block.type,
   }));
 
@@ -243,20 +295,24 @@ function startTypingEffect(step: number | [number, number] = 2, interval = 50) {
     charIndex += stepSize;
     const partialContent = block.value.slice(0, charIndex);
 
-    if (block.type === 'text') {
+    if (block.type === "text") {
       // 文本块：渲染部分markdown内容
       const html = md.value?.render(partialContent) || partialContent;
-      renderedBlocks.value[blockIndex].vnode = h('div', { innerHTML: props.value.safeMode ? sanitizeHtml(html) : html });
-    } else if (block.type === 'code') {
+      renderedBlocks.value[blockIndex].vnode = h("div", {
+        innerHTML: props.value.safeMode ? sanitizeHtml(html) : html,
+      });
+    } else if (block.type === "code") {
       // 代码块：显示部分代码内容
-      const language = block.value.match(/^```(\w*)/)?.[1] || '';
-      const codeContent = partialContent.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '');
-      
+      const language = block.value.match(/^```(\w*)/)?.[1] || "";
+      const codeContent = partialContent
+        .replace(/^```[a-zA-Z]*\n?/, "")
+        .replace(/```$/, "");
+
       // 如果是 mermaid 代码块，使用 MermaidBlock 组件
-      if (language === 'mermaid') {
+      if (language === "mermaid") {
         renderedBlocks.value[blockIndex].vnode = h(MermaidBlock, {
           code: codeContent,
-          theme: 'default',
+          theme: "default",
           showCodeToggle: true,
           showZoom: true,
           showExport: true,
@@ -271,38 +327,46 @@ function startTypingEffect(step: number | [number, number] = 2, interval = 50) {
           showCopy: true,
         });
       }
-    } else if (block.type === 'mermaid') {
+    } else if (block.type === "mermaid") {
       // Mermaid 图表块：逐步显示内容
-      const mermaidContent = partialContent.replace(/^<mermaid>/, '').replace(/<\/mermaid>$/, '');
-      
+      const mermaidContent = partialContent
+        .replace(/^<mermaid>/, "")
+        .replace(/<\/mermaid>$/, "");
+
       // 始终使用 MermaidBlock 组件，让它处理逐步加载
       renderedBlocks.value[blockIndex].vnode = h(MermaidBlock, {
-        code: mermaidContent || 'graph TD\n    A[正在加载...] --> B[请稍候]',
-        theme: 'default',
+        code: mermaidContent || "graph TD\n    A[正在加载...] --> B[请稍候]",
+        theme: "default",
         showCodeToggle: true,
         showZoom: true,
         showExport: true,
         showFullscreen: true,
       });
-    } else if (block.type === 'think') {
+    } else if (block.type === "think") {
       // 思考块：显示部分内容
-      const thinkContent = partialContent.replace(/^<think-block>/, '').replace(/<\/think-block>$/, '');
-      renderedBlocks.value[blockIndex].vnode = h(ThinkBlock, null, { 
-        default: () => h('div', { innerHTML: thinkContent }) 
+      const thinkContent = partialContent
+        .replace(/^<think-block>/, "")
+        .replace(/<\/think-block>$/, "");
+      renderedBlocks.value[blockIndex].vnode = h(ThinkBlock, null, {
+        default: () => h("div", { innerHTML: thinkContent }),
       });
-    } else if (block.type === 'agent' || block.type === 'task') {
+    } else if (block.type === "agent" || block.type === "task") {
       // agent/task块：显示部分内容
       const tagName = block.tagName || block.type;
-      const content = partialContent.replace(new RegExp(`^<${block.type}>`), '').replace(new RegExp(`<\\/${block.type}>$`), '');
-      renderedBlocks.value[blockIndex].vnode = h(tagName, null, { 
-        default: () => h('div', { innerHTML: content }) 
+      const content = partialContent
+        .replace(new RegExp(`^<${block.type}>`), "")
+        .replace(new RegExp(`<\\/${block.type}>$`), "");
+      renderedBlocks.value[blockIndex].vnode = h(tagName, null, {
+        default: () => h("div", { innerHTML: content }),
       });
     } else {
       // 其他自定义块：显示部分内容
       const tagName = block.tagName || block.type;
-      const content = partialContent.replace(new RegExp(`^<${block.type}>`), '').replace(new RegExp(`<\\/${block.type}>$`), '');
-      renderedBlocks.value[blockIndex].vnode = h(tagName, null, { 
-        default: () => h('div', { innerHTML: content }) 
+      const content = partialContent
+        .replace(new RegExp(`^<${block.type}>`), "")
+        .replace(new RegExp(`<\\/${block.type}>$`), "");
+      renderedBlocks.value[blockIndex].vnode = h(tagName, null, {
+        default: () => h("div", { innerHTML: content }),
       });
     }
 
@@ -325,7 +389,9 @@ watch(
     if (!md.value) return;
     if (typing) startTypingEffect();
     else {
-      const src = props.value.enableThink ? parseContentWithThink(String(content || '')) : String(content || '');
+      const src = props.value.enableThink
+        ? parseContentWithThink(String(content || ""))
+        : String(content || "");
       const blocks = splitMarkdownBlocks(src);
       renderedBlocks.value = blocks.map((block, i) => ({
         key: `block-${i}`,
@@ -334,7 +400,9 @@ watch(
       }));
       nextTick(() => {
         if (props.value.enableMermaid) {
-          processMermaidDiagrams(document.querySelector('.ac-markdown-renderer')!).catch(console.error);
+          processMermaidDiagrams(
+            document.querySelector(".ac-markdown-renderer")!
+          ).catch(console.error);
         }
       });
     }
@@ -344,7 +412,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@use './markdown-render.scss';
+@use "./markdown-render.scss";
 .ac-markdown-renderer {
   .ac-markdown-content {
     width: 100%;
@@ -363,7 +431,7 @@ watch(
   border-radius: 8px;
   background: var(--color-fill-2);
   min-height: 120px;
-  
+
   .loading-spinner {
     width: 32px;
     height: 32px;
@@ -372,7 +440,7 @@ watch(
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
-  
+
   .loading-text {
     font-size: 14px;
     font-weight: 500;
@@ -381,7 +449,11 @@ watch(
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

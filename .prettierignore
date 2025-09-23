@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+.turbo/
+
+# Generated files
+*.min.js
+*.min.css
+*.d.ts
+*.d.ts.map
+
+# Documentation
+CHANGELOG.md
+
+# Config files
+*.config.js
+*.config.ts
+vite.config.ts
