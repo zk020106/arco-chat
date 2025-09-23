@@ -16,10 +16,18 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: path.resolve(__dirname, "src/index.ts"),
-      name: "ArcoChatCore",
-      fileName: (format) => `arco-chat.${format}.js`,
-      formats: ["es"],
+      entry: {
+        index: path.resolve(__dirname, "src/index.ts"),
+        style: path.resolve(__dirname, "src/style.ts"),
+      },
+      name: "ArcoDesignX",
+      fileName: (format, entryName) => {
+        if (entryName === 'style') {
+          return `style.${format === 'es' ? 'js' : 'cjs.js'}`;
+        }
+        return `arco-design-x.${format === 'es' ? 'es.js' : 'cjs.js'}`;
+      },
+      formats: ["es", "cjs"],
     },
     cssCodeSplit: true, // ✅ 关键：独立输出 CSS
     rollupOptions: {
