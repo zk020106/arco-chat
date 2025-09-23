@@ -23,7 +23,7 @@ Layout 组件提供了一套完整的聊天界面布局系统，包含头部、�
           <!-- 对话列表内容 -->
         </div>
       </template>
-      
+
       <!-- 头部 -->
       <template #header>
         <div class="header-content">
@@ -33,14 +33,14 @@ Layout 组件提供了一套完整的聊天界面布局系统，包含头部、�
           </div>
         </div>
       </template>
-      
+
       <!-- 主内容区 -->
       <template #content>
         <div class="chat-messages">
           <!-- 消息列表 -->
         </div>
       </template>
-      
+
       <!-- 输入区 -->
       <template #sender>
         <Input v-model="inputValue" @submit="handleSend" />
@@ -50,21 +50,21 @@ Layout 组件提供了一套完整的聊天界面布局系统，包含头部、�
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Layout, Input } from 'arco-design-x'
+import { ref } from "vue";
+import { Layout, Input } from "arco-design-x";
 
 // 布局配置
-const asideWidth = ref('280px')
-const asideCollapsed = ref(false)
-const headerHeight = ref('8vh')
-const contentHeight = ref('70vh')
-const senderHeight = ref('22vh')
+const asideWidth = ref("280px");
+const asideCollapsed = ref(false);
+const headerHeight = ref("8vh");
+const contentHeight = ref("70vh");
+const senderHeight = ref("22vh");
 
-const inputValue = ref('')
+const inputValue = ref("");
 
-const handleSend = (content) => {
-  console.log('发送消息:', content)
-}
+const handleSend = content => {
+  console.log("发送消息:", content);
+};
 </script>
 
 <style scoped>
@@ -78,30 +78,33 @@ const handleSend = (content) => {
 ## 组件特性
 
 ### 1. 自动布局
+
 - **头部区域**: 固定高度，不会被挤压
 - **内容区域**: 自动占据剩余空间，内容超出时内部滚动
 - **输入区域**: 固定高度，始终保持在底部
 - **侧边栏**: 可折叠，支持拖拽调整宽度
 
 ### 2. 响应式设计
+
 - 支持移动端适配
 - 小屏幕时自动折叠侧边栏
 - 所有区域都有最小高度保证
 
 ### 3. 滚动优化
+
 - 自定义滚动条样式
 - 平滑滚动体验
 - 防止布局抖动
 
 ## Props 配置
 
-| 属性 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| asideWidth | string | '260px' | 侧边栏宽度 |
-| collapsed | boolean | false | 是否默认折叠 |
-| headerHeight | string | '10vh' | 头部区域高度 |
-| contentHeight | string | '70vh' | 内容区域高度 |
-| senderHeight | string | '20vh' | 输入区域高度 |
+| 属性          | 类型    | 默认值  | 说明         |
+| ------------- | ------- | ------- | ------------ |
+| asideWidth    | string  | '260px' | 侧边栏宽度   |
+| collapsed     | boolean | false   | 是否默认折叠 |
+| headerHeight  | string  | '10vh'  | 头部区域高度 |
+| contentHeight | string  | '70vh'  | 内容区域高度 |
+| senderHeight  | string  | '20vh'  | 输入区域高度 |
 
 ## 样式定制
 

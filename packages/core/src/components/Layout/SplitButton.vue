@@ -7,59 +7,58 @@
     <IconRight v-if="collapsed" :size="iconSize" />
     <IconLeft v-else :size="iconSize" />
   </div>
-  
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import IconLeft from '@arco-design/web-vue/es/icon/icon-left'
-import IconRight from '@arco-design/web-vue/es/icon/icon-right'
+import { computed } from "vue";
+import IconLeft from "@arco-design/web-vue/es/icon/icon-left";
+import IconRight from "@arco-design/web-vue/es/icon/icon-right";
 
 /** 按钮类型 */
-type ButtonType = 'default' | 'circle'
+type ButtonType = "default" | "circle";
 
 /** 组件属性定义 */
 interface Props {
   /** 是否折叠状态 */
-  collapsed?: boolean
+  collapsed?: boolean;
   /** 按钮类型 */
-  type?: ButtonType
+  type?: ButtonType;
   /** 图标大小 */
-  iconSize?: number
+  iconSize?: number;
   /** 是否禁用 */
-  disabled?: boolean
+  disabled?: boolean;
 }
 
 /** 组件事件定义 */
 interface Emits {
-  (e: 'click'): void
-  (e: 'update:collapsed', value: boolean): void
+  (e: "click"): void;
+  (e: "update:collapsed", value: boolean): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   collapsed: false,
-  type: 'circle',
+  type: "circle",
   iconSize: 14,
-  disabled: false
-})
+  disabled: false,
+});
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>();
 
 /** 计算按钮类名 */
 const buttonClass = computed(() => [
   `gi-split-button--${props.type}`,
   {
-    'is-collapsed': props.collapsed,
-    'is-disabled': props.disabled
-  }
-])
+    "is-collapsed": props.collapsed,
+    "is-disabled": props.disabled,
+  },
+]);
 
 /** 处理点击事件 */
 const handleClick = () => {
-  if (props.disabled) return
-  emit('click')
-  emit('update:collapsed', !props.collapsed)
-}
+  if (props.disabled) return;
+  emit("click");
+  emit("update:collapsed", !props.collapsed);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -101,5 +100,3 @@ const handleClick = () => {
   }
 }
 </style>
-
-

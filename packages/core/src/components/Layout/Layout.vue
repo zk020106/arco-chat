@@ -14,16 +14,19 @@
       </template>
       <template #second>
         <div class="ac-layout-main">
-          <div 
-            v-if="$slots.header" 
+          <div
+            v-if="$slots.header"
             class="ac-layout-header"
-            :style="{ height: props.headerHeight, flex: `0 0 ${props.headerHeight}` }"
+            :style="{
+              height: props.headerHeight,
+              flex: `0 0 ${props.headerHeight}`,
+            }"
           >
             <div class="ac-header-content">
               <slot name="header" />
             </div>
           </div>
-          <div 
+          <div
             class="ac-layout-content"
             :style="{ height: props.contentHeight }"
           >
@@ -31,10 +34,13 @@
               <slot name="content" />
             </div>
           </div>
-          <div 
-            v-if="$slots.sender" 
+          <div
+            v-if="$slots.sender"
             class="ac-layout-sender"
-            :style="{ height: props.senderHeight, flex: `0 0 ${props.senderHeight}` }"
+            :style="{
+              height: props.senderHeight,
+              flex: `0 0 ${props.senderHeight}`,
+            }"
           >
             <div class="ac-sender-content">
               <slot name="sender" />
@@ -47,54 +53,53 @@
       </template>
     </a-split>
   </div>
-  
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useMutationObserver, useDebounceFn, useElementSize } from '@vueuse/core'
-import type { LayoutProps } from './layout-types'
-import SplitButton from './SplitButton.vue'
+import { ref, computed, watch } from "vue";
+import {
+  useMutationObserver,
+  useDebounceFn,
+  useElementSize,
+} from "@vueuse/core";
+import type { LayoutProps } from "./layout-types";
+import SplitButton from "./SplitButton.vue";
 
 const props = withDefaults(defineProps<LayoutProps>(), {
-  asideWidth: '260px',
+  asideWidth: "260px",
   collapsed: false,
-  headerHeight: '10vh',
-  contentHeight: '70vh',
-  senderHeight: '20vh'
-})
+  headerHeight: "10vh",
+  contentHeight: "70vh",
+  senderHeight: "20vh",
+});
 
-const defaultSize = props.asideWidth
-const size = ref(props.collapsed ? '0px' : defaultSize)
-const contentWrapperRef = ref<HTMLElement>()
+const defaultSize = props.asideWidth;
+const size = ref(props.collapsed ? "0px" : defaultSize);
+const contentWrapperRef = ref<HTMLElement>();
 
-const collapsedNow = computed(() => parseInt(size.value) <= 20)
+const collapsedNow = computed(() => parseInt(size.value) <= 20);
 
 function toggleCollapse() {
-  size.value = collapsedNow.value ? defaultSize : '0px'
+  size.value = collapsedNow.value ? defaultSize : "0px";
 }
 
 // 创建防抖函数，避免频繁触发重排
 const forceReflow = useDebounceFn(() => {
   if (contentWrapperRef.value) {
     // 触发重排，让浏览器重新计算滚动区域
-    contentWrapperRef.value.offsetHeight
+    contentWrapperRef.value.offsetHeight;
   }
-}, 16) // 16ms 防抖，约等于 60fps
+}, 16); // 16ms 防抖，约等于 60fps
 
 // 使用 @vueuse/core 的 useElementSize 监听元素大小变化
-const { width, height } = useElementSize(contentWrapperRef)
-watch([width, height], forceReflow, { flush: 'post' })
+const { width, height } = useElementSize(contentWrapperRef);
+watch([width, height], forceReflow, { flush: "post" });
 
 // 使用 @vueuse/core 的 useMutationObserver 监听 DOM 变化
-useMutationObserver(
-  contentWrapperRef,
-  forceReflow,
-  {
-    childList: true,
-    subtree: true
-  }
-)
+useMutationObserver(contentWrapperRef, forceReflow, {
+  childList: true,
+  subtree: true,
+});
 
 // Layout component - serves as the main container for the chat interface
 </script>
@@ -127,17 +132,17 @@ useMutationObserver(
   border-right: 1px solid var(--color-border-2);
   display: flex;
   flex-direction: column;
-  
+
   /* 隐藏滚动条但保持滚动功能 */
   &::-webkit-scrollbar {
     width: 0;
     background: transparent;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: transparent;
   }
@@ -156,7 +161,7 @@ useMutationObserver(
 /* 头部区域 */
 .ac-layout-header {
   overflow: hidden; /* 防止内容溢出 */
-  
+
   .ac-header-content {
     height: 100%;
     width: 100%;
@@ -179,7 +184,7 @@ useMutationObserver(
   min-height: 0; /* 关键：使其在flex容器内可收缩并滚动 */
   overflow: hidden; /* 防止内容溢出，由子组件处理滚动 */
   position: relative;
-  
+
   .ac-content-wrapper {
     height: 100%;
     width: 100%;
@@ -189,28 +194,28 @@ useMutationObserver(
     background-color: var(--color-bg-1);
     display: flex;
     flex-direction: column;
-    
+
     /* 隐藏滚动条但保持滚动功能 */
     &::-webkit-scrollbar {
       width: 0;
       background: transparent;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: transparent;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: transparent;
     }
-    
+
     /* 确保内容可以滚动 */
     min-height: 0;
     flex: 1;
-    
+
     /* 优化滚动性能 */
     scroll-behavior: smooth;
-    
+
     /* 强制浏览器立即重新计算布局 */
     will-change: scroll-position;
   }
@@ -219,7 +224,7 @@ useMutationObserver(
 /* 底部输入区 */
 .ac-layout-sender {
   overflow: hidden; /* 防止内容溢出 */
-  
+
   .ac-sender-content {
     width: 100%;
     padding: 16px;
@@ -228,7 +233,7 @@ useMutationObserver(
     display: flex;
     flex-direction: column;
     gap: 12px;
-    
+
     /* 确保输入区域不会被挤压 */
     flex-shrink: 0;
     min-height: fit-content;

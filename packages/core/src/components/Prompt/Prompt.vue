@@ -1,5 +1,8 @@
 <template>
-  <div class="ac-prompt" :class="[`ac-prompt-${variantClass}`, `ac-prompt-dir-${directionClass}`]">
+  <div
+    class="ac-prompt"
+    :class="[`ac-prompt-${variantClass}`, `ac-prompt-dir-${directionClass}`]"
+  >
     <div v-if="title || $slots.header" class="ac-prompt-header">
       <slot name="header">{{ title }}</slot>
     </div>
@@ -12,12 +15,22 @@
         @click="handleItemClick(item)"
       >
         <span v-if="item.iconConfig" class="ac-prompt-item-icon">
-          <component :is="item.iconConfig.component" v-if="item.iconConfig.component" :style="iconStyle(item.iconConfig)" />
-          <i v-else :class="item.iconConfig.name" :style="iconStyle(item.iconConfig)" />
+          <component
+            :is="item.iconConfig.component"
+            v-if="item.iconConfig.component"
+            :style="iconStyle(item.iconConfig)"
+          />
+          <i
+            v-else
+            :class="item.iconConfig.name"
+            :style="iconStyle(item.iconConfig)"
+          />
         </span>
         <div class="ac-prompt-item-content-wrap">
           <div class="ac-prompt-item-title">{{ item.label }}</div>
-          <div v-if="item.desc" class="ac-prompt-item-content">{{ item.desc }}</div>
+          <div v-if="item.desc" class="ac-prompt-item-content">
+            {{ item.desc }}
+          </div>
         </div>
       </div>
       <div v-if="list.length === 0" class="ac-prompt-empty">
@@ -28,39 +41,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { PromptItem, PromptProps } from './prompt-types'
-import { ListDirection, ListVariant } from './prompt-types'
+import { ref, computed } from "vue";
+import type { PromptItem, PromptProps } from "./prompt-types";
+import { ListDirection, ListVariant } from "./prompt-types";
 
 const props = withDefaults(defineProps<PromptProps>(), {
   direction: ListDirection.Vertical,
   list: () => [],
   variant: ListVariant.Filled,
-  title: '',
+  title: "",
   onItemClick: undefined,
-})
+});
 
 /**
  * Prompt 组件支持的事件
  * @event item-click - 点击提示项
  */
-const emit = defineEmits<(e: 'item-click', item: PromptItem) => void>()
+const emit = defineEmits<(e: "item-click", item: PromptItem) => void>();
 
-const activeIndex = ref(-1)
+const activeIndex = ref(-1);
 
-const directionClass = computed(() => props.direction ?? 'vertical')
-const variantClass = computed(() => props.variant ?? 'filled')
+const directionClass = computed(() => props.direction ?? "vertical");
+const variantClass = computed(() => props.variant ?? "filled");
 
 function iconStyle(icon: any) {
   return {
-    fontSize: icon.size || '20px',
-    color: icon.color || 'var(--color-primary, #165dff)',
-  }
+    fontSize: icon.size || "20px",
+    color: icon.color || "var(--color-primary, #165dff)",
+  };
 }
 
 const handleItemClick = (item: PromptItem) => {
-  emit('item-click', item)
-}
+  emit("item-click", item);
+};
 </script>
 
 <style scoped lang="scss">
@@ -99,7 +112,10 @@ const handleItemClick = (item: PromptItem) => {
   border-radius: var(--border-radius-medium, 10px);
   background-color: var(--color-fill-2, #f7f8fa);
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s, border 0.2s;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s,
+    border 0.2s;
   border: none;
 }
 
@@ -128,7 +144,7 @@ const handleItemClick = (item: PromptItem) => {
 
 /* 列表项激活状态 */
 .ac-prompt-item-active {
-  box-shadow: 0 0 0 2px var(--color-primary-light-2, rgba(22,93,255,0.08));
+  box-shadow: 0 0 0 2px var(--color-primary-light-2, rgba(22, 93, 255, 0.08));
 }
 
 /* 列表项图标 */

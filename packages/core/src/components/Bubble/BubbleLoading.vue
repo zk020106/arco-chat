@@ -8,43 +8,43 @@
 
 <script setup lang="ts"></script>
 
-  <style scoped lang="scss">
-  .ac-bubble-loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    height: 100%;
+<style scoped lang="scss">
+.ac-bubble-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
 
-    .loading-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 5px;
-      background-color: #9880ff;
+  .loading-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
+    background-color: #9880ff;
 
-      &.dot-start {
-        animation: dotFlashing 1s infinite linear alternate;
-        animation-delay: 0s;
-      }
+    &.dot-start {
+      animation: dotFlashing 1s infinite linear alternate;
+      animation-delay: 0s;
+    }
 
-      &.dot-middle {
-        animation: dotFlashing 1s infinite linear alternate;
-        animation-delay: 0.5s;
-      }
+    &.dot-middle {
+      animation: dotFlashing 1s infinite linear alternate;
+      animation-delay: 0.5s;
+    }
 
-      &.dot-end {
-        animation: dotFlashing 1s infinite linear alternate;
-        animation-delay: 1s;
-      }
+    &.dot-end {
+      animation: dotFlashing 1s infinite linear alternate;
+      animation-delay: 1s;
     }
   }
+}
 
-  @keyframes dotFlashing {
-    0% {
-      background-color: #9880ff;
-    }
-    100% {
-      background-color: #ebe6ff;
-    }
+@keyframes dotFlashing {
+  0% {
+    background-color: #9880ff;
   }
-  </style>
+  100% {
+    background-color: #ebe6ff;
+  }
+}
+</style>

@@ -6,7 +6,9 @@
       <a-tag size="small" color="blue" class="dev-tag">开发模式</a-tag>
     </div>
     <div class="test-buttons">
-      <a-tooltip :content="localTypewriterEnabled ? '关闭打字机效果' : '开启打字机效果'">
+      <a-tooltip
+        :content="localTypewriterEnabled ? '关闭打字机效果' : '开启打字机效果'"
+      >
         <a-button
           size="small"
           :type="localTypewriterEnabled ? 'primary' : 'outline'"
@@ -86,69 +88,84 @@
     </div>
   </div>
 </template>
-  
-  <script setup lang="ts">
-  import { ref } from 'vue'
-  import { Message } from '@arco-design/web-vue'
-  import { IconCode, IconFile, IconList, IconBranch, IconNav, IconSun, IconApps, IconDelete, IconEdit } from '@arco-design/web-vue/es/icon'
-  import type { BubbleMessage } from 'arco-design-x'
-  
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { Message } from "@arco-design/web-vue";
+import {
+  IconCode,
+  IconFile,
+  IconList,
+  IconBranch,
+  IconNav,
+  IconSun,
+  IconApps,
+  IconDelete,
+  IconEdit,
+} from "@arco-design/web-vue/es/icon";
+import type { BubbleMessage } from "arco-design-x";
+
 // 定义 emits
 interface Emits {
-  (e: 'add-message', message: BubbleMessage): void
-  (e: 'clear-all'): void
+  (e: "add-message", message: BubbleMessage): void;
+  (e: "clear-all"): void;
 }
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>();
 
 // 本地打字机状态
-const localTypewriterEnabled = ref(true)
+const localTypewriterEnabled = ref(true);
 
 // 切换打字机状态
 const toggleTypewriter = () => {
-  localTypewriterEnabled.value = !localTypewriterEnabled.value
-  Message.success(localTypewriterEnabled.value ? '已开启打字机效果' : '已关闭打字机效果')
-}
-  
-  // 生成唯一 ID
-  const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9)
-  
-  // 默认打字机配置
-  const defaultTypewriterConfig = {
-    speed: 50,
-    showCursor: true,
-    cursorStyle: '|',
-    cursorBlinkSpeed: 530,
-    autoStart: true,
-    delayAfterComplete: 0,
-  }
-  
-  // 创建基础消息对象
-  const createBaseMessage = (content: string): BubbleMessage => ({
-    id: generateId(),
-    content,
-    userId: 'assistant',
-    userName: 'AI 助手',
-    align: 'start',
-    timestamp: Date.now(),
-    markdown: true,
-    typewriter: localTypewriterEnabled.value,
-    typewriterConfig: localTypewriterEnabled.value ? defaultTypewriterConfig : undefined,
-    avatarConfig: {
-      imageUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
-    },
-  })
-  
-  // 创建并发送消息的通用函数
-  const createAndSendMessage = (content: string, successMessage: string) => {
-    const message = createBaseMessage(content)
-    emit('add-message', message)
-    Message.success(successMessage)
-  }
-  
-  // 测试基础 Markdown
-  const testBasicMarkdown = () => {
-    const content = `# 基础 Markdown 测试
+  localTypewriterEnabled.value = !localTypewriterEnabled.value;
+  Message.success(
+    localTypewriterEnabled.value ? "已开启打字机效果" : "已关闭打字机效果"
+  );
+};
+
+// 生成唯一 ID
+const generateId = () =>
+  Date.now().toString() + Math.random().toString(36).substr(2, 9);
+
+// 默认打字机配置
+const defaultTypewriterConfig = {
+  speed: 50,
+  showCursor: true,
+  cursorStyle: "|",
+  cursorBlinkSpeed: 530,
+  autoStart: true,
+  delayAfterComplete: 0,
+};
+
+// 创建基础消息对象
+const createBaseMessage = (content: string): BubbleMessage => ({
+  id: generateId(),
+  content,
+  userId: "assistant",
+  userName: "AI 助手",
+  align: "start",
+  timestamp: Date.now(),
+  markdown: true,
+  typewriter: localTypewriterEnabled.value,
+  typewriterConfig: localTypewriterEnabled.value
+    ? defaultTypewriterConfig
+    : undefined,
+  avatarConfig: {
+    imageUrl: "https://avatars.githubusercontent.com/u/2?v=4",
+  },
+});
+
+// 创建并发送消息的通用函数
+const createAndSendMessage = (content: string, successMessage: string) => {
+  const message = createBaseMessage(content);
+  emit("add-message", message);
+  Message.success(successMessage);
+};
+
+// 测试基础 Markdown
+const testBasicMarkdown = () => {
+  const content = `# 基础 Markdown 测试
   
 这是一个 **粗体文本** 和 *斜体文本* 的测试。
 
@@ -176,27 +193,26 @@ const toggleTypewriter = () => {
 
 ## 行内代码
 
-这里有一个 \`console.log('Hello World')\` 的示例。`
-    
-    createAndSendMessage(content, '已添加基础 Markdown 测试消息')
-  }
-  
-  // 测试代码块
-  const testCodeBlock = () => {
-    const content = `\`\`\`javascript
+这里有一个 \`console.log('Hello World')\` 的示例。`;
+
+  createAndSendMessage(content, "已添加基础 Markdown 测试消息");
+};
+
+// 测试代码块
+const testCodeBlock = () => {
+  const content = `\`\`\`javascript
 function padEnd(string, length, chars) {
   const strLength = length ? stringSize(string) : 0
   return (length && strLength < length) ? (string + createPadding(length - strLength, chars)) : (string || '')
 }
-\`\`\``
-    
-    createAndSendMessage(content, '已添加代码块测试消息')
-  }
+\`\`\``;
 
-  
-  // 测试表格
-  const testTable = () => {
-    const content = `# 表格测试
+  createAndSendMessage(content, "已添加代码块测试消息");
+};
+
+// 测试表格
+const testTable = () => {
+  const content = `# 表格测试
 
 ## 基础表格
 
@@ -222,14 +238,14 @@ function padEnd(string, length, chars) {
 |:-------|:-------:|-------:|
 | 文本内容 | 文本内容 | 文本内容 |
 | 较长的文本内容 | 较长的文本内容 | 较长的文本内容 |
-| 短文本 | 短文本 | 短文本 |`
-    
-    createAndSendMessage(content, '已添加表格测试消息')
-  }
-  
-  // 测试数学公式
-  const testMathFormula = () => {
-    const content = `# 数学公式测试
+| 短文本 | 短文本 | 短文本 |`;
+
+  createAndSendMessage(content, "已添加表格测试消息");
+};
+
+// 测试数学公式
+const testMathFormula = () => {
+  const content = `# 数学公式测试
   
 ## 行内数学公式
   
@@ -249,14 +265,14 @@ $$e^{i\\pi} + 1 = 0$$
   
 ### 积分公式
   
-$$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$`
-    
-    createAndSendMessage(content, '已添加数学公式测试消息')
-  }
-  
-  // 测试 Mermaid 图表
-  const testMermaid = () => {
-    const content = `# Mermaid 图表测试
+$$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$`;
+
+  createAndSendMessage(content, "已添加数学公式测试消息");
+};
+
+// 测试 Mermaid 图表
+const testMermaid = () => {
+  const content = `# Mermaid 图表测试
 \`\`\`mermaid
 xychart
     title "Sales Revenue"
@@ -295,14 +311,14 @@ sequenceDiagram
     D-->>B: 返回结果
     B-->>F: 响应数据
     F-->>U: 显示结果
-\`\`\``
-    
-    createAndSendMessage(content, '已添加 Mermaid 图表测试消息')
-  }
-  
-  // 测试 Emoji 表情
-  const testEmoji = () => {
-    const content = `# Emoji 表情测试
+\`\`\``;
+
+  createAndSendMessage(content, "已添加 Mermaid 图表测试消息");
+};
+
+// 测试 Emoji 表情
+const testEmoji = () => {
+  const content = `# Emoji 表情测试
   
 ## 基础表情
   
@@ -310,14 +326,14 @@ sequenceDiagram
   
 ## 手势和身体部位
   
-👋 🤚 🖐️ ✋ 🖖 👌 🤏 ✌️ 🤞 🤟 🤘 🤙 👈 👉 👆 🖕 👇 ☝️ 👍 👎 👊 ✊ 🤛 🤜 👏 🙌 👐 🤲 🤝 🙏 ✍️ 💅 🤳 💪 🦾 🦿 🦵 🦶 👂 🦻 👃 🧠 🦷 🦴 👀 👁️ 👅 👄 💋 🩸`
-    
-    createAndSendMessage(content, '已添加 Emoji 表情测试消息')
-  }
-  
-  // 测试复杂内容
-  const testComplex = () => {
-    const content = `# 🎨 复杂 Markdown 内容测试
+👋 🤚 🖐️ ✋ 🖖 👌 🤏 ✌️ 🤞 🤟 🤘 🤙 👈 👉 👆 🖕 👇 ☝️ 👍 👎 👊 ✊ 🤛 🤜 👏 🙌 👐 🤲 🤝 🙏 ✍️ 💅 🤳 💪 🦾 🦿 🦵 🦶 👂 🦻 👃 🧠 🦷 🦴 👀 👁️ 👅 👄 💋 🩸`;
+
+  createAndSendMessage(content, "已添加 Emoji 表情测试消息");
+};
+
+// 测试复杂内容
+const testComplex = () => {
+  const content = `# 🎨 复杂 Markdown 内容测试
   
 ## 📊 数据分析报告
   
@@ -406,25 +422,29 @@ class UserService {
   
 ---
   
-*最后更新时间: 2024-01-15*`
-    
-    createAndSendMessage(content, '已添加复杂内容测试消息')
-  }
+*最后更新时间: 2024-01-15*`;
+
+  createAndSendMessage(content, "已添加复杂内容测试消息");
+};
 
 // 清空所有消息
 const clearAllMessages = () => {
-  emit('clear-all')
-  Message.success('已清空所有测试消息')
-}
-  </script>
-  
-  <style scoped lang="scss">
+  emit("clear-all");
+  Message.success("已清空所有测试消息");
+};
+</script>
+
+<style scoped lang="scss">
 .markdown-test-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  background: linear-gradient(135deg, var(--color-fill-1) 0%, var(--color-fill-2) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-fill-1) 0%,
+    var(--color-fill-2) 100%
+  );
   border-bottom: 1px solid var(--color-border-2);
   margin-bottom: 8px;
   border-radius: 8px 8px 0 0;
@@ -512,7 +532,7 @@ const clearAllMessages = () => {
       .typewriter-btn {
         font-size: 10px;
         min-width: 60px;
-        
+
         .arco-icon {
           font-size: 11px;
         }
@@ -562,4 +582,4 @@ const clearAllMessages = () => {
     }
   }
 }
-  </style>
+</style>

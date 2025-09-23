@@ -16,8 +16,8 @@
 
 ```vue
 <template>
-  <Typewriter 
-    :text="message" 
+  <Typewriter
+    :text="message"
     :config="config"
     @complete="handleComplete"
     @start="handleStart"
@@ -26,72 +26,72 @@
 </template>
 
 <script setup>
-import { Typewriter } from '@arco-design/x'
+import { Typewriter } from "@arco-design/x";
 
-const message = 'Hello, World!'
+const message = "Hello, World!";
 const config = {
   speed: 100,
   showCursor: true,
-  cursorStyle: '|',
+  cursorStyle: "|",
   cursorBlinkSpeed: 530,
   autoStart: true,
-  delayAfterComplete: 0
-}
+  delayAfterComplete: 0,
+};
 
 const handleComplete = () => {
-  console.log('打字完成')
-}
+  console.log("打字完成");
+};
 
 const handleStart = () => {
-  console.log('开始打字')
-}
+  console.log("开始打字");
+};
 
 const handleTyping = (currentText, progress) => {
-  console.log('当前文本:', currentText, '进度:', progress)
-}
+  console.log("当前文本:", currentText, "进度:", progress);
+};
 </script>
 ```
 
 ## Props
 
-| 参数 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| text | 要显示的文本内容 | `string` | `''` |
-| config | 打字机配置 | `TypewriterConfig` | 见下方配置说明 |
-| immediate | 是否立即开始打字动画 | `boolean` | `false` |
+| 参数      | 说明                 | 类型               | 默认值         |
+| --------- | -------------------- | ------------------ | -------------- |
+| text      | 要显示的文本内容     | `string`           | `''`           |
+| config    | 打字机配置           | `TypewriterConfig` | 见下方配置说明 |
+| immediate | 是否立即开始打字动画 | `boolean`          | `false`        |
 
 ## TypewriterConfig
 
-| 参数 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| speed | 打字速度，每个字符的间隔时间（毫秒） | `number` | `50` |
-| showCursor | 是否显示光标 | `boolean` | `true` |
-| cursorStyle | 光标样式 | `string` | `'|'` |
-| cursorBlinkSpeed | 光标闪烁间隔时间（毫秒） | `number` | `530` |
-| autoStart | 是否自动开始打字动画 | `boolean` | `true` |
-| delayAfterComplete | 打字完成后的延迟时间（毫秒） | `number` | `0` |
+| 参数               | 说明                                 | 类型      | 默认值 |
+| ------------------ | ------------------------------------ | --------- | ------ | --- |
+| speed              | 打字速度，每个字符的间隔时间（毫秒） | `number`  | `50`   |
+| showCursor         | 是否显示光标                         | `boolean` | `true` |
+| cursorStyle        | 光标样式                             | `string`  | `'     | '`  |
+| cursorBlinkSpeed   | 光标闪烁间隔时间（毫秒）             | `number`  | `530`  |
+| autoStart          | 是否自动开始打字动画                 | `boolean` | `true` |
+| delayAfterComplete | 打字完成后的延迟时间（毫秒）         | `number`  | `0`    |
 
 ## Events
 
-| 事件名 | 说明 | 回调参数 |
-| --- | --- | --- |
-| complete | 打字完成时触发 | `()` |
-| start | 开始打字时触发 | `()` |
-| typing | 打字过程中触发 | `(currentText: string, progress: number)` |
+| 事件名   | 说明           | 回调参数                                  |
+| -------- | -------------- | ----------------------------------------- |
+| complete | 打字完成时触发 | `()`                                      |
+| start    | 开始打字时触发 | `()`                                      |
+| typing   | 打字过程中触发 | `(currentText: string, progress: number)` |
 
 ## 暴露的方法
 
 通过 ref 可以调用以下方法：
 
-| 方法名 | 说明 | 参数 | 返回值 |
-| --- | --- | --- | --- |
-| startTyping | 开始打字动画 | - | `Promise<void>` |
-| stopTyping | 停止打字动画 | - | `void` |
-| reset | 重置打字机 | - | `void` |
-| complete | 完成打字 | - | `void` |
-| isTyping | 是否正在打字 | - | `boolean` |
-| isComplete | 是否已完成 | - | `boolean` |
-| progress | 当前进度 | - | `number` |
+| 方法名      | 说明         | 参数 | 返回值          |
+| ----------- | ------------ | ---- | --------------- |
+| startTyping | 开始打字动画 | -    | `Promise<void>` |
+| stopTyping  | 停止打字动画 | -    | `void`          |
+| reset       | 重置打字机   | -    | `void`          |
+| complete    | 完成打字     | -    | `void`          |
+| isTyping    | 是否正在打字 | -    | `boolean`       |
+| isComplete  | 是否已完成   | -    | `boolean`       |
+| progress    | 当前进度     | -    | `number`        |
 
 ## 使用示例
 
@@ -108,23 +108,23 @@ const handleTyping = (currentText, progress) => {
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Typewriter } from '@arco-design/x'
+import { ref } from "vue";
+import { Typewriter } from "@arco-design/x";
 
-const typewriterRef = ref()
-const text = '这是一个可以手动控制的打字机效果'
+const typewriterRef = ref();
+const text = "这是一个可以手动控制的打字机效果";
 
 const start = () => {
-  typewriterRef.value?.startTyping()
-}
+  typewriterRef.value?.startTyping();
+};
 
 const stop = () => {
-  typewriterRef.value?.stopTyping()
-}
+  typewriterRef.value?.stopTyping();
+};
 
 const reset = () => {
-  typewriterRef.value?.reset()
-}
+  typewriterRef.value?.reset();
+};
 </script>
 ```
 
@@ -132,23 +132,23 @@ const reset = () => {
 
 ```vue
 <template>
-  <Typewriter 
-    :text="text" 
+  <Typewriter
+    :text="text"
     :config="{
       speed: 200,
       showCursor: true,
       cursorStyle: '█',
       cursorBlinkSpeed: 1000,
       autoStart: true,
-      delayAfterComplete: 1000
+      delayAfterComplete: 1000,
     }"
   />
 </template>
 
 <script setup>
-import { Typewriter } from '@arco-design/x'
+import { Typewriter } from "@arco-design/x";
 
-const text = '自定义配置的打字机效果'
+const text = "自定义配置的打字机效果";
 </script>
 ```
 

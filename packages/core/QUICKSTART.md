@@ -21,61 +21,57 @@ npm install arco-design-x
           @load-more="loadMore"
         />
       </template>
-      
+
       <!-- 输入框 -->
       <template #sender>
-        <Input
-          v-model="input"
-          :loading="loading"
-          @submit="sendMessage"
-        />
+        <Input v-model="input" :loading="loading" @submit="sendMessage" />
       </template>
     </Layout>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Layout, BubbleList, Input } from 'arco-design-x'
+import { ref } from "vue";
+import { Layout, BubbleList, Input } from "arco-design-x";
 
-const input = ref('')
-const loading = ref(false)
+const input = ref("");
+const loading = ref(false);
 const messages = ref([
   {
-    id: '1',
-    content: '你好！有什么可以帮助你的吗？',
-    align: 'start',
-    timestamp: Date.now()
-  }
-])
+    id: "1",
+    content: "你好！有什么可以帮助你的吗？",
+    align: "start",
+    timestamp: Date.now(),
+  },
+]);
 
-const sendMessage = async (message) => {
+const sendMessage = async message => {
   // 添加用户消息
   messages.value.push({
     id: Date.now().toString(),
     content: message,
-    align: 'end',
-    timestamp: Date.now()
-  })
-  
+    align: "end",
+    timestamp: Date.now(),
+  });
+
   // 显示 AI 回复
-  loading.value = true
+  loading.value = true;
   const aiMessage = {
     id: (Date.now() + 1).toString(),
-    content: '这是 AI 的回复...',
-    align: 'start',
+    content: "这是 AI 的回复...",
+    align: "start",
     timestamp: Date.now(),
     typewriter: true,
-    markdown: true
-  }
-  messages.value.push(aiMessage)
-  loading.value = false
-}
+    markdown: true,
+  };
+  messages.value.push(aiMessage);
+  loading.value = false;
+};
 
 const loadMore = () => {
   // 加载历史消息
-  console.log('加载更多消息')
-}
+  console.log("加载更多消息");
+};
 </script>
 
 <style>
@@ -94,7 +90,7 @@ const loadMore = () => {
   v-model="input"
   :voice-input="{
     enabled: true,
-    customRecognition: myVoiceRecognition
+    customRecognition: myVoiceRecognition,
   }"
   @submit="sendMessage"
 >
@@ -116,9 +112,9 @@ const loadMore = () => {
       trigger: '/',
       getSuggestions: () => [
         { text: '清空对话', value: '/clear' },
-        { text: '导出记录', value: '/export' }
-      ]
-    }
+        { text: '导出记录', value: '/export' },
+      ],
+    },
   ]"
   @command-trigger="handleCommand"
   @submit="sendMessage"
@@ -145,6 +141,5 @@ const loadMore = () => {
 ## 组件 API
 
 - [Layout 组件](./src/components/Layout/README.md)
-- [BubbleList 组件](./src/components/Bubble/README.md)  
+- [BubbleList 组件](./src/components/Bubble/README.md)
 - [Input 组件](./src/components/Input/README.md)
-

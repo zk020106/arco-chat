@@ -1,7 +1,13 @@
 <template>
   <div class="ac-mention-host">
-    <slot /> <!-- default 插槽：自定义宿主元素 -->
-    <div v-if="props.modelValue" class="ac-mention-menu" :class="[props.menuClass]" :style="menuStyle">
+    <slot />
+    <!-- default 插槽：自定义宿主元素 -->
+    <div
+      v-if="props.modelValue"
+      class="ac-mention-menu"
+      :class="[props.menuClass]"
+      :style="menuStyle"
+    >
       <slot name="menu">
         <!-- 默认弹出框内容，兼容 items/activeIndex 逻辑 -->
         <div class="ac-mention-list">
@@ -18,7 +24,9 @@
             </div>
             <div class="ac-mention-item-info">
               <div class="ac-mention-item-name">{{ item.name }}</div>
-              <div v-if="item.description" class="ac-mention-item-description">{{ item.description }}</div>
+              <div v-if="item.description" class="ac-mention-item-description">
+                {{ item.description }}
+              </div>
             </div>
           </div>
           <div v-if="items.length === 0" class="ac-mention-empty">
@@ -31,100 +39,108 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import type { CSSProperties } from 'vue'
-import type { MentionItem, Prefix, SearchChangeEvent } from './mention-types'
+import { ref, computed, watch } from "vue";
+import type { CSSProperties } from "vue";
+import type { MentionItem, Prefix, SearchChangeEvent } from "./mention-types";
 
 interface MentionProps {
   /** 控制组件是否显示 */
-  modelValue: boolean
+  modelValue: boolean;
   /** 触发组件的前缀符 */
-  prefix?: Prefix
+  prefix?: Prefix;
   /** 是否和宿主元素宽度保持一致 */
-  fitHostWidth?: boolean
+  fitHostWidth?: boolean;
   /** 自定义弹出框样式 */
-  menuClass?: string
+  menuClass?: string;
   /** 菜单项列表 */
-  items?: MentionItem[]
+  items?: MentionItem[];
   /** 搜索文本 */
-  searchText?: string
+  searchText?: string;
 }
 
 const props = withDefaults(defineProps<MentionProps>(), {
   modelValue: false,
-  prefix: () => ['@'],
+  prefix: () => ["@"],
   fitHostWidth: true,
-  menuClass: '',
+  menuClass: "",
   items: () => [],
-  searchText: ''
-})
+  searchText: "",
+});
 const emit = defineEmits<{
-  (e: 'searchChange', event: SearchChangeEvent): void
-  (e: 'toggleChange', open: boolean): void
-  (e: 'select', item: MentionItem): void
-}>()
+  (e: "searchChange", event: SearchChangeEvent): void;
+  (e: "toggleChange", open: boolean): void;
+  (e: "select", item: MentionItem): void;
+}>();
 
-const activeIndex = ref(0)
-const items = computed(() => props.items || [])
-const searchText = computed(() => props.searchText || '')
+const activeIndex = ref(0);
+const items = computed(() => props.items || []);
+const searchText = computed(() => props.searchText || "");
 const menuStyle = computed<CSSProperties>(() => {
   // 返回实际样式对象，示例：
-  return {}
-})
+  return {};
+});
 
 const filteredItems = computed(() => {
   if (!searchText.value) {
-    return items.value
+    return items.value;
   }
-  let query = searchText.value.toLowerCase()
-  let prefixStr = ''
+  let query = searchText.value.toLowerCase();
+  let prefixStr = "";
   if (Array.isArray(props.prefix)) {
-    const first = props.prefix[0]
-    prefixStr = typeof first === 'string' ? first : (first && typeof first.key === 'string' ? first.key : '')
-  } else if (typeof props.prefix === 'string') {
-    prefixStr = props.prefix
-  } else if (props.prefix && typeof (props.prefix as any).key === 'string') {
-    prefixStr = (props.prefix as any).key
+    const first = props.prefix[0];
+    prefixStr =
+      typeof first === "string"
+        ? first
+        : first && typeof first.key === "string"
+          ? first.key
+          : "";
+  } else if (typeof props.prefix === "string") {
+    prefixStr = props.prefix;
+  } else if (props.prefix && typeof (props.prefix as any).key === "string") {
+    prefixStr = (props.prefix as any).key;
   }
   if (prefixStr) {
-    query = query.replace(prefixStr, '')
+    query = query.replace(prefixStr, "");
   }
-  return items.value.filter((item) =>
-    item.name.toLowerCase().includes(query)
-    || (item.description && item.description.toLowerCase().includes(query)),
-  )
-})
+  return items.value.filter(
+    item =>
+      item.name.toLowerCase().includes(query) ||
+      (item.description && item.description.toLowerCase().includes(query))
+  );
+});
 
 watch(filteredItems, () => {
-  activeIndex.value = 0
-})
+  activeIndex.value = 0;
+});
 
 const handleItemClick = (item: MentionItem) => {
-  emit('select', item)
-}
+  emit("select", item);
+};
 
 const selectActive = () => {
   if (filteredItems.value.length > 0) {
-    emit('select', filteredItems.value[activeIndex.value])
+    emit("select", filteredItems.value[activeIndex.value]);
   }
-}
+};
 
-const moveSelection = (direction: 'up' | 'down') => {
-  if (direction === 'up') {
-    activeIndex.value = activeIndex.value <= 0
-      ? filteredItems.value.length - 1
-      : activeIndex.value - 1
+const moveSelection = (direction: "up" | "down") => {
+  if (direction === "up") {
+    activeIndex.value =
+      activeIndex.value <= 0
+        ? filteredItems.value.length - 1
+        : activeIndex.value - 1;
   } else {
-    activeIndex.value = activeIndex.value >= filteredItems.value.length - 1
-      ? 0
-      : activeIndex.value + 1
+    activeIndex.value =
+      activeIndex.value >= filteredItems.value.length - 1
+        ? 0
+        : activeIndex.value + 1;
   }
-}
+};
 
 defineExpose({
   selectActive,
   moveSelection,
-})
+});
 </script>
 
 <style scoped lang="scss">

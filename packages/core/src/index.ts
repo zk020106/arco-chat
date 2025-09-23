@@ -1,17 +1,17 @@
-import './style.css'
-import '@arco-design/web-vue/dist/arco.css'
-export { Bubble, BubbleList } from './components/Bubble'
-export { Typewriter } from './components/Typewriter'
-export { Input } from './components/Input'
-export { Mention } from './components/Mention'
-export { Prompt } from './components/Prompt'
-export { Layout} from './components/Layout'
-export { MarkdownRender } from './components/MarkdownRender'
+import "./style.css";
+import "@arco-design/web-vue/dist/arco.css";
+export { Bubble, BubbleList } from "./components/Bubble";
+export { Typewriter } from "./components/Typewriter";
+export { Input } from "./components/Input";
+export { Mention } from "./components/Mention";
+export { Prompt } from "./components/Prompt";
+export { Layout } from "./components/Layout";
+export { MarkdownRender } from "./components/MarkdownRender";
 // Re-export types
-export * from './components/Bubble/bubble-types'
-export * from './components/Typewriter/typewriter-types'
-export * from './components/Input/input-types'
-export * from './components/Layout/layout-types'
-export * from './components/MarkdownRender/markdown-render-types'
-export * from './components/Mention/mention-types'
-export * from './components/Prompt/prompt-types'
+export * from "./components/Bubble/bubble-types";
+export * from "./components/Typewriter/typewriter-types";
+export * from "./components/Input/input-types";
+export * from "./components/Layout/layout-types";
+export * from "./components/MarkdownRender/markdown-render-types";
+export * from "./components/Mention/mention-types";
+export * from "./components/Prompt/prompt-types";

@@ -39,60 +39,56 @@ pnpm add arco-design-x
           @load-more="loadMore"
         />
       </template>
-      
+
       <!-- 输入框 -->
       <template #sender>
-        <Input
-          v-model="input"
-          :loading="loading"
-          @submit="sendMessage"
-        />
+        <Input v-model="input" :loading="loading" @submit="sendMessage" />
       </template>
     </Layout>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Layout, BubbleList, Input } from 'arco-design-x'
+import { ref } from "vue";
+import { Layout, BubbleList, Input } from "arco-design-x";
 
-const input = ref('')
-const loading = ref(false)
+const input = ref("");
+const loading = ref(false);
 const messages = ref([
   {
-    id: '1',
-    content: '你好！有什么可以帮助你的吗？',
-    align: 'start',
-    timestamp: Date.now()
-  }
-])
+    id: "1",
+    content: "你好！有什么可以帮助你的吗？",
+    align: "start",
+    timestamp: Date.now(),
+  },
+]);
 
-const sendMessage = async (message) => {
+const sendMessage = async message => {
   // 添加用户消息
   messages.value.push({
     id: Date.now().toString(),
     content: message,
-    align: 'end',
-    timestamp: Date.now()
-  })
-  
+    align: "end",
+    timestamp: Date.now(),
+  });
+
   // 显示 AI 回复
-  loading.value = true
+  loading.value = true;
   const aiMessage = {
     id: (Date.now() + 1).toString(),
-    content: '这是 AI 的回复...',
-    align: 'start',
+    content: "这是 AI 的回复...",
+    align: "start",
     timestamp: Date.now(),
     typewriter: true,
-    markdown: true
-  }
-  messages.value.push(aiMessage)
-  loading.value = false
-}
+    markdown: true,
+  };
+  messages.value.push(aiMessage);
+  loading.value = false;
+};
 
 const loadMore = () => {
-  console.log('加载更多消息')
-}
+  console.log("加载更多消息");
+};
 </script>
 
 <style>
@@ -111,7 +107,7 @@ const loadMore = () => {
   v-model="input"
   :voice-input="{
     enabled: true,
-    customRecognition: myVoiceRecognition
+    customRecognition: myVoiceRecognition,
   }"
   @submit="sendMessage"
 >
@@ -133,9 +129,9 @@ const loadMore = () => {
       trigger: '/',
       getSuggestions: () => [
         { text: '清空对话', value: '/clear' },
-        { text: '导出记录', value: '/export' }
-      ]
-    }
+        { text: '导出记录', value: '/export' },
+      ],
+    },
   ]"
   @command-trigger="handleCommand"
   @submit="sendMessage"
@@ -146,21 +142,21 @@ const loadMore = () => {
 
 ### 核心组件
 
-| 组件 | 描述 | 文档 |
-|------|------|------|
-| **Layout** | 聊天界面布局组件 | [查看文档](./src/components/Layout/README.md) |
+| 组件           | 描述             | 文档                                          |
+| -------------- | ---------------- | --------------------------------------------- |
+| **Layout**     | 聊天界面布局组件 | [查看文档](./src/components/Layout/README.md) |
 | **BubbleList** | 消息列表容器组件 | [查看文档](./src/components/Bubble/README.md) |
-| **Bubble** | 单个消息气泡组件 | [查看文档](./src/components/Bubble/README.md) |
-| **Input** | 智能输入框组件 | [查看文档](./src/components/Input/README.md) |
+| **Bubble**     | 单个消息气泡组件 | [查看文档](./src/components/Bubble/README.md) |
+| **Input**      | 智能输入框组件   | [查看文档](./src/components/Input/README.md)  |
 
 ### 辅助组件
 
-| 组件 | 描述 |
-|------|------|
-| **Typewriter** | 打字机动画组件 |
+| 组件               | 描述              |
+| ------------------ | ----------------- |
+| **Typewriter**     | 打字机动画组件    |
 | **MarkdownRender** | Markdown 渲染组件 |
-| **VoiceInput** | 语音输入组件 |
-| **CommandTrigger** | 指令触发组件 |
+| **VoiceInput**     | 语音输入组件      |
+| **CommandTrigger** | 指令触发组件      |
 
 ## 🎯 使用场景
 

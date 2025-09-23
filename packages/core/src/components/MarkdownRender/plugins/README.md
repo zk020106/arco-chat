@@ -5,12 +5,15 @@ MarkdownRender 组件提供了一个强大的插件系统，支持动态添加�
 ## 内置插件
 
 ### 1. Mermaid 插件
+
 支持流程图、序列图、甘特图等 Mermaid 图表。
 
 ### 2. LaTeX 插件
+
 支持数学公式渲染，包括内联和块级公式。
 
 ### 3. Emoji 插件
+
 支持表情符号渲染，包括短代码和 Unicode emoji。
 
 ## 插件管理器
@@ -18,18 +21,20 @@ MarkdownRender 组件提供了一个强大的插件系统，支持动态添加�
 插件管理器提供了完整的插件生命周期管理功能：
 
 ```typescript
-import { pluginManager, registerPlugin } from './plugins'
+import { pluginManager, registerPlugin } from "./plugins";
 
 // 获取插件统计信息
-const stats = pluginManager.getStats()
-console.log(`总插件数: ${stats.total}, 启用: ${stats.enabled}, 禁用: ${stats.disabled}`)
+const stats = pluginManager.getStats();
+console.log(
+  `总插件数: ${stats.total}, 启用: ${stats.enabled}, 禁用: ${stats.disabled}`
+);
 
 // 启用/禁用插件
-pluginManager.enable('emoji')
-pluginManager.disable('latex')
+pluginManager.enable("emoji");
+pluginManager.disable("latex");
 
 // 检查插件状态
-const isEnabled = pluginManager.isEnabled('mermaid')
+const isEnabled = pluginManager.isEnabled("mermaid");
 ```
 
 ## 添加自定义插件
@@ -38,62 +43,62 @@ const isEnabled = pluginManager.isEnabled('mermaid')
 
 ```typescript
 // my-custom-plugin.ts
-import type { PluginSimple } from 'markdown-it'
+import type { PluginSimple } from "markdown-it";
 
 export interface MyCustomPluginOptions {
-  enabled?: boolean
-  customOption?: string
+  enabled?: boolean;
+  customOption?: string;
 }
 
-export const myCustomPlugin: PluginSimple = (md, options: MyCustomPluginOptions = {}) => {
-  if (!options.enabled) return
+export const myCustomPlugin: PluginSimple = (
+  md,
+  options: MyCustomPluginOptions = {}
+) => {
+  if (!options.enabled) return;
 
   // 添加自定义渲染规则
-  md.renderer.rules.custom_rule = function(tokens, idx) {
-    const token = tokens[idx]
-    return `<div class="custom-content">${token.content}</div>`
-  }
-}
+  md.renderer.rules.custom_rule = function (tokens, idx) {
+    const token = tokens[idx];
+    return `<div class="custom-content">${token.content}</div>`;
+  };
+};
 
-export default myCustomPlugin
+export default myCustomPlugin;
 ```
 
 ### 2. 注册插件
 
 ```typescript
-import { registerPlugin } from './plugins'
-import { myCustomPlugin } from './my-custom-plugin'
+import { registerPlugin } from "./plugins";
+import { myCustomPlugin } from "./my-custom-plugin";
 
 // 注册插件
 registerPlugin({
-  name: 'my-custom',
+  name: "my-custom",
   plugin: myCustomPlugin,
   options: {
     enabled: true,
-    customOption: 'value'
+    customOption: "value",
   },
   priority: 50,
-  description: '我的自定义插件'
-})
+  description: "我的自定义插件",
+});
 ```
 
 ### 3. 在组件中使用
 
 ```vue
 <template>
-  <MarkdownRender 
-    :content="content"
-    :plugin-config="pluginConfig"
-  />
+  <MarkdownRender :content="content" :plugin-config="pluginConfig" />
 </template>
 
 <script setup>
 const pluginConfig = {
-  'my-custom': {
+  "my-custom": {
     enabled: true,
-    customOption: 'new-value'
-  }
-}
+    customOption: "new-value",
+  },
+};
 </script>
 ```
 
@@ -102,7 +107,7 @@ const pluginConfig = {
 插件按优先级顺序加载，数字越小优先级越高：
 
 - Mermaid: 10
-- LaTeX: 20  
+- LaTeX: 20
 - Emoji: 30
 - 自定义插件: 50+
 
@@ -113,22 +118,22 @@ const pluginConfig = {
 ```typescript
 const pluginConfig = {
   mermaid: {
-    theme: 'dark',
-    securityLevel: 'strict',
-    animate: true
+    theme: "dark",
+    securityLevel: "strict",
+    animate: true,
   },
   latex: {
-    strict: 'warn',
+    strict: "warn",
     trust: false,
-    throwOnError: true
+    throwOnError: true,
   },
   emoji: {
     enabled: true,
     shortcodes: true,
     unicode: true,
-    size: '1.2em'
-  }
-}
+    size: "1.2em",
+  },
+};
 ```
 
 ## 插件开发指南
@@ -142,7 +147,7 @@ export interface PluginOptions {
 
 export const myPlugin: PluginSimple = (md, options: PluginOptions = {}) => {
   // 插件实现
-}
+};
 ```
 
 ### 2. 常用 API
@@ -160,10 +165,10 @@ export const myPlugin: PluginSimple = (md, options = {}) => {
   try {
     // 插件逻辑
   } catch (error) {
-    console.error('Plugin error:', error)
+    console.error("Plugin error:", error);
     // 优雅降级
   }
-}
+};
 ```
 
 ### 4. 性能考虑
@@ -179,31 +184,37 @@ export const myPlugin: PluginSimple = (md, options = {}) => {
 
 ```typescript
 export const tableEnhancePlugin: PluginSimple = (md, options = {}) => {
-  const originalTable = md.renderer.rules.table_open || function() { return '<table>' }
-  
-  md.renderer.rules.table_open = function(tokens, idx) {
-    return '<table class="enhanced-table">'
-  }
-}
+  const originalTable =
+    md.renderer.rules.table_open ||
+    function () {
+      return "<table>";
+    };
+
+  md.renderer.rules.table_open = function (tokens, idx) {
+    return '<table class="enhanced-table">';
+  };
+};
 ```
 
 ### 代码块增强插件
 
 ```typescript
 export const codeBlockEnhancePlugin: PluginSimple = (md, options = {}) => {
-  const originalFence = md.renderer.rules.fence
-  
-  md.renderer.rules.fence = function(tokens, idx, options, env, renderer) {
-    const token = tokens[idx]
-    const lang = token.info ? md.utils.unescapeAll(token.info).trim() : ''
-    
-    if (lang === 'enhanced') {
-      return `<div class="enhanced-code-block">${token.content}</div>`
+  const originalFence = md.renderer.rules.fence;
+
+  md.renderer.rules.fence = function (tokens, idx, options, env, renderer) {
+    const token = tokens[idx];
+    const lang = token.info ? md.utils.unescapeAll(token.info).trim() : "";
+
+    if (lang === "enhanced") {
+      return `<div class="enhanced-code-block">${token.content}</div>`;
     }
-    
-    return originalFence ? originalFence(tokens, idx, options, env, renderer) : ''
-  }
-}
+
+    return originalFence
+      ? originalFence(tokens, idx, options, env, renderer)
+      : "";
+  };
+};
 ```
 
 ## 最佳实践
@@ -221,10 +232,12 @@ export const codeBlockEnhancePlugin: PluginSimple = (md, options = {}) => {
 ```typescript
 // 启用插件调试
 pluginManager.getStats().plugins.forEach(plugin => {
-  console.log(`${plugin.name}: ${plugin.enabled ? 'enabled' : 'disabled'} (priority: ${plugin.priority})`)
-})
+  console.log(
+    `${plugin.name}: ${plugin.enabled ? "enabled" : "disabled"} (priority: ${plugin.priority})`
+  );
+});
 
 // 检查插件配置
-const mermaidPlugin = pluginManager.get('mermaid')
-console.log('Mermaid config:', mermaidPlugin?.options)
+const mermaidPlugin = pluginManager.get("mermaid");
+console.log("Mermaid config:", mermaidPlugin?.options);
 ```

@@ -3,43 +3,43 @@
  */
 export interface TypewriterConfig {
   /** 打字速度，每个字符的间隔时间（毫秒） */
-  speed?: number
+  speed?: number;
   /** 是否显示光标 */
-  showCursor?: boolean
+  showCursor?: boolean;
   /** 光标样式 */
-  cursorStyle?: string
+  cursorStyle?: string;
   /** 光标闪烁间隔时间（毫秒） */
-  cursorBlinkSpeed?: number
+  cursorBlinkSpeed?: number;
   /** 是否自动开始打字动画 */
-  autoStart?: boolean
+  autoStart?: boolean;
   /** 打字完成后的延迟时间（毫秒） */
-  delayAfterComplete?: number
+  delayAfterComplete?: number;
 }
 
 /**
  * 打字完成触发策略
  */
-export type TypewriterCompleteStrategy = 'only-last' | 'all' | number[]
+export type TypewriterCompleteStrategy = "only-last" | "all" | number[];
 
 /**
  * Typewriter 组件的 Props 类型
  */
 export interface TypewriterProps {
   /** 要显示的文本内容 */
-  text: string
+  text: string;
   /** 打字机配置 */
-  config?: TypewriterConfig
+  config?: TypewriterConfig;
   /** 是否立即开始打字动画 */
-  immediate?: boolean
+  immediate?: boolean;
 }
 
 /**
  * Typewriter 组件的事件类型
  */
 export interface TypewriterEmits {
-  (e: 'complete'): void
-  (e: 'start'): void
-  (e: 'typing', currentText: string, progress: number): void
+  (e: "complete"): void;
+  (e: "start"): void;
+  (e: "typing", currentText: string, progress: number): void;
 }
 
 /**
@@ -47,17 +47,17 @@ export interface TypewriterEmits {
  */
 export interface TypewriterExpose {
   /** 开始打字动画 */
-  startTyping: () => Promise<void>
+  startTyping: () => Promise<void>;
   /** 停止打字动画 */
-  stopTyping: () => void
+  stopTyping: () => void;
   /** 重置打字机 */
-  reset: () => void
+  reset: () => void;
   /** 完成打字 */
-  complete: () => void
+  complete: () => void;
   /** 是否正在打字 */
-  isTyping: () => boolean
+  isTyping: () => boolean;
   /** 是否已完成 */
-  isComplete: () => boolean
+  isComplete: () => boolean;
   /** 当前进度 */
-  progress: () => number
+  progress: () => number;
 }

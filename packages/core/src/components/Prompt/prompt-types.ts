@@ -4,18 +4,18 @@
  * 列表排列方向
  */
 export enum ListDirection {
-  Horizontal = 'horizontal',
-  Vertical = 'vertical',
+  Horizontal = "horizontal",
+  Vertical = "vertical",
 }
 
 /**
  * 列表样式类型
  */
 export enum ListVariant {
-  Transparent = 'transparent',
-  Filled = 'filled',
-  Bordered = 'bordered',
-  None = 'none',
+  Transparent = "transparent",
+  Filled = "filled",
+  Bordered = "bordered",
+  None = "none",
 }
 
 /**
@@ -23,13 +23,13 @@ export enum ListVariant {
  */
 export interface IconConfig {
   /** 图标名 */
-  name: string
+  name: string;
   /** 图标大小 */
-  size?: string
+  size?: string;
   /** 图标颜色 */
-  color?: string
+  color?: string;
   /** 自定义组件 */
-  component?: any
+  component?: any;
 }
 
 /**
@@ -37,13 +37,13 @@ export interface IconConfig {
  */
 export interface PromptItem {
   /** 唯一值 */
-  value: string | number
+  value: string | number;
   /** 显示文本 */
-  label: string
+  label: string;
   /** 图标配置 */
-  iconConfig?: IconConfig
+  iconConfig?: IconConfig;
   /** 描述 */
-  desc?: string
+  desc?: string;
 }
 
 /**
@@ -51,13 +51,13 @@ export interface PromptItem {
  */
 export interface PromptProps {
   /** 列表排列方向 */
-  direction?: ListDirection
+  direction?: ListDirection;
   /** 提示项数组 */
-  list: PromptItem[]
+  list: PromptItem[];
   /** 列表样式 */
-  variant?: ListVariant
+  variant?: ListVariant;
   /** 标题 */
-  title?: string
+  title?: string;
   /** 点击项事件 */
-  onItemClick?: (item: PromptItem) => any
+  onItemClick?: (item: PromptItem) => any;
 }

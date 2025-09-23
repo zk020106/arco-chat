@@ -1,8 +1,8 @@
-import type { App } from 'vue'
-import Mention from './Mention.vue'
+import type { App } from "vue";
+import Mention from "./Mention.vue";
 
 Mention.install = (app: App) => {
-  app.component('Mention', Mention)
-}
+  app.component("Mention", Mention);
+};
 
-export { Mention }
+export { Mention };
