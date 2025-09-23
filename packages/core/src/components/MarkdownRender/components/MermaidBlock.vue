@@ -57,7 +57,7 @@
       <div v-show="showPreview" class="mermaid-preview" :style="previewStyle">
         <div v-if="loading" class="mermaid-loading">
           <div class="loading-spinner"></div>
-          <div>正在渲染图表...</div>
+          <div class="loading-text">正在渲染 Mermaid 图表...</div>
         </div>
         <div v-else-if="error" class="mermaid-error">
           <div class="error-icon">❌</div>
@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted,nextTick  } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { Message } from '@arco-design/web-vue'
 import { 
   IconCode, 
@@ -127,6 +127,15 @@ async function loadMermaid(): Promise<any> {
   
   try {
     const mermaid = await import('mermaid')
+    
+    // 设置全局错误处理
+    if ((mermaid.default as any).onError) {
+      (mermaid.default as any).onError = (error: any) => {
+        console.error('Mermaid error:', error)
+        // 不显示错误到页面，只记录到控制台
+      }
+    }
+    
     return mermaid.default
   } catch (err) {
     console.warn('Failed to load Mermaid:', err)
@@ -136,9 +145,19 @@ async function loadMermaid(): Promise<any> {
 
 // 渲染 Mermaid 图表
 async function renderMermaid() {
-  if (!props.code.trim()) return
+  if (!props.code.trim()) {
+    error.value = 'Mermaid 内容为空'
+    return
+  }
   
-  loading.value = true
+  // 检查是否是 loading 状态的代码
+  if (props.code.includes('正在加载...') && props.code.includes('请稍候')) {
+    // loading.value = true
+    // renderedSvg.value = '' // 清空之前的渲染结果
+    return
+  }
+  
+  // loading.value = true
   error.value = ''
   
   try {
@@ -147,23 +166,41 @@ async function renderMermaid() {
       throw new Error('无法加载 Mermaid 库')
     }
     
-    // 初始化 Mermaid
+    // 初始化 Mermaid - 配置为忽略错误
     mermaid.initialize({
       theme: props.theme,
-      securityLevel: 'strict',
+      securityLevel: 'loose', // 使用宽松的安全级别
       startOnLoad: false,
+      suppressErrorRendering: true, // 抑制错误渲染到页面
+      suppressWarnings: true, // 抑制警告
+      logLevel: 'silent', // 静默模式，不输出任何日志
+      maxTextSize: 50000, // 增加文本大小限制
     })
     
     // 生成唯一 ID
-    const id = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    const id = `mermaid-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
     
-    // 渲染图表
-    const { svg } = await mermaid.render(id, props.code)
-    renderedSvg.value = svg
+    // 尝试渲染图表，如果失败则显示当前内容
+    try {
+      const { svg } = await mermaid.render(id, props.code)
+      renderedSvg.value = svg
+    } catch (renderError) {
+      // 如果渲染失败，可能是内容不完整，显示一个简单的占位符
+      // console.log('Mermaid render failed (content may be incomplete):', renderError)
+      // renderedSvg.value = `
+      //   <svg width="100%" height="100" viewBox="0 0 400 100">
+      //     <rect width="100%" height="100%" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1" rx="4"/>
+      //     <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
+      //           font-family="Arial, sans-serif" font-size="14" fill="#6c757d">
+      //       正在加载 Mermaid 图表...
+      //     </text>
+      //   </svg>
+      // `
+    }
     
     await nextTick()
     
-    // 调整 SVG 大小
+    // 调整 SVG 大小  
     const svgElement = mermaidContainer.value?.querySelector('svg')
     if (svgElement) {
       svgElement.style.maxWidth = '100%'
@@ -306,6 +343,17 @@ document.addEventListener('fullscreenchange', () => {
 onMounted(() => {
   renderMermaid()
 })
+
+// 监听 code 变化，重新渲染
+watch(() => props.code, (newCode, oldCode) => {
+  // 如果代码没有实际变化，不重新渲染
+  if (newCode === oldCode) return
+  
+  // 如果新代码是空的，不渲染
+  if (!newCode || !newCode.trim()) return
+  
+  renderMermaid()
+}, { immediate: false })
 </script>
 
 <style lang="scss" scoped>
@@ -372,16 +420,25 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 20px;
   color: var(--color-text-3, #86909c);
+  min-height: 120px;
   
   .loading-spinner {
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--color-border-2, #e5e6eb);
-    border-top: 2px solid var(--color-primary-6, #165dff);
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-border-2, #e5e6eb);
+    border-top: 3px solid var(--color-primary-6, #165dff);
     border-radius: 50%;
     animation: spin 1s linear infinite;
+  }
+  
+  .loading-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-2, #4e5969);
   }
 }
 

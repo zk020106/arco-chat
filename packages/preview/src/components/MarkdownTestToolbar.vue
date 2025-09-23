@@ -257,6 +257,13 @@ $$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$`
   // 测试 Mermaid 图表
   const testMermaid = () => {
     const content = `# Mermaid 图表测试
+\`\`\`mermaid
+xychart
+    title "Sales Revenue"
+    x-axis [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
+    y-axis "Revenue (in $)" 4000 --> 11000
+    line [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]
+\`\`\`
   
 ## 流程图
   
