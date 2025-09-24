@@ -29,7 +29,7 @@ export default defineConfig({
       },
       formats: ["es", "cjs"],
     },
-    cssCodeSplit: true, // ✅ 关键：独立输出 CSS
+    cssCodeSplit: false, // 禁用CSS代码分割，统一输出
     rollupOptions: {
       external: [
         "vue",
