@@ -1,6 +1,6 @@
 {
   "name": "arco-design-x",
-  "version": "1.0.37",
+  "version": "1.0.38",
   "author": "mochou",
   "license": "MIT",
   "main": "dist/arco-chat.cjs.js",
